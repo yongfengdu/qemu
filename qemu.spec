@@ -153,7 +153,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 0.1.rc0%{?dist}
+Release: 0.2.rc1%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -169,7 +169,7 @@ ExclusiveArch: %{kvm_archs}
 %endif
 
 #Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc0.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc1.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -193,6 +193,9 @@ Source12: bridge.conf
 
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
+
+# Fix virtconsole migration
+Patch0001: 0001-virtio-serial-fix-virtio-config-size.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -736,7 +739,11 @@ CAC emulation development files.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc0
+%setup -q -n qemu-%{version}-rc1
+
+# Fix virtconsole migration
+%patch0001 -p1
+
 
 %build
 %if %{with kvmonly}
@@ -1514,6 +1521,9 @@ getent passwd qemu >/dev/null || \
 %endif
 
 %changelog
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc1
+- Rebased to version 2.3.0-rc1
+
 * Sun Mar 22 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc0
 - Rebased to version 2.3.0-rc0
 
