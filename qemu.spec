@@ -43,14 +43,14 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 0.2.rc1%{?dist}
+Release: 0.3.rc2%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
 #Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc1.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc2.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -74,9 +74,6 @@ Source12: bridge.conf
 
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
-
-# Fix virtconsole migration
-Patch0001: 0001-virtio-serial-fix-virtio-config-size.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -542,10 +539,8 @@ CAC emulation development files.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc1
-
-# Fix virtconsole migration
-%patch0001 -p1
+%setup -q -n qemu-%{version}-rc2
+%autopatch
 
 
 %build
@@ -644,11 +639,11 @@ if [ -x "$b" ]; then "$b" -help; fi
 mkdir -p %{buildroot}%{_udevdir}
 mkdir -p %{buildroot}%{_unitdir}
 
-install -D -p -m 0744 %{_sourcedir}/ksm.service %{buildroot}%{_unitdir}
+install -D -p -m 0644 %{_sourcedir}/ksm.service %{buildroot}%{_unitdir}
 install -D -p -m 0644 %{_sourcedir}/ksm.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/ksm
-install -D -p -m 0755 ksmctl %{buildroot}/lib/systemd/ksmctl
+install -D -p -m 0755 ksmctl %{buildroot}%{_libexecdir}/ksmctl
 
-install -D -p -m 0744 %{_sourcedir}/ksmtuned.service %{buildroot}%{_unitdir}
+install -D -p -m 0644 %{_sourcedir}/ksmtuned.service %{buildroot}%{_unitdir}
 install -D -p -m 0755 %{_sourcedir}/ksmtuned %{buildroot}%{_sbindir}/ksmtuned
 install -D -p -m 0644 %{_sourcedir}/ksmtuned.conf %{buildroot}%{_sysconfdir}/ksmtuned.conf
 
@@ -802,11 +797,19 @@ done
 
 
 %check
-# Run check on all arches, don't currently fail build on ARM and s390
-%ifnarch %{arm} aarch64 s390
+
+# 2.3.0-rc2 tests are hanging on s390:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1206057
+%global archs_skip_tests s390
+
+%global archs_ignore_test_failures 0
+
+%ifnarch %{archs_skip_tests}
+%ifarch %{archs_ignore_test_failures}
 make check V=1
 %else
-make check V=1 ||:
+make check V=1 || :
+%endif
 %endif
 
 # Sanity-check current kernel can boot on this qemu.
@@ -909,7 +912,7 @@ getent passwd qemu >/dev/null || \
 
 
 %files -n ksm
-/lib/systemd/ksmctl
+%{_libexecdir}/ksmctl
 %{_sbindir}/ksmtuned
 %{_unitdir}/ksmtuned.service
 %{_unitdir}/ksm.service
@@ -1185,6 +1188,13 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc2
+- Rebased to version 2.3.0-rc2
+- Don't install ksm services as executable (bz #1192720)
+- Skip hanging tests on s390 (bz #1206057)
+- CVE-2015-1779 vnc: insufficient resource limiting in VNC websockets decoder
+  (bz #1205051, bz #1199572)
+
 * Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc1
 - Rebased to version 2.3.0-rc1
 
