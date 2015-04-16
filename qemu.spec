@@ -1,34 +1,24 @@
 %global kvm_archs %{ix86} x86_64 ppc64 ppc64le s390x armv7hl aarch64
 
-%ifarch %{ix86} x86_64
-%global have_seccomp 1
-%global have_spice   1
-%endif
-
-# Xen is available only on i386 x86_64 (from libvirt spec)
-%ifarch %{ix86} x86_64
-%global have_xen 1
-%endif
-
 %ifarch %{ix86}
 %global kvm_package   system-x86
 %global kvm_target    i386
+# need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
 %endif
 %ifarch x86_64
 %global kvm_package   system-x86
 %global kvm_target    x86_64
+# need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
 %endif
 %ifarch ppc64 ppc64le
 %global kvm_package   system-ppc
 %global kvm_target    ppc64
-%global need_kvm_modfile 1
 %endif
 %ifarch s390x
 %global kvm_package   system-s390x
 %global kvm_target    s390x
-%global need_kvm_modfile 1
 %endif
 %ifarch armv7hl
 %global kvm_package   system-arm
@@ -39,11 +29,21 @@
 %global kvm_target    aarch64
 %endif
 
+%ifarch %{ix86} x86_64
+%global have_seccomp 1
+%global have_spice   1
+%endif
+
+# Xen is available only on i386 x86_64 (from libvirt spec)
+%ifarch %{ix86} x86_64
+%global have_xen 1
+%endif
+
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 0.4.rc3%{?dist}
+Release: 0.5.rc3%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -53,9 +53,6 @@ URL: http://www.qemu.org/
 Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc3.tar.bz2
 
 Source1: qemu.binfmt
-
-# Loads kvm kernel modules at boot
-Source2: kvm.modules
 
 # Creates /dev/kvm
 Source3: 80-kvm.rules
@@ -653,11 +650,6 @@ install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
 
 # Install kvm specific bits
 %ifarch %{kvm_archs}
-%if 0%{?need_kvm_modfile}
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/modules
-install -m 0755 kvm.modules %{buildroot}%{_sysconfdir}/sysconfig/modules/kvm.modules
-%endif
-
 mkdir -p %{buildroot}%{_bindir}/
 install -m 0755 scripts/kvm/kvm_stat %{buildroot}%{_bindir}/
 install -m 0644 %{_sourcedir}/80-kvm.rules %{buildroot}%{_udevdir}
@@ -668,16 +660,14 @@ make DESTDIR=%{buildroot} install
 
 %find_lang %{name}
 
-%if 0%{?need_qemu_kvm}
-install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
-%endif
-
 chmod -x %{buildroot}%{_mandir}/man1/*
 install -D -p -m 0644 -t %{buildroot}%{qemudocdir} Changelog README COPYING COPYING.LIB LICENSE
 for emu in %{buildroot}%{_bindir}/qemu-system-*; do
     ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/$(basename $emu).1.gz
 done
+
 %if 0%{?need_qemu_kvm}
+install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
 ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/qemu-kvm.1.gz
 %endif
 
@@ -833,7 +823,6 @@ if test -f "$hostqemu"; then qemu-sanity-check --qemu=$hostqemu ||: ; fi
 %post %{kvm_package}
 # load kvm modules now, so we can make sure no reboot is needed.
 # If there's already a kvm module installed, we don't mess with it
-sh %{_sysconfdir}/sysconfig/modules/kvm.modules &> /dev/null || :
 setfacl --remove-all /dev/kvm &> /dev/null || :
 udevadm trigger --subsystem-match=misc --sysname-match=kvm --action=add || :
 %endif
@@ -870,16 +859,8 @@ getent passwd qemu >/dev/null || \
 
 
 %global kvm_files \
-%if 0%{?need_kvm_modfile} \
-%{_sysconfdir}/sysconfig/modules/kvm.modules \
-%endif \
 %{_udevdir}/80-kvm.rules
 
-%if 0%{?need_qemu_kvm}
-%global qemu_kvm_files \
-%{_bindir}/qemu-kvm \
-%{_mandir}/man1/qemu-kvm.1*
-%endif
 
 %files
 
@@ -981,6 +962,12 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
 %{_mandir}/man1/qemu-system-i386.1*
 %{_mandir}/man1/qemu-system-x86_64.1*
+
+%if 0%{?need_qemu_kvm}
+%{_bindir}/qemu-kvm
+%{_mandir}/man1/qemu-kvm.1*
+%endif
+
 %{_datadir}/%{name}/acpi-dsdt.aml
 %{_datadir}/%{name}/q35-acpi-dsdt.aml
 %{_datadir}/%{name}/bios.bin
@@ -1007,7 +994,6 @@ getent passwd qemu >/dev/null || \
 %config(noreplace) %{_sysconfdir}/qemu/target-x86_64.conf
 %ifarch %{ix86} x86_64
 %{?kvm_files:}
-%{?qemu_kvm_files:}
 %endif
 
 
@@ -1030,7 +1016,6 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-arm.1*
 %ifarch armv7hl
 %{?kvm_files:}
-%{?qemu_kvm_files:}
 %endif
 
 
@@ -1087,7 +1072,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/s390-ccw.img
 %ifarch s390x
 %{?kvm_files:}
-%{?qemu_kvm_files:}
 %endif
 
 
@@ -1125,7 +1109,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/u-boot.e500
 %ifarch ppc64 ppc64le
 %{?kvm_files:}
-%{?qemu_kvm_files:}
 %endif
 
 
@@ -1155,7 +1138,6 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-aarch64.1*
 %ifarch aarch64
 %{?kvm_files:}
-%{?qemu_kvm_files:}
 %endif
 
 
@@ -1188,17 +1170,21 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc3
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.5.rc3
+- Drop unneeded kvm.modules
+- Fix s390/ppc64 FTBFS (bz 1212328)
+
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.4.rc3
 - Rebased to version 2.3.0-rc3
 
-* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc2
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.3.rc2
 - Rebased to version 2.3.0-rc2
 - Don't install ksm services as executable (bz #1192720)
 - Skip hanging tests on s390 (bz #1206057)
 - CVE-2015-1779 vnc: insufficient resource limiting in VNC websockets decoder
   (bz #1205051, bz #1199572)
 
-* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc1
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.2.rc1
 - Rebased to version 2.3.0-rc1
 
 * Sun Mar 22 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.1.rc0
