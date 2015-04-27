@@ -43,14 +43,13 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 0.5.rc3%{?dist}
+Release: 1%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-#Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc3.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -536,7 +535,7 @@ CAC emulation development files.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc3
+%setup -q -n qemu-%{version}
 %autopatch
 
 
@@ -821,10 +820,11 @@ if test -f "$hostqemu"; then qemu-sanity-check --qemu=$hostqemu ||: ; fi
 
 %ifarch %{kvm_archs}
 %post %{kvm_package}
-# load kvm modules now, so we can make sure no reboot is needed.
-# If there's already a kvm module installed, we don't mess with it
-setfacl --remove-all /dev/kvm &> /dev/null || :
-udevadm trigger --subsystem-match=misc --sysname-match=kvm --action=add || :
+# Default /dev/kvm permissions are 660, we install a udev rule changing that
+# to 666. However trying to trigger the re-permissioning via udev has been
+# been a neverending source of trouble, so we just force it with chmod. For
+# more info see: https://bugzilla.redhat.com/show_bug.cgi?id=950436
+chmod --quiet 666 /dev/kvm || :
 %endif
 
 
@@ -1170,6 +1170,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-1
+- Rebased to version 2.3.0 GA
+- Another attempt at fixing default /dev/kvm permissions (bz 950436)
+
 * Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-0.5.rc3
 - Drop unneeded kvm.modules
 - Fix s390/ppc64 FTBFS (bz 1212328)
