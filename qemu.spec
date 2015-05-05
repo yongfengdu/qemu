@@ -43,7 +43,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -295,7 +295,9 @@ Requires: seavgabios-bin
 Requires: seabios-bin >= 1.7.5
 Requires: sgabios-bin
 Requires: ipxe-roms-qemu
+%if 0%{?have_seccomp:1}
 Requires: libseccomp >= 1.0.0
+%endif
 
 
 %description system-x86
@@ -1170,6 +1172,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue May  5 2015 Dan Horák <dan[at]danny.cz> - 2:2.3.0-2
+- Require libseccomp only when built with it
+
 * Tue Mar 24 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-1
 - Rebased to version 2.3.0 GA
 - Another attempt at fixing default /dev/kvm permissions (bz 950436)
