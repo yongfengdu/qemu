@@ -43,7 +43,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1172,6 +1172,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed May 06 2015 Cole Robinson <crobinso@redhat.com> 2:2.3.0-3%
+- Fix ksm.service (bz 1218814)
+
 * Tue May  5 2015 Dan Horák <dan[at]danny.cz> - 2:2.3.0-2
 - Require libseccomp only when built with it
 
