@@ -43,7 +43,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -71,6 +71,8 @@ Source12: bridge.conf
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
 
+Patch0: 0001-configure-Add-support-for-tcmalloc.patch
+
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
 BuildRequires: which
@@ -87,6 +89,7 @@ BuildRequires: libiscsi-devel
 BuildRequires: ncurses-devel
 BuildRequires: libattr-devel
 BuildRequires: usbredir-devel >= 0.5.2
+BuildRequires: gperftools-devel
 BuildRequires: texinfo
 # For /usr/bin/pod2man
 BuildRequires: perl-podlators
@@ -538,7 +541,7 @@ CAC emulation development files.
 
 %prep
 %setup -q -n qemu-%{version}
-%autopatch
+%autopatch -p1
 
 
 %build
@@ -598,6 +601,7 @@ unicore32-linux-user aarch64-softmmu"
     --audio-drv-list=pa,sdl,alsa,oss \
     --enable-trace-backend=$tracebackends \
     --enable-kvm \
+    --enable-tcmalloc \
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0" \
 %ifarch s390
@@ -1172,7 +1176,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed May 06 2015 Cole Robinson <crobinso@redhat.com> 2:2.3.0-3%
+* Sun May 10 2015 Paolo Bonzini <pbonzini@redhat.com> 2:2.3.0-4
+- Backport upstream 2.4 patch to link with tcmalloc, enable it
+- Add -p1 to %autopatch
+
+* Wed May 06 2015 Cole Robinson <crobinso@redhat.com> 2:2.3.0-3
 - Fix ksm.service (bz 1218814)
 
 * Tue May  5 2015 Dan Horák <dan[at]danny.cz> - 2:2.3.0-2
