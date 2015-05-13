@@ -43,7 +43,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -71,7 +71,11 @@ Source12: bridge.conf
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
 
-Patch0: 0001-configure-Add-support-for-tcmalloc.patch
+# Backport upstream 2.4 patch to link with tcmalloc, enable it
+Patch0001: 0001-configure-Add-support-for-tcmalloc.patch
+# CVE-2015-3456: (VENOM) fdc: out-of-bounds fifo buffer memory access
+# (bz #1221152)
+Patch0002: 0002-fdc-force-the-fifo-access-to-be-in-bounds-of-the-all.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1176,6 +1180,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed May 13 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-5
+- Backport upstream 2.4 patch to link with tcmalloc, enable it
+- CVE-2015-3456: (VENOM) fdc: out-of-bounds fifo buffer memory access (bz
+  #1221152)
+
 * Sun May 10 2015 Paolo Bonzini <pbonzini@redhat.com> 2:2.3.0-4
 - Backport upstream 2.4 patch to link with tcmalloc, enable it
 - Add -p1 to %autopatch

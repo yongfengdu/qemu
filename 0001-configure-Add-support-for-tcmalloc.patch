@@ -1,4 +1,3 @@
-From 2847b46958ab0bd604e1b3fcafba0f5ba4375833 Mon Sep 17 00:00:00 2001
 From: Fam Zheng <famz@redhat.com>
 Date: Thu, 26 Mar 2015 11:03:12 +0800
 Subject: [PATCH] configure: Add support for tcmalloc
@@ -33,6 +32,7 @@ read       4k         1          156    39969      23
 Signed-off-by: Fam Zheng <famz@redhat.com>
 Message-Id: <1427338992-27057-1-git-send-email-famz@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+(cherry picked from commit 2847b46958ab0bd604e1b3fcafba0f5ba4375833)
 ---
  configure | 24 ++++++++++++++++++++++++
  1 file changed, 24 insertions(+)
@@ -100,6 +100,3 @@ index 6969f6f..75a4def 100755
  
  if test "$sdl_too_old" = "yes"; then
  echo "-> Your SDL version is too old - please upgrade to have SDL support"
--- 
-2.4.0
-
