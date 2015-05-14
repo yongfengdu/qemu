@@ -1187,7 +1187,7 @@ getent passwd qemu >/dev/null || \
 
 * Sun May 10 2015 Paolo Bonzini <pbonzini@redhat.com> 2:2.3.0-4
 - Backport upstream 2.4 patch to link with tcmalloc, enable it
-- Add -p1 to %autopatch
+- Add -p1 to autopatch
 
 * Wed May 06 2015 Cole Robinson <crobinso@redhat.com> 2:2.3.0-3
 - Fix ksm.service (bz 1218814)
