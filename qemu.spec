@@ -630,15 +630,6 @@ make V=1 %{?_smp_mflags} $buildldflags
 
 gcc %{_sourcedir}/ksmctl.c -O2 -g -o ksmctl
 
-# Check the binary runs (see eg RHBZ#998722).
-# XXX: Disable this, currently hanging on arm, and we need to get a build
-#      with the VENOM fix out.
-#      https://bugzilla.redhat.com/show_bug.cgi?id=1223319
-#%ifarch %{kvm_archs}
-#b="./x86_64-softmmu/qemu-system-x86_64"
-#if [ -x "$b" ]; then "$b" -help; fi
-#%endif
-
 
 %install
 
@@ -800,18 +791,27 @@ done
 
 %check
 
-# 2.3.0-rc2 tests are hanging on s390:
+# 2.3.0-rc2 tests are hanging on s390
 # https://bugzilla.redhat.com/show_bug.cgi?id=1206057
-%global archs_skip_tests s390
-
+# Tests seem to be a recurring problem on s390, so I'd suggest just leaving
+# it disabled.
+#
+# Tests hanging on arm rawhide, but we need to get a build
+# with the VENOM fix out.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1223319
+%global archs_skip_tests s390 %{arm}
 %global archs_ignore_test_failures 0
 
 %ifnarch %{archs_skip_tests}
+
+# Check the binary runs (see eg RHBZ#998722).
+b="./x86_64-softmmu/qemu-system-x86_64"
+if [ -x "$b" ]; then "$b" -help; fi
+
 %ifarch %{archs_ignore_test_failures}
 make check V=1
 %else
 make check V=1 || :
-%endif
 %endif
 
 # Sanity-check current kernel can boot on this qemu.
@@ -830,12 +830,14 @@ hostqemu=x86_64-softmmu/qemu-system-x86_64
 %endif
 if test -f "$hostqemu"; then qemu-sanity-check --qemu=$hostqemu ||: ; fi
 
+%endif  # archs_skip_tests
+
 
 %ifarch %{kvm_archs}
 %post %{kvm_package}
 # Default /dev/kvm permissions are 660, we install a udev rule changing that
 # to 666. However trying to trigger the re-permissioning via udev has been
-# been a neverending source of trouble, so we just force it with chmod. For
+# a neverending source of trouble, so we just force it with chmod. For
 # more info see: https://bugzilla.redhat.com/show_bug.cgi?id=950436
 chmod --quiet 666 /dev/kvm || :
 %endif
