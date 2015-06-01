@@ -587,6 +587,15 @@ ppc64abi32-linux-user s390x-linux-user sh4-linux-user sh4eb-linux-user \
 sparc-linux-user sparc64-linux-user sparc32plus-linux-user \
 unicore32-linux-user aarch64-softmmu"
 
+# tcmalloc hangs on arm architecture
+# https://bugzilla.redhat.com/show_bug.cgi?id=1226806
+%ifarch %{arm}
+    %define tcmallocflag --disable-tcmalloc
+%else
+    %define tcmallocflag --enable-tcmalloc
+%endif
+
+
 ./configure \
     --prefix=%{_prefix} \
     --libdir=%{_libdir} \
@@ -605,13 +614,7 @@ unicore32-linux-user aarch64-softmmu"
     --audio-drv-list=pa,sdl,alsa,oss \
     --enable-trace-backend=$tracebackends \
     --enable-kvm \
-# tcmalloc hangs on arm architecture
-# https://bugzilla.redhat.com/show_bug.cgi?id=1226806
-%ifarch %{arm}
-    --disable-tcmalloc \
-%else
-    --enable-tcmalloc \
-%endif
+    %{tcmallocflag} \
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0" \
 %ifarch s390
