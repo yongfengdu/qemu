@@ -43,7 +43,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -605,7 +605,13 @@ unicore32-linux-user aarch64-softmmu"
     --audio-drv-list=pa,sdl,alsa,oss \
     --enable-trace-backend=$tracebackends \
     --enable-kvm \
+# tcmalloc hangs on arm architecture
+# https://bugzilla.redhat.com/show_bug.cgi?id=1226806
+%ifarch %{arm}
+    --disable-tcmalloc \
+%else
     --enable-tcmalloc \
+%endif
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0" \
 %ifarch s390
@@ -795,11 +801,7 @@ done
 # https://bugzilla.redhat.com/show_bug.cgi?id=1206057
 # Tests seem to be a recurring problem on s390, so I'd suggest just leaving
 # it disabled.
-#
-# Tests hanging on arm rawhide, but we need to get a build
-# with the VENOM fix out.
-# https://bugzilla.redhat.com/show_bug.cgi?id=1223319
-%global archs_skip_tests s390 %{arm}
+%global archs_skip_tests s390
 %global archs_ignore_test_failures 0
 
 %ifnarch %{archs_skip_tests}
@@ -1185,6 +1187,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Jun  1 2015 Daniel P. Berrange <berrange@redhat.com> - 2:2.3.0-6
+- Disable tcmalloc on arm since it currently hangs (rhbz #1226806)
+- Re-enable tests on arm
+
 * Wed May 13 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-5
 - Backport upstream 2.4 patch to link with tcmalloc, enable it
 - CVE-2015-3456: (VENOM) fdc: out-of-bounds fifo buffer memory access (bz
