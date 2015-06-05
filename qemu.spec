@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -73,6 +73,9 @@ Patch0001: 0001-configure-Add-support-for-tcmalloc.patch
 # CVE-2015-3456: (VENOM) fdc: out-of-bounds fifo buffer memory access
 # (bz #1221152)
 Patch0002: 0002-fdc-force-the-fifo-access-to-be-in-bounds-of-the-all.patch
+# CVE-2015-4037: insecure temporary file use in /net/slirp.c (bz
+# #1222894)
+Patch0003: 0003-slirp-use-less-predictable-directory-name-in-tmp-for.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1187,6 +1190,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Jun 05 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-7
+- CVE-2015-4037: insecure temporary file use in /net/slirp.c (bz #1222894)
+
 * Mon Jun  1 2015 Daniel P. Berrange <berrange@redhat.com> - 2:2.3.0-6
 - Disable tcmalloc on arm since it currently hangs (rhbz #1226806)
 - Re-enable tests on arm
