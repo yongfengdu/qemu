@@ -1,32 +1,29 @@
-%global kvm_archs %{ix86} x86_64 ppc64 ppc64le s390x armv7hl aarch64
-
 %ifarch %{ix86}
 %global kvm_package   system-x86
-%global kvm_target    i386
 # need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
 %endif
 %ifarch x86_64
 %global kvm_package   system-x86
-%global kvm_target    x86_64
 # need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
 %endif
 %ifarch ppc64 ppc64le
 %global kvm_package   system-ppc
-%global kvm_target    ppc64
 %endif
 %ifarch s390x
 %global kvm_package   system-s390x
-%global kvm_target    s390x
 %endif
 %ifarch armv7hl
 %global kvm_package   system-arm
-%global kvm_target    arm
 %endif
 %ifarch aarch64
 %global kvm_package   system-aarch64
-%global kvm_target    aarch64
+%endif
+
+%global have_kvm 0
+%if 0%{?kvm_package:1}
+%global have_kvm 1
 %endif
 
 %ifarch %{ix86} x86_64
@@ -200,7 +197,7 @@ emulation speed by using dynamic translation. QEMU has two operating modes:
 As QEMU requires no host kernel patches to run, it is safe and easy to use.
 
 
-%ifarch %{kvm_archs}
+%if %{have_kvm}
 %package kvm
 Summary: QEMU metapackage for KVM support
 Group: Development/Tools
@@ -506,7 +503,7 @@ emulation speed by using dynamic translation.
 This package provides the system emulator for Tricore.
 
 
-%ifarch %{kvm_archs}
+%if %{have_kvm}
 %package kvm-tools
 Summary: KVM debugging and diagnostics tools
 Group: Development/Tools
@@ -661,7 +658,7 @@ install -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
 install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
 
 # Install kvm specific bits
-%ifarch %{kvm_archs}
+%if %{have_kvm}
 mkdir -p %{buildroot}%{_bindir}/
 install -m 0755 scripts/kvm/kvm_stat %{buildroot}%{_bindir}/
 install -m 0644 %{_sourcedir}/80-kvm.rules %{buildroot}%{_udevdir}
@@ -838,7 +835,7 @@ if test -f "$hostqemu"; then qemu-sanity-check --qemu=$hostqemu ||: ; fi
 %endif  # archs_skip_tests
 
 
-%ifarch %{kvm_archs}
+%if %{have_kvm}
 %post %{kvm_package}
 # Default /dev/kvm permissions are 660, we install a udev rule changing that
 # to 666. However trying to trigger the re-permissioning via udev has been
@@ -884,7 +881,7 @@ getent passwd qemu >/dev/null || \
 
 %files
 
-%ifarch %{kvm_archs}
+%if %{have_kvm}
 %files kvm
 %endif
 
@@ -1017,7 +1014,7 @@ getent passwd qemu >/dev/null || \
 %endif
 
 
-%ifarch %{kvm_archs}
+%if %{have_kvm}
 %files kvm-tools
 %{_bindir}/kvm_stat
 %endif
