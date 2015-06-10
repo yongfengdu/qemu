@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -93,7 +93,9 @@ BuildRequires: libiscsi-devel
 BuildRequires: ncurses-devel
 BuildRequires: libattr-devel
 BuildRequires: usbredir-devel >= 0.5.2
+%ifnarch s390 s390x
 BuildRequires: gperftools-devel
+%endif
 BuildRequires: texinfo
 # For /usr/bin/pod2man
 BuildRequires: perl-podlators
@@ -589,7 +591,8 @@ unicore32-linux-user aarch64-softmmu"
 
 # tcmalloc hangs on arm architecture
 # https://bugzilla.redhat.com/show_bug.cgi?id=1226806
-%ifarch %{arm}
+# gperftools providing tcmalloc is not ported to s390(x)
+%ifarch %{arm} s390 s390x
     %define tcmallocflag --disable-tcmalloc
 %else
     %define tcmallocflag --enable-tcmalloc
@@ -1190,6 +1193,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Jun 10 2015 Dan Horák <dan[at]danny.cz> - 2:2.3.0-8
+- gperftools not available on s390(x)
+
 * Fri Jun 05 2015 Cole Robinson <crobinso@redhat.com> - 2:2.3.0-7
 - CVE-2015-4037: insecure temporary file use in /net/slirp.c (bz #1222894)
 
