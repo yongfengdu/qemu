@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 9%{?dist}
+Release: 10%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -589,10 +589,8 @@ ppc64abi32-linux-user s390x-linux-user sh4-linux-user sh4eb-linux-user \
 sparc-linux-user sparc64-linux-user sparc32plus-linux-user \
 unicore32-linux-user aarch64-softmmu"
 
-# tcmalloc hangs on arm architecture
-# https://bugzilla.redhat.com/show_bug.cgi?id=1226806
 # gperftools providing tcmalloc is not ported to s390(x)
-%ifarch %{arm} s390 s390x
+%ifarch s390 s390x
     %define tcmallocflag --disable-tcmalloc
 %else
     %define tcmallocflag --enable-tcmalloc
@@ -1193,6 +1191,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Jun 19 2015 Paolo Bonzini <pbonzini@redhat.com> - 2:2.3.0-10
+- Re-enable tcmalloc on arm
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2:2.3.0-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
