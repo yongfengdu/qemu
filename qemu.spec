@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 10%{?dist}
+Release: 11%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -552,6 +552,9 @@ CAC emulation development files.
 
 %build
 
+# QEMU already knows how to set _FORTIFY_SOURCE
+%global optflags %(echo %{optflags} | sed 's/-Wp,-D_FORTIFY_SOURCE=2//')
+
 # drop -g flag to prevent memory exhaustion by linker
 %ifarch s390
 %global optflags %(echo %{optflags} | sed 's/-g//')
@@ -608,8 +611,9 @@ unicore32-linux-user aarch64-softmmu"
     --disable-strip \
 %ifnarch aarch64
     --extra-ldflags="$extraldflags -pie -Wl,-z,relro -Wl,-z,now" \
-    --extra-cflags="%{optflags} -fPIE -DPIE -fPIC" \
+    --extra-cflags="%{optflags}" \
 %endif
+    --enable-pie \
     --disable-werror \
     --target-list="$buildarch" \
     --audio-drv-list=pa,sdl,alsa,oss \
@@ -1191,6 +1195,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Jun 26 2015 Paolo Bonzini <pbonzini@redhat.com> - 2:2.3.0-10
+- Rebuild for libiscsi soname bump
+
 * Fri Jun 19 2015 Paolo Bonzini <pbonzini@redhat.com> - 2:2.3.0-10
 - Re-enable tcmalloc on arm
 
