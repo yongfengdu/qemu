@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 12%{?dist}
+Release: 13%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -614,7 +614,7 @@ unicore32-linux-user aarch64-softmmu"
     --extra-cflags="%{optflags}" \
 %endif
 %ifarch aarch64
-    --extra-cflags="%{optflags} -fno-stack-protector" \
+    --extra-cflags="%{optflags} -fPIC" \
 %endif
     --enable-pie \
     --disable-werror \
@@ -1198,6 +1198,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Jul  2 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.3.0-13
+- Build aarch64 with -fPIC (rhbz 1232499)
+
 * Wed Jul 01 2015 Nick Clifton <nickc@redhat.com> - 2:2.3.0-12
 - Disable stack protection for AArch64.  F23's GCC thinks that it is available but F23's glibc does not support it.
 
