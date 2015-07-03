@@ -599,7 +599,7 @@ unicore32-linux-user aarch64-softmmu"
     %define tcmallocflag --enable-tcmalloc
 %endif
 
-%if %{have_spice}
+%if 0%{?have_spice:1}
     %define spiceflag --enable-spice
 %else
     %define spiceflag --disable-spice
