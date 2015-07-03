@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.3.0
-Release: 13%{?dist}
+Release: 14%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -599,6 +599,11 @@ unicore32-linux-user aarch64-softmmu"
     %define tcmallocflag --enable-tcmalloc
 %endif
 
+%if %{have_spice}
+    %define spiceflag --enable-spice
+%else
+    %define spiceflag --disable-spice
+%endif
 
 ./configure \
     --prefix=%{_prefix} \
@@ -623,6 +628,7 @@ unicore32-linux-user aarch64-softmmu"
     --enable-trace-backend=$tracebackends \
     --enable-kvm \
     %{tcmallocflag} \
+    %{spiceflag} \
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0" \
 %ifarch s390
@@ -1198,6 +1204,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Jul  3 2015 Daniel P. Berrange <berrange@redhat.com> - 2:2.3.0-14
+- Use explicit --(enable,disable)-spice args (rhbz #1239102)
+
 * Thu Jul  2 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.3.0-13
 - Build aarch64 with -fPIC (rhbz 1232499)
 
