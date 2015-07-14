@@ -39,14 +39,14 @@
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.3.0
-Release: 15%{?dist}
+Version: 2.4.0
+Release: 0.1.rc0%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc0.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -68,14 +68,6 @@ Source12: bridge.conf
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
 
-# Backport upstream 2.4 patch to link with tcmalloc, enable it
-Patch0001: 0001-configure-Add-support-for-tcmalloc.patch
-# CVE-2015-3456: (VENOM) fdc: out-of-bounds fifo buffer memory access
-# (bz #1221152)
-Patch0002: 0002-fdc-force-the-fifo-access-to-be-in-bounds-of-the-all.patch
-# CVE-2015-4037: insecure temporary file use in /net/slirp.c (bz
-# #1222894)
-Patch0003: 0003-slirp-use-less-predictable-directory-name-in-tmp-for.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -164,6 +156,8 @@ BuildRequires: numactl-devel
 %endif
 # Added in qemu 2.3
 BuildRequires: bzip2-devel
+# Added in qemu 2.4 for opengl bits
+Requires: libepoxy-devel
 
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
@@ -546,7 +540,7 @@ CAC emulation development files.
 
 
 %prep
-%setup -q -n qemu-%{version}
+%setup -q -n qemu-%{version}-rc0
 %autopatch -p1
 
 
@@ -661,6 +655,7 @@ gcc %{_sourcedir}/ksmctl.c -O2 -g -o ksmctl
 
 mkdir -p %{buildroot}%{_udevdir}
 mkdir -p %{buildroot}%{_unitdir}
+mkdir -p %{buildroot}%{_sysconfdir}/qemu
 
 install -D -p -m 0644 %{_sourcedir}/ksm.service %{buildroot}%{_unitdir}
 install -D -p -m 0644 %{_sourcedir}/ksm.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/ksm
@@ -741,6 +736,7 @@ rom_link ../seavgabios/vgabios-cirrus.bin vgabios-cirrus.bin
 rom_link ../seavgabios/vgabios-qxl.bin vgabios-qxl.bin
 rom_link ../seavgabios/vgabios-stdvga.bin vgabios-stdvga.bin
 rom_link ../seavgabios/vgabios-vmware.bin vgabios-vmware.bin
+rom_link ../seavgabios/vgabios-virtio.bin vgabios-virtio.bin
 rom_link ../seabios/bios.bin bios.bin
 rom_link ../seabios/bios-256k.bin bios-256k.bin
 rom_link ../seabios/acpi-dsdt.aml acpi-dsdt.aml
@@ -1015,6 +1011,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/vgabios-qxl.bin
 %{_datadir}/%{name}/vgabios-stdvga.bin
 %{_datadir}/%{name}/vgabios-vmware.bin
+%{_datadir}/%{name}/vgabios-virtio.bin
 %{_datadir}/%{name}/pxe-e1000.rom
 %{_datadir}/%{name}/efi-e1000.rom
 %{_datadir}/%{name}/pxe-virtio.rom
@@ -1025,7 +1022,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/efi-rtl8139.rom
 %{_datadir}/%{name}/pxe-ne2k_pci.rom
 %{_datadir}/%{name}/efi-ne2k_pci.rom
-%config(noreplace) %{_sysconfdir}/qemu/target-x86_64.conf
 %ifarch %{ix86} x86_64
 %{?kvm_files:}
 %endif
@@ -1204,6 +1200,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Jul 14 2015 Cole Robinson <crobinso@redhat.com> 2:2.4.0-0.1-rc0
+- Rebased to version 2.4.0-rc0
+
 * Fri Jul  3 2015 Richard W.M. Jones <rjones@redhat.com> - 2:2.3.0-15
 - Bump and rebuild.
 
