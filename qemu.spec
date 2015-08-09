@@ -40,13 +40,13 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.4.0
-Release: 0.1.rc0%{?dist}
+Release: 0.2.rc4%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc0.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc4.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -540,7 +540,7 @@ CAC emulation development files.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc0
+%setup -q -n qemu-%{version}-rc4
 %autopatch -p1
 
 
@@ -1200,6 +1200,17 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sun Aug 09 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0-0.2.rc4
+- CVE-2015-3209: pcnet: multi-tmd buffer overflow in the tx path (bz #1230536)
+- CVE-2015-3214: i8254: out-of-bounds memory access (bz #1243728)
+- CVE-2015-5158: scsi stack buffer overflow (bz #1246025)
+- CVE-2015-5154: ide: atapi: heap overflow during I/O buffer memory access (bz
+  #1247141)
+- CVE-2015-5165: rtl8139 uninitialized heap memory information leakage to
+  guest (bz #1249755)
+- CVE-2015-5166: BlockBackend object use after free issue (bz #1249758)
+- CVE-2015-5745: buffer overflow in virtio-serial (bz #1251160)
+
 * Tue Jul 14 2015 Cole Robinson <crobinso@redhat.com> 2:2.4.0-0.1-rc0
 - Rebased to version 2.4.0-rc0
 
