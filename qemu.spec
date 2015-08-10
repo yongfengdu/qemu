@@ -89,9 +89,6 @@ BuildRequires: usbredir-devel >= 0.5.2
 BuildRequires: gperftools-devel
 %endif
 BuildRequires: texinfo
-# F24/rawhide perl is missing dep on perl-Storable
-# https://bugzilla.redhat.com/show_bug.cgi?id=1251766
-BuildRequires: perl-Storable
 # For /usr/bin/pod2man
 BuildRequires: perl-podlators
 %if 0%{?have_spice:1}
