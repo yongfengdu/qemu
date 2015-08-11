@@ -40,13 +40,13 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.4.0
-Release: 0.2.rc4%{?dist}
+Release: 1%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc4.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -540,7 +540,7 @@ CAC emulation development files.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc4
+%setup -q -n qemu-%{version}
 %autopatch -p1
 
 
@@ -1200,6 +1200,13 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Aug 11 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0-1
+- Rebased to version 2.4.0
+- Support for virtio-gpu, 2D only
+- Support for virtio-based keyboard/mouse/tablet emulation
+- x86 support for memory hot-unplug
+- ACPI v5.1 table support for 'virt' board
+
 * Sun Aug 09 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0-0.2.rc4
 - CVE-2015-3209: pcnet: multi-tmd buffer overflow in the tx path (bz #1230536)
 - CVE-2015-3214: i8254: out-of-bounds memory access (bz #1243728)
