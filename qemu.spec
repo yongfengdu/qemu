@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.4.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -67,6 +67,10 @@ Source12: bridge.conf
 
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
+
+# CVE-2015-5255: heap memory corruption in vnc_refresh_server_surface
+# (bz #1255899)
+Patch0001: 0001-vnc-fix-memory-corruption-CVE-2015-5225.patch
 
 
 BuildRequires: SDL2-devel
@@ -1200,6 +1204,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Aug 31 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0-2
+- CVE-2015-5255: heap memory corruption in vnc_refresh_server_surface (bz
+  #1255899)
+
 * Tue Aug 11 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0-1
 - Rebased to version 2.4.0
 - Support for virtio-gpu, 2D only
