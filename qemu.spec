@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.4.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -71,10 +71,19 @@ Source13: qemu-kvm.sh
 # CVE-2015-5255: heap memory corruption in vnc_refresh_server_surface
 # (bz #1255899)
 Patch0001: 0001-vnc-fix-memory-corruption-CVE-2015-5225.patch
-
-# Fix emulation of various instructions, required by libm in F22 ppc64 guests.
-Patch0002: 0001-target-ppc-fix-vcipher-vcipherlast-vncipherlast-and-.patch
-Patch0003: 0002-target-ppc-fix-xscmpodp-and-xscmpudp-decoding.patch
+# Fix emulation of various instructions, required by libm in F22 ppc64
+# guests.
+Patch0002: 0002-target-ppc-fix-vcipher-vcipherlast-vncipherlast-and-.patch
+Patch0003: 0003-target-ppc-fix-xscmpodp-and-xscmpudp-decoding.patch
+# CVE-2015-6815: net: e1000: infinite loop issue (bz #1260225)
+Patch0004: 0004-e1000-Avoid-infinite-loop-in-processing-transmit-des.patch
+# CVE-2015-6855: ide: divide by zero issue (bz #1261793)
+Patch0005: 0005-ide-fix-ATAPI-command-permissions.patch
+# CVE-2015-5278: Infinite loop in ne2000_receive() (bz #1263284)
+Patch0006: 0006-net-avoid-infinite-loop-when-receiving-packets-CVE-2.patch
+# CVE-2015-5279: Heap overflow vulnerability in ne2000_receive() (bz
+# #1263287)
+Patch0007: 0007-net-add-checks-to-validate-ring-buffer-pointers-CVE-.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1207,6 +1216,12 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Sep 21 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0-4
+- CVE-2015-6815: net: e1000: infinite loop issue (bz #1260225)
+- CVE-2015-6855: ide: divide by zero issue (bz #1261793)
+- CVE-2015-5278: Infinite loop in ne2000_receive() (bz #1263284)
+- CVE-2015-5279: Heap overflow vulnerability in ne2000_receive() (bz #1263287)
+
 * Sun Sep 20 2015 Richard W.M. Jones <rjones@redhat.com> - 2:2.4.0-3
 - Fix emulation of various instructions, required by libm in F22 ppc64 guests.
 

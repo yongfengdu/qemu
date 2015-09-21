@@ -1,7 +1,6 @@
-From d233fc09d20fa24f6ee03f8505333d73f559eacf Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Sun, 13 Sep 2015 23:03:44 +0200
-Subject: [PATCH 1/2] target-ppc: fix vcipher, vcipherlast, vncipherlast and
+Subject: [PATCH] target-ppc: fix vcipher, vcipherlast, vncipherlast and
  vpermxor
 
 For vector instructions, the helpers get pointers to the vector register
@@ -93,6 +92,3 @@ index 0a55d5e..b122868 100644
  }
  
  #undef VECTOR_FOR_INORDER_I
--- 
-2.5.0
-
