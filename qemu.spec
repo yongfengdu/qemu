@@ -173,7 +173,7 @@ BuildRequires: numactl-devel
 # Added in qemu 2.3
 BuildRequires: bzip2-devel
 # Added in qemu 2.4 for opengl bits
-Requires: libepoxy-devel
+BuildRequires: libepoxy-devel
 
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
