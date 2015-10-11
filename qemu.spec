@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.4.0.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1212,6 +1212,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sun Oct 11 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0.1-2
+- Rebuild for xen 4.6
+
 * Thu Oct 08 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0.1-1
 - Rebased to version 2.4.0.1
 - CVE-2015-7295: virtio-net possible remote DoS (bz #1264393)
