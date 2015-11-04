@@ -39,8 +39,8 @@
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.4.0.1
-Release: 2%{?dist}
+Version: 2.4.1
+Release: 1%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -67,19 +67,6 @@ Source12: bridge.conf
 
 # qemu-kvm back compat wrapper
 Source13: qemu-kvm.sh
-
-# Fix emulation of various instructions, required by libm in F22 ppc64
-# guests.
-Patch0001: 0001-target-ppc-fix-vcipher-vcipherlast-vncipherlast-and-.patch
-Patch0002: 0002-target-ppc-fix-xscmpodp-and-xscmpudp-decoding.patch
-# CVE-2015-6855: ide: divide by zero issue (bz #1261793)
-Patch0003: 0003-ide-fix-ATAPI-command-permissions.patch
-# CVE-2015-7295: virtio-net possible remote DoS (bz #1264393)
-Patch0004: 0004-virtio-introduce-virtqueue_unmap_sg.patch
-Patch0005: 0005-virtio-introduce-virtqueue_discard.patch
-Patch0006: 0006-virtio-net-correctly-drop-truncated-packets.patch
-# drive-mirror: Fix coroutine reentrance (bz #1266936)
-Patch0007: 0007-mirror-Fix-coroutine-reentrance.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1212,6 +1199,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Nov 04 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.1-1
+- Rebased to version 2.4.1
+
 * Sun Oct 11 2015 Cole Robinson <crobinso@redhat.com> - 2:2.4.0.1-2
 - Rebuild for xen 4.6
 
