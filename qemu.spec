@@ -39,14 +39,14 @@
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.4.1
-Release: 1%{?dist}
+Version: 2.5.0
+Release: 0.1.rc0%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc0.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -157,6 +157,12 @@ BuildRequires: numactl-devel
 BuildRequires: bzip2-devel
 # Added in qemu 2.4 for opengl bits
 BuildRequires: libepoxy-devel
+# For 2.5 TLS test suite
+BuildRequires: libtasn1-devel
+# libcacard is it's own project as of qemu 2.5
+BuildRequires: libcacard-devel >= 2.5.0
+# virgl 3d support
+BuildRequires: virglrenderer-devel
 
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
@@ -214,6 +220,14 @@ Group: Development/Tools
 
 %description img
 This package provides a command line tool for manipulating disk images
+
+
+%package -n ivshmem-tools
+Summary: Client and server for QEMU ivshmem device
+Group: Development/Tools
+
+%description -n ivshmem-tools
+This package provides client and server tools for QEMU's ivshmem device.
 
 
 %package  common
@@ -512,34 +526,8 @@ such as kvm_stat.
 %endif
 
 
-%package -n libcacard
-Summary:        Common Access Card (CAC) Emulation
-Group:          Development/Libraries
-
-%description -n libcacard
-Common Access Card (CAC) emulation library.
-
-
-%package -n libcacard-tools
-Summary:        CAC Emulation tools
-Group:          Development/Libraries
-Requires:       libcacard = %{epoch}:%{version}-%{release}
-
-%description -n libcacard-tools
-CAC emulation tools.
-
-
-%package -n libcacard-devel
-Summary:        CAC Emulation devel
-Group:          Development/Libraries
-Requires:       libcacard = %{epoch}:%{version}-%{release}
-
-%description -n libcacard-devel
-CAC emulation development files.
-
-
 %prep
-%setup -q -n qemu-%{version}
+%setup -q -n qemu-%{version}-rc0
 %autopatch -p1
 
 
@@ -633,14 +621,6 @@ echo "config-host.mak contents:"
 echo "==="
 cat config-host.mak
 echo "==="
-
-# These is some problem upstream where libcacard is not built
-# with --extra-cflags the first time, but if you remove some
-# files and rerun make, lo and behold --extra-cflags is used.
-# Hence the following hack:
-make V=1 %{?_smp_mflags} $buildldflags ||:
-rm ./libcacard/vcard_emul_nss.o ./libcacard/.libs/vcard_emul_nss.o
-# End of hack.
 
 make V=1 %{?_smp_mflags} $buildldflags
 
@@ -789,10 +769,6 @@ done < %{_sourcedir}/qemu.binfmt
 # Install rules to use the bridge helper with libvirt's virbr0
 install -m 0644 %{_sourcedir}/bridge.conf %{buildroot}%{_sysconfdir}/qemu
 
-# Install libcacard.so
-find %{buildroot} -name '*.la' -or -name '*.a' | xargs rm -f
-find %{buildroot} -name "libcacard.so*" -exec chmod +x \{\} \;
-
 # When building using 'rpmbuild' or 'fedpkg local', RPATHs can be left in
 # the binaries and libraries (although this doesn't occur when
 # building in Koji, for some unknown reason). Some discussion here:
@@ -876,10 +852,6 @@ getent passwd qemu >/dev/null || \
 %systemd_postun_with_restart ksmtuned.service
 
 
-%post -n libcacard -p /sbin/ldconfig
-%postun -n libcacard -p /sbin/ldconfig
-
-
 %post user
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 
@@ -933,6 +905,7 @@ getent passwd qemu >/dev/null || \
 %files guest-agent
 %doc COPYING README
 %{_bindir}/qemu-ga
+%{_mandir}/man8/qemu-ga.8*
 %{_unitdir}/qemu-guest-agent.service
 %{_udevdir}/99-qemu-guest-agent.rules
 
@@ -1127,8 +1100,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-ppc64
 %{_bindir}/qemu-system-ppcemb
 %{_datadir}/systemtap/tapset/qemu-system-ppc*.stp
-%{_datadir}/systemtap/tapset/qemu-system-ppc64*.stp
-%{_datadir}/systemtap/tapset/qemu-system-ppcemb*.stp
 %{_mandir}/man1/qemu-system-ppc.1*
 %{_mandir}/man1/qemu-system-ppc64.1*
 %{_mandir}/man1/qemu-system-ppcemb.1*
@@ -1184,18 +1155,9 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man8/qemu-nbd.8*
 
 
-%files -n libcacard
-%{_libdir}/libcacard.so.*
-
-
-%files -n libcacard-tools
-%{_bindir}/vscclient
-
-
-%files -n libcacard-devel
-%{_includedir}/cacard
-%{_libdir}/libcacard.so
-%{_libdir}/pkgconfig/libcacard.pc
+%files -n ivshmem-tools
+%{_bindir}/ivshmem-client
+%{_bindir}/ivshmem-server
 
 
 %changelog
