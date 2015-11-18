@@ -201,35 +201,6 @@ emulation speed by using dynamic translation. QEMU has two operating modes:
 As QEMU requires no host kernel patches to run, it is safe and easy to use.
 
 
-%if %{have_kvm}
-%package kvm
-Summary: QEMU metapackage for KVM support
-Group: Development/Tools
-Requires: qemu-%{kvm_package} = %{epoch}:%{version}-%{release}
-
-%description kvm
-This is a meta-package that provides a qemu-system-<arch> package for native
-architectures where kvm can be enabled. For example, in an x86 system, this
-will install qemu-system-x86
-%endif
-
-
-%package  img
-Summary: QEMU command line tool for manipulating disk images
-Group: Development/Tools
-
-%description img
-This package provides a command line tool for manipulating disk images
-
-
-%package -n ivshmem-tools
-Summary: Client and server for QEMU ivshmem device
-Group: Development/Tools
-
-%description -n ivshmem-tools
-This package provides client and server tools for QEMU's ivshmem device.
-
-
 %package  common
 Summary: QEMU common files needed by all QEMU targets
 Group: Development/Tools
@@ -245,6 +216,19 @@ QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
 
 This package provides the common files needed by all QEMU targets
+
+
+%package -n ksm
+Summary: Kernel Samepage Merging services
+Group: Development/Tools
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires(post): systemd-units
+Requires(postun): systemd-units
+%description -n ksm
+Kernel Samepage Merging (KSM) is a memory-saving de-duplication feature,
+that merges anonymous (private) pages (not pagecache ones).
+
+This package provides service files for disabling and tuning KSM.
 
 
 %package guest-agent
@@ -263,27 +247,43 @@ with the host over a virtio-serial channel named "org.qemu.guest_agent.0"
 
 This package does not need to be installed on the host OS.
 
-%post guest-agent
-%systemd_post qemu-guest-agent.service
 
-%preun guest-agent
-%systemd_preun qemu-guest-agent.service
-
-%postun guest-agent
-%systemd_postun_with_restart qemu-guest-agent.service
-
-
-%package -n ksm
-Summary: Kernel Samepage Merging services
+%package  img
+Summary: QEMU command line tool for manipulating disk images
 Group: Development/Tools
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires(post): systemd-units
-Requires(postun): systemd-units
-%description -n ksm
-Kernel Samepage Merging (KSM) is a memory-saving de-duplication feature,
-that merges anonymous (private) pages (not pagecache ones).
 
-This package provides service files for disabling and tuning KSM.
+%description img
+This package provides a command line tool for manipulating disk images
+
+
+%package -n ivshmem-tools
+Summary: Client and server for QEMU ivshmem device
+Group: Development/Tools
+
+%description -n ivshmem-tools
+This package provides client and server tools for QEMU's ivshmem device.
+
+
+%if %{have_kvm}
+%package kvm
+Summary: QEMU metapackage for KVM support
+Group: Development/Tools
+Requires: qemu-%{kvm_package} = %{epoch}:%{version}-%{release}
+
+%description kvm
+This is a meta-package that provides a qemu-system-<arch> package for native
+architectures where kvm can be enabled. For example, in an x86 system, this
+will install qemu-system-x86
+
+
+%package kvm-tools
+Summary: KVM debugging and diagnostics tools
+Group: Development/Tools
+
+%description kvm-tools
+This package contains some diagnostics and debugging tools for KVM,
+such as kvm_stat.
+%endif
 
 
 %package user
@@ -514,16 +514,6 @@ emulation speed by using dynamic translation.
 
 This package provides the system emulator for Tricore.
 
-
-%if %{have_kvm}
-%package kvm-tools
-Summary: KVM debugging and diagnostics tools
-Group: Development/Tools
-
-%description kvm-tools
-This package contains some diagnostics and debugging tools for KVM,
-such as kvm_stat.
-%endif
 
 
 %prep
@@ -854,20 +844,25 @@ getent passwd qemu >/dev/null || \
 
 %post user
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-
 %postun user
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
+
+
+%post guest-agent
+%systemd_post qemu-guest-agent.service
+%preun guest-agent
+%systemd_preun qemu-guest-agent.service
+%postun guest-agent
+%systemd_postun_with_restart qemu-guest-agent.service
+
 
 
 %global kvm_files \
 %{_udevdir}/80-kvm.rules
 
-
 %files
+# Deliberately empty
 
-%if %{have_kvm}
-%files kvm
-%endif
 
 %files common -f %{name}.lang
 %dir %{qemudocdir}
@@ -908,6 +903,28 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man8/qemu-ga.8*
 %{_unitdir}/qemu-guest-agent.service
 %{_udevdir}/99-qemu-guest-agent.rules
+
+
+%files img
+%{_bindir}/qemu-img
+%{_bindir}/qemu-io
+%{_bindir}/qemu-nbd
+%{_mandir}/man1/qemu-img.1*
+%{_mandir}/man8/qemu-nbd.8*
+
+
+%files -n ivshmem-tools
+%{_bindir}/ivshmem-client
+%{_bindir}/ivshmem-server
+
+
+%if %{have_kvm}
+%files kvm
+# Deliberately empty
+
+%files kvm-tools
+%{_bindir}/kvm_stat
+%endif
 
 
 %files user
@@ -996,12 +1013,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/efi-ne2k_pci.rom
 %ifarch %{ix86} x86_64
 %{?kvm_files:}
-%endif
-
-
-%if %{have_kvm}
-%files kvm-tools
-%{_bindir}/kvm_stat
 %endif
 
 
@@ -1145,19 +1156,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-tricore
 %{_datadir}/systemtap/tapset/qemu-system-tricore*.stp
 %{_mandir}/man1/qemu-system-tricore.1*
-
-
-%files img
-%{_bindir}/qemu-img
-%{_bindir}/qemu-io
-%{_bindir}/qemu-nbd
-%{_mandir}/man1/qemu-img.1*
-%{_mandir}/man8/qemu-nbd.8*
-
-
-%files -n ivshmem-tools
-%{_bindir}/ivshmem-client
-%{_bindir}/ivshmem-server
 
 
 %changelog
