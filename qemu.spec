@@ -221,7 +221,6 @@ This package provides the common files needed by all QEMU targets
 %package -n ksm
 Summary: Kernel Samepage Merging services
 Group: Development/Tools
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires(post): systemd-units
 Requires(postun): systemd-units
 %description -n ksm
