@@ -40,13 +40,13 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 0.1.rc1%{?dist}
+Release: 0.1.rc2%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc1.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc2.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -516,7 +516,7 @@ This package provides the system emulator for Tricore.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc1
+%setup -q -n qemu-%{version}-rc2
 %autopatch -p1
 
 
@@ -1158,6 +1158,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Nov 30 2015 Cole Robinson <crobinso@redhat.com> 2:2.5.0-0.1.rc2
+- Rebased to version 2.5.0-rc2
+
 * Fri Nov 20 2015 Cole Robinson <crobinso@redhat.com> 2:2.5.0-0.1.rc1
 - Rebased to version 2.5.0-rc1
 
