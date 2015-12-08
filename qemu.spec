@@ -40,13 +40,13 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 0.1.rc2%{?dist}
+Release: 0.1.rc3%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc2.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}-rc3.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -516,7 +516,7 @@ This package provides the system emulator for Tricore.
 
 
 %prep
-%setup -q -n qemu-%{version}-rc2
+%setup -q -n qemu-%{version}-rc3
 %autopatch -p1
 
 
@@ -774,8 +774,8 @@ done
 
 %check
 
-# 2.3.0-rc2 tests are hanging on s390
-# https://bugzilla.redhat.com/show_bug.cgi?id=1206057
+# Tests are hanging on s390 as of 2.3.0
+#   https://bugzilla.redhat.com/show_bug.cgi?id=1206057
 # Tests seem to be a recurring problem on s390, so I'd suggest just leaving
 # it disabled.
 %global archs_skip_tests s390
@@ -1158,6 +1158,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Dec 08 2015 Cole Robinson <crobinso@redhat.com> 2:2.5.0-0.1.rc3
+- Rebased to version 2.5.0-rc3
+
 * Mon Nov 30 2015 Cole Robinson <crobinso@redhat.com> 2:2.5.0-0.1.rc2
 - Rebased to version 2.5.0-rc2
 
