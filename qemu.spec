@@ -71,6 +71,8 @@ Source13: qemu-kvm.sh
 # For modprobe.d
 Source20: kvm.conf
 
+Patch0001: 0001-virtio-9p-use-accessor-to-get-thread-pool.patch
+
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
 BuildRequires: which
@@ -1166,6 +1168,7 @@ getent passwd qemu >/dev/null || \
 %changelog
 * Thu Jan 7 2015 Paolo Bonzini <pbonzini@redhat.com> - 2:2.5.0-2
 - add /etc/modprobe.d/kvm.conf
+- add 0001-virtio-9p-use-accessor-to-get-thread-pool.patch
 
 * Wed Dec 23 2015 Cole Robinson <crobinso@redhat.com> 2:2.5.0-1
 - Rebased to version 2.5.0
