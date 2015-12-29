@@ -538,7 +538,7 @@ sed -i.debug 's/"-g $CFLAGS"/"$CFLAGS"/g' configure
 
 # OOM killer breaks builds with parallel make on s390(x)
 %ifarch s390 s390x
-%define _smp_mflags %{nil}
+%global _smp_mflags %{nil}
 %endif
 
 
@@ -569,15 +569,15 @@ unicore32-linux-user aarch64-softmmu"
 
 # gperftools providing tcmalloc is not ported to s390(x)
 %ifarch s390 s390x
-    %define tcmallocflag --disable-tcmalloc
+    %global tcmallocflag --disable-tcmalloc
 %else
-    %define tcmallocflag --enable-tcmalloc
+    %global tcmallocflag --enable-tcmalloc
 %endif
 
 %if 0%{?have_spice:1}
-    %define spiceflag --enable-spice
+    %global spiceflag --enable-spice
 %else
-    %define spiceflag --disable-spice
+    %global spiceflag --disable-spice
 %endif
 
 ./configure \
@@ -623,8 +623,8 @@ gcc %{_sourcedir}/ksmctl.c -O2 -g -o ksmctl
 
 %install
 
-%define _udevdir /lib/udev/rules.d
-%define qemudocdir %{_docdir}/%{name}
+%global _udevdir /lib/udev/rules.d
+%global qemudocdir %{_docdir}/%{name}
 
 mkdir -p %{buildroot}%{_udevdir}
 mkdir -p %{buildroot}%{_unitdir}
