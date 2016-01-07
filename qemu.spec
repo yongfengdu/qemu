@@ -1166,7 +1166,7 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Thu Jan 7 2015 Paolo Bonzini <pbonzini@redhat.com> - 2:2.5.0-2
+* Thu Jan 7 2016 Paolo Bonzini <pbonzini@redhat.com> - 2:2.5.0-2
 - add /etc/modprobe.d/kvm.conf
 - add 0001-virtio-9p-use-accessor-to-get-thread-pool.patch
 
