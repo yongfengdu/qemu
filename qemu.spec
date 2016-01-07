@@ -889,8 +889,8 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_bindir}/virtfs-proxy-helper
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
+%config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/kvm.conf
-%config(noreplace) %{_sysconfdir}/ksmtuned.conf
 %dir %{_sysconfdir}/qemu
 %config(noreplace) %{_sysconfdir}/qemu/bridge.conf
 
