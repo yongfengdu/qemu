@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -71,7 +71,10 @@ Source13: qemu-kvm.sh
 # For modprobe.d
 Source20: kvm.conf
 
-Patch0001: 0001-virtio-9p-use-accessor-to-get-thread-pool.patch
+# Fix virtio 9p thread pool usage
+Patch0001: 0001-virtio-9p-use-accessor-to-get-thread_pool.patch
+# CVE-2015-8558: DoS by infinite loop in ehci_advance_state (bz #1291309)
+Patch0002: 0002-ehci-make-idt-processing-more-robust.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1166,6 +1169,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Jan 09 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-3
+- Fix virtio 9p thread pool usage
+- CVE-2015-8558: DoS by infinite loop in ehci_advance_state (bz #1291309)
+- Re-add dist tag
+
 * Thu Jan 7 2016 Paolo Bonzini <pbonzini@redhat.com> - 2:2.5.0-2
 - add /etc/modprobe.d/kvm.conf
 - add 0001-virtio-9p-use-accessor-to-get-thread-pool.patch
