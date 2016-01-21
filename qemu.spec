@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -75,6 +75,19 @@ Source20: kvm.conf
 Patch0001: 0001-virtio-9p-use-accessor-to-get-thread_pool.patch
 # CVE-2015-8558: DoS by infinite loop in ehci_advance_state (bz #1291309)
 Patch0002: 0002-ehci-make-idt-processing-more-robust.patch
+# CVE-2015-8567: net: vmxnet3: host memory leakage (bz #1289818)
+Patch0003: 0003-net-vmxnet3-avoid-memory-leakage-in-activate_device.patch
+# CVE-2016-1922: i386: avoid null pointer dereference (bz #1292766)
+Patch0004: 0004-i386-avoid-null-pointer-dereference.patch
+# CVE-2015-8613: buffer overflow in megasas_ctrl_get_info (bz #1284008)
+Patch0005: 0005-scsi-initialise-info-object-with-appropriate-size.patch
+# CVE-2015-8701: Buffer overflow in tx_consume in rocker.c (bz #1293720)
+Patch0006: 0006-net-rocker-fix-an-incorrect-array-bounds-check.patch
+# CVE-2015-8743: ne2000: OOB memory access in ioport r/w functions (bz
+# #1294787)
+Patch0007: 0007-net-ne2000-fix-bounds-check-in-ioport-operations.patch
+# CVE-2016-1568: Use-after-free vulnerability in ahci (bz #1297023)
+Patch0008: 0008-ide-ahci-reset-ncq-object-to-unused-on-error.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1169,6 +1182,16 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Jan 20 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-4
+- CVE-2015-8567: net: vmxnet3: host memory leakage (bz #1289818)
+- CVE-2016-1922: i386: avoid null pointer dereference (bz #1292766)
+- CVE-2015-8613: buffer overflow in megasas_ctrl_get_info (bz #1284008)
+- CVE-2015-8701: Buffer overflow in tx_consume in rocker.c (bz #1293720)
+- CVE-2015-8743: ne2000: OOB memory access in ioport r/w functions (bz
+  #1294787)
+- CVE-2016-1568: Use-after-free vulnerability in ahci (bz #1297023)
+- Fix modules.d/kvm.conf example syntax (bz #1298823)
+
 * Sat Jan 09 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-3
 - Fix virtio 9p thread pool usage
 - CVE-2015-8558: DoS by infinite loop in ehci_advance_state (bz #1291309)
