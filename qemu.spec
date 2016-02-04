@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1182,6 +1182,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.5.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Wed Jan 20 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-4
 - CVE-2015-8567: net: vmxnet3: host memory leakage (bz #1289818)
 - CVE-2016-1922: i386: avoid null pointer dereference (bz #1292766)
