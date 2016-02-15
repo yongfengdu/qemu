@@ -40,7 +40,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -88,6 +88,26 @@ Patch0006: 0006-net-rocker-fix-an-incorrect-array-bounds-check.patch
 Patch0007: 0007-net-ne2000-fix-bounds-check-in-ioport-operations.patch
 # CVE-2016-1568: Use-after-free vulnerability in ahci (bz #1297023)
 Patch0008: 0008-ide-ahci-reset-ncq-object-to-unused-on-error.patch
+# CVE-2015-8619: Fix sendkey out of bounds (bz #1292757)
+Patch0009: 0009-hmp-fix-sendkey-out-of-bounds-write-CVE-2015-8619.patch
+# CVE-2016-1981: infinite loop in e1000 (bz #1299995)
+Patch0010: 0010-e1000-eliminate-infinite-loops-on-out-of-bounds-tran.patch
+# Fix Out-of-bounds read in usb-ehci (bz #1300234, bz #1299455)
+Patch0011: 0011-usb-check-page-select-value-while-processing-iTD.patch
+# CVE-2016-2197: ahci: null pointer dereference (bz #1302952)
+Patch0012: 0012-ahci-Do-not-unmap-NULL-addresses.patch
+# Fix gdbstub for VSX registers for ppc64 (bz #1304377)
+Patch0013: 0013-target-ppc-rename-and-export-maybe_bswap_register.patch
+Patch0014: 0014-target-ppc-gdbstub-fix-float-registers-for-little-en.patch
+Patch0015: 0015-target-ppc-gdbstub-introduce-avr_need_swap.patch
+Patch0016: 0016-target-ppc-gdbstub-fix-altivec-registers-for-little-.patch
+Patch0017: 0017-target-ppc-gdbstub-fix-spe-registers-for-little-endi.patch
+Patch0018: 0018-target-ppc-gdbstub-Add-VSX-support.patch
+Patch0019: 0019-target-ppc-kvm-fix-floating-point-registers-sync-on-.patch
+
+# Fix qemu-img vmdk images to work with VMware (bz #1299185)
+Patch0101: 0101-vmdk-Create-streamOptimized-as-version-3.patch
+Patch0102: 0102-vmdk-Fix-converting-to-streamOptimized.patch
 
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
@@ -1182,6 +1202,14 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Feb 15 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-6
+- CVE-2015-8619: Fix sendkey out of bounds (bz #1292757)
+- CVE-2016-1981: infinite loop in e1000 (bz #1299995)
+- Fix Out-of-bounds read in usb-ehci (bz #1300234, bz #1299455)
+- CVE-2016-2197: ahci: null pointer dereference (bz #1302952)
+- Fix gdbstub for VSX registers for ppc64 (bz #1304377)
+- Fix qemu-img vmdk images to work with VMware (bz #1299185)
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.5.0-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 

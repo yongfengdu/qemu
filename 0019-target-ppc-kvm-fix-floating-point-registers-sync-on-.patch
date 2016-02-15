@@ -1,0 +1,85 @@
+From: Greg Kurz <gkurz@linux.vnet.ibm.com>
+Date: Fri, 15 Jan 2016 16:00:12 +0100
+Subject: [PATCH] target-ppc: kvm: fix floating point registers sync on
+ little-endian hosts
+
+On VSX capable CPUs, the 32 FP registers are mapped to the high-bits
+of the 32 first VSX registers. So if you have:
+
+VSR31 = (uint128) 0x0102030405060708090a0b0c0d0e0f00
+
+then
+
+FPR31 = (uint64) 0x0102030405060708
+
+The kernel stores the VSX registers in the fp_state struct following the
+host endian element ordering.
+
+On big-endian:
+
+fp_state.fpr[31][0] = 0x0102030405060708
+fp_state.fpr[31][1] = 0x090a0b0c0d0e0f00
+
+On little-endian:
+
+fp_state.fpr[31][0] = 0x090a0b0c0d0e0f00
+fp_state.fpr[31][1] = 0x0102030405060708
+
+The KVM_GET_ONE_REG and KVM_SET_ONE_REG ioctls preserve this ordering, but
+QEMU considers it as big-endian and always copies element [0] to the
+fpr[] array and element [1] to the vsr[] array. This does not work with
+little-endian hosts, and you will get:
+
+(qemu) p $f31
+0x90a0b0c0d0e0f00
+
+instead of:
+
+(qemu) p $f31
+0x102030405060708
+
+This patch fixes the element ordering for little-endian hosts.
+
+Signed-off-by: Greg Kurz <gkurz@linux.vnet.ibm.com>
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+(cherry picked from commit 3a4b791b4c13e02537a5cc572fa3de70bc5f68da)
+---
+ target-ppc/kvm.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/target-ppc/kvm.c b/target-ppc/kvm.c
+index ac70f08..acd3275 100644
+--- a/target-ppc/kvm.c
++++ b/target-ppc/kvm.c
+@@ -650,8 +650,13 @@ static int kvm_put_fp(CPUState *cs)
+         for (i = 0; i < 32; i++) {
+             uint64_t vsr[2];
+ 
++#ifdef HOST_WORDS_BIGENDIAN
+             vsr[0] = float64_val(env->fpr[i]);
+             vsr[1] = env->vsr[i];
++#else
++            vsr[0] = env->vsr[i];
++            vsr[1] = float64_val(env->fpr[i]);
++#endif
+             reg.addr = (uintptr_t) &vsr;
+             reg.id = vsx ? KVM_REG_PPC_VSR(i) : KVM_REG_PPC_FPR(i);
+ 
+@@ -721,10 +726,17 @@ static int kvm_get_fp(CPUState *cs)
+                         vsx ? "VSR" : "FPR", i, strerror(errno));
+                 return ret;
+             } else {
++#ifdef HOST_WORDS_BIGENDIAN
+                 env->fpr[i] = vsr[0];
+                 if (vsx) {
+                     env->vsr[i] = vsr[1];
+                 }
++#else
++                env->fpr[i] = vsr[1];
++                if (vsx) {
++                    env->vsr[i] = vsr[0];
++                }
++#endif
+             }
+         }
+     }

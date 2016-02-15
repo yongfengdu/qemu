@@ -1,0 +1,48 @@
+From: Fam Zheng <famz@redhat.com>
+Date: Mon, 25 Jan 2016 10:26:23 +0800
+Subject: [PATCH] vmdk: Fix converting to streamOptimized
+
+Commit d62d9dc4b8 lifted streamOptimized images's version to 3, but we
+now refuse to open version 3 images read-write.  We need to make
+streamOptimized an exception to allow converting to it. This fixes the
+accidentally broken iotests case 059 for the same reason.
+
+Signed-off-by: Fam Zheng <famz@redhat.com>
+Signed-off-by: Kevin Wolf <kwolf@redhat.com>
+Signed-off-by: Max Reitz <mreitz@redhat.com>
+(cherry picked from commit 3db1d98a20262228373bb973ca62b1ab64b29af4)
+---
+ block/vmdk.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/block/vmdk.c b/block/vmdk.c
+index 26b76d9..e46271a 100644
+--- a/block/vmdk.c
++++ b/block/vmdk.c
+@@ -570,6 +570,7 @@ static int vmdk_open_vmdk4(BlockDriverState *bs,
+     VmdkExtent *extent;
+     BDRVVmdkState *s = bs->opaque;
+     int64_t l1_backup_offset = 0;
++    bool compressed;
+ 
+     ret = bdrv_pread(file->bs, sizeof(magic), &header, sizeof(header));
+     if (ret < 0) {
+@@ -644,6 +645,8 @@ static int vmdk_open_vmdk4(BlockDriverState *bs,
+         header = footer.header;
+     }
+ 
++    compressed =
++        le16_to_cpu(header.compressAlgorithm) == VMDK4_COMPRESSION_DEFLATE;
+     if (le32_to_cpu(header.version) > 3) {
+         char buf[64];
+         snprintf(buf, sizeof(buf), "VMDK version %" PRId32,
+@@ -651,7 +654,8 @@ static int vmdk_open_vmdk4(BlockDriverState *bs,
+         error_setg(errp, QERR_UNKNOWN_BLOCK_FORMAT_FEATURE,
+                    bdrv_get_device_or_node_name(bs), "vmdk", buf);
+         return -ENOTSUP;
+-    } else if (le32_to_cpu(header.version) == 3 && (flags & BDRV_O_RDWR)) {
++    } else if (le32_to_cpu(header.version) == 3 && (flags & BDRV_O_RDWR) &&
++               !compressed) {
+         /* VMware KB 2064959 explains that version 3 added support for
+          * persistent changed block tracking (CBT), and backup software can
+          * read it as version=1 if it doesn't care about the changed area

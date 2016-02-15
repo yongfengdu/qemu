@@ -1,0 +1,139 @@
+From: Anton Blanchard <anton@samba.org>
+Date: Fri, 15 Jan 2016 16:00:51 +0100
+Subject: [PATCH] target-ppc: gdbstub: Add VSX support
+
+Add the XML and functions to get and set VSX registers.
+
+Signed-off-by: Anton Blanchard <anton@samba.org>
+(fixed little-endian guests)
+Signed-off-by: Greg Kurz <gkurz@linux.vnet.ibm.com>
+Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+
+(cherry picked from commit 1438eff302cbc6c85d477fd7181b8a9aeea2efd7)
+---
+ configure                   |  6 +++---
+ gdb-xml/power-vsx.xml       | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ target-ppc/translate_init.c | 24 ++++++++++++++++++++++++
+ 3 files changed, 71 insertions(+), 3 deletions(-)
+ create mode 100644 gdb-xml/power-vsx.xml
+
+diff --git a/configure b/configure
+index b9552fd..7811180 100755
+--- a/configure
++++ b/configure
+@@ -5617,20 +5617,20 @@ case "$target_name" in
+   ppc64)
+     TARGET_BASE_ARCH=ppc
+     TARGET_ABI_DIR=ppc
+-    gdb_xml_files="power64-core.xml power-fpu.xml power-altivec.xml power-spe.xml"
++    gdb_xml_files="power64-core.xml power-fpu.xml power-altivec.xml power-spe.xml power-vsx.xml"
+   ;;
+   ppc64le)
+     TARGET_ARCH=ppc64
+     TARGET_BASE_ARCH=ppc
+     TARGET_ABI_DIR=ppc
+-    gdb_xml_files="power64-core.xml power-fpu.xml power-altivec.xml power-spe.xml"
++    gdb_xml_files="power64-core.xml power-fpu.xml power-altivec.xml power-spe.xml power-vsx.xml"
+   ;;
+   ppc64abi32)
+     TARGET_ARCH=ppc64
+     TARGET_BASE_ARCH=ppc
+     TARGET_ABI_DIR=ppc
+     echo "TARGET_ABI32=y" >> $config_target_mak
+-    gdb_xml_files="power64-core.xml power-fpu.xml power-altivec.xml power-spe.xml"
++    gdb_xml_files="power64-core.xml power-fpu.xml power-altivec.xml power-spe.xml power-vsx.xml"
+   ;;
+   sh4|sh4eb)
+     TARGET_ARCH=sh4
+diff --git a/gdb-xml/power-vsx.xml b/gdb-xml/power-vsx.xml
+new file mode 100644
+index 0000000..fd290e9
+--- /dev/null
++++ b/gdb-xml/power-vsx.xml
+@@ -0,0 +1,44 @@
++<?xml version="1.0"?>
++<!-- Copyright (C) 2008-2015 Free Software Foundation, Inc.
++
++     Copying and distribution of this file, with or without modification,
++     are permitted in any medium without royalty provided the copyright
++     notice and this notice are preserved.  -->
++
++<!-- POWER7 VSX registers that do not overlap existing FP and VMX
++     registers.  -->
++<!DOCTYPE feature SYSTEM "gdb-target.dtd">
++<feature name="org.gnu.gdb.power.vsx">
++  <reg name="vs0h" bitsize="64" type="uint64"/>
++  <reg name="vs1h" bitsize="64" type="uint64"/>
++  <reg name="vs2h" bitsize="64" type="uint64"/>
++  <reg name="vs3h" bitsize="64" type="uint64"/>
++  <reg name="vs4h" bitsize="64" type="uint64"/>
++  <reg name="vs5h" bitsize="64" type="uint64"/>
++  <reg name="vs6h" bitsize="64" type="uint64"/>
++  <reg name="vs7h" bitsize="64" type="uint64"/>
++  <reg name="vs8h" bitsize="64" type="uint64"/>
++  <reg name="vs9h" bitsize="64" type="uint64"/>
++  <reg name="vs10h" bitsize="64" type="uint64"/>
++  <reg name="vs11h" bitsize="64" type="uint64"/>
++  <reg name="vs12h" bitsize="64" type="uint64"/>
++  <reg name="vs13h" bitsize="64" type="uint64"/>
++  <reg name="vs14h" bitsize="64" type="uint64"/>
++  <reg name="vs15h" bitsize="64" type="uint64"/>
++  <reg name="vs16h" bitsize="64" type="uint64"/>
++  <reg name="vs17h" bitsize="64" type="uint64"/>
++  <reg name="vs18h" bitsize="64" type="uint64"/>
++  <reg name="vs19h" bitsize="64" type="uint64"/>
++  <reg name="vs20h" bitsize="64" type="uint64"/>
++  <reg name="vs21h" bitsize="64" type="uint64"/>
++  <reg name="vs22h" bitsize="64" type="uint64"/>
++  <reg name="vs23h" bitsize="64" type="uint64"/>
++  <reg name="vs24h" bitsize="64" type="uint64"/>
++  <reg name="vs25h" bitsize="64" type="uint64"/>
++  <reg name="vs26h" bitsize="64" type="uint64"/>
++  <reg name="vs27h" bitsize="64" type="uint64"/>
++  <reg name="vs28h" bitsize="64" type="uint64"/>
++  <reg name="vs29h" bitsize="64" type="uint64"/>
++  <reg name="vs30h" bitsize="64" type="uint64"/>
++  <reg name="vs31h" bitsize="64" type="uint64"/>
++</feature>
+diff --git a/target-ppc/translate_init.c b/target-ppc/translate_init.c
+index 5ea168c..8069f3c 100644
+--- a/target-ppc/translate_init.c
++++ b/target-ppc/translate_init.c
+@@ -8897,6 +8897,26 @@ static int gdb_set_spe_reg(CPUPPCState *env, uint8_t *mem_buf, int n)
+     return 0;
+ }
+ 
++static int gdb_get_vsx_reg(CPUPPCState *env, uint8_t *mem_buf, int n)
++{
++    if (n < 32) {
++        stq_p(mem_buf, env->vsr[n]);
++        ppc_maybe_bswap_register(env, mem_buf, 8);
++        return 8;
++    }
++    return 0;
++}
++
++static int gdb_set_vsx_reg(CPUPPCState *env, uint8_t *mem_buf, int n)
++{
++    if (n < 32) {
++        ppc_maybe_bswap_register(env, mem_buf, 8);
++        env->vsr[n] = ldq_p(mem_buf);
++        return 8;
++    }
++    return 0;
++}
++
+ static int ppc_fixup_cpu(PowerPCCPU *cpu)
+ {
+     CPUPPCState *env = &cpu->env;
+@@ -9002,6 +9022,10 @@ static void ppc_cpu_realizefn(DeviceState *dev, Error **errp)
+         gdb_register_coprocessor(cs, gdb_get_spe_reg, gdb_set_spe_reg,
+                                  34, "power-spe.xml", 0);
+     }
++    if (pcc->insns_flags2 & PPC2_VSX) {
++        gdb_register_coprocessor(cs, gdb_get_vsx_reg, gdb_set_vsx_reg,
++                                 32, "power-vsx.xml", 0);
++    }
+ 
+     qemu_init_vcpu(cs);
+ 
