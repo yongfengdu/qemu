@@ -42,7 +42,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -149,8 +149,6 @@ BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
 # For smartcard NSS support
 BuildRequires: nss-devel
-# For XFS discard support in raw-posix.c
-BuildRequires: xfsprogs-devel
 # For VNC JPEG support
 BuildRequires: libjpeg-devel
 # For VNC PNG support
@@ -636,6 +634,7 @@ unicore32-linux-user aarch64-softmmu"
 %endif
     --enable-pie \
     --disable-werror \
+    --disable-xfsctl \
     --target-list="$buildarch" \
     --audio-drv-list=pa,sdl,alsa,oss \
     --enable-trace-backend=$tracebackends \
@@ -1204,6 +1203,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Mar  1 2016 Paolo Bonzini <pbonzini@redhat.com> 2:2.5.0-8
+- Disable xfsctl, fallocate works fine in newer kernels (bz #1305512)
+
 * Tue Mar  1 2016 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.5.0-7
 - All Fedora arches have libseccomp support (ARMv7, aarch64, Power64, s390(x))
 
