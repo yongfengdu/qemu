@@ -26,8 +26,10 @@
 %global have_kvm 1
 %endif
 
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} x86_64 %{arm} aarch64 %{power64} s390 s390x
 %global have_seccomp 1
+%endif
+%ifarch %{ix86} x86_64
 %global have_spice   1
 %endif
 
@@ -40,7 +42,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -136,7 +138,7 @@ BuildRequires: spice-protocol >= 0.12.2
 BuildRequires: spice-server-devel >= 0.12.0
 %endif
 %if 0%{?have_seccomp:1}
-BuildRequires: libseccomp-devel >= 2.1.0
+BuildRequires: libseccomp-devel >= 2.3.0
 %endif
 # For network block driver
 BuildRequires: libcurl-devel
@@ -1202,6 +1204,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Mar  1 2016 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.5.0-7
+- All Fedora arches have libseccomp support (ARMv7, aarch64, Power64, s390(x))
+
 * Mon Feb 15 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-6
 - CVE-2015-8619: Fix sendkey out of bounds (bz #1292757)
 - CVE-2016-1981: infinite loop in e1000 (bz #1299995)
