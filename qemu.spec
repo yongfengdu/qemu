@@ -42,7 +42,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.5.0
-Release: 8%{?dist}
+Release: 9%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1203,6 +1203,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Mar  9 2016 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.5.0-9
+- Rebuild for tcmalloc ifunc issues on non x86 arches (see rhbz 1312462)
+
 * Tue Mar  1 2016 Paolo Bonzini <pbonzini@redhat.com> 2:2.5.0-8
 - Disable xfsctl, fallocate works fine in newer kernels (bz #1305512)
 
