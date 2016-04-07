@@ -38,17 +38,23 @@
 %global have_xen 1
 %endif
 
+# Release candidate version tracking
+%global rcver rc1
+%if 0%{?rcver:1}
+%global rcstr -%{rcver}
+%endif
+
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.5.0
-Release: 11%{?dist}
+Version: 2.6.0
+Release: 0.1.%{rcver}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.bz2
 
 Source1: qemu.binfmt
 
@@ -73,55 +79,6 @@ Source13: qemu-kvm.sh
 # For modprobe.d
 Source20: kvm.conf
 
-# Fix virtio 9p thread pool usage
-Patch0001: 0001-virtio-9p-use-accessor-to-get-thread_pool.patch
-# CVE-2015-8558: DoS by infinite loop in ehci_advance_state (bz #1291309)
-Patch0002: 0002-ehci-make-idt-processing-more-robust.patch
-# CVE-2015-8567: net: vmxnet3: host memory leakage (bz #1289818)
-Patch0003: 0003-net-vmxnet3-avoid-memory-leakage-in-activate_device.patch
-# CVE-2016-1922: i386: avoid null pointer dereference (bz #1292766)
-Patch0004: 0004-i386-avoid-null-pointer-dereference.patch
-# CVE-2015-8613: buffer overflow in megasas_ctrl_get_info (bz #1284008)
-Patch0005: 0005-scsi-initialise-info-object-with-appropriate-size.patch
-# CVE-2015-8701: Buffer overflow in tx_consume in rocker.c (bz #1293720)
-Patch0006: 0006-net-rocker-fix-an-incorrect-array-bounds-check.patch
-# CVE-2015-8743: ne2000: OOB memory access in ioport r/w functions (bz
-# #1294787)
-Patch0007: 0007-net-ne2000-fix-bounds-check-in-ioport-operations.patch
-# CVE-2016-1568: Use-after-free vulnerability in ahci (bz #1297023)
-Patch0008: 0008-ide-ahci-reset-ncq-object-to-unused-on-error.patch
-# CVE-2015-8619: Fix sendkey out of bounds (bz #1292757)
-Patch0009: 0009-hmp-fix-sendkey-out-of-bounds-write-CVE-2015-8619.patch
-# CVE-2016-1981: infinite loop in e1000 (bz #1299995)
-Patch0010: 0010-e1000-eliminate-infinite-loops-on-out-of-bounds-tran.patch
-# Fix Out-of-bounds read in usb-ehci (bz #1300234, bz #1299455)
-Patch0011: 0011-usb-check-page-select-value-while-processing-iTD.patch
-# CVE-2016-2197: ahci: null pointer dereference (bz #1302952)
-Patch0012: 0012-ahci-Do-not-unmap-NULL-addresses.patch
-# Fix gdbstub for VSX registers for ppc64 (bz #1304377)
-Patch0013: 0013-target-ppc-rename-and-export-maybe_bswap_register.patch
-Patch0014: 0014-target-ppc-gdbstub-fix-float-registers-for-little-en.patch
-Patch0015: 0015-target-ppc-gdbstub-introduce-avr_need_swap.patch
-Patch0016: 0016-target-ppc-gdbstub-fix-altivec-registers-for-little-.patch
-Patch0017: 0017-target-ppc-gdbstub-fix-spe-registers-for-little-endi.patch
-Patch0018: 0018-target-ppc-gdbstub-Add-VSX-support.patch
-Patch0019: 0019-target-ppc-kvm-fix-floating-point-registers-sync-on-.patch
-
-# Fix qemu-img vmdk images to work with VMware (bz #1299185)
-Patch0101: 0101-vmdk-Create-streamOptimized-as-version-3.patch
-Patch0102: 0102-vmdk-Fix-converting-to-streamOptimized.patch
-# CVE-2016-2538: Integer overflow in usb module (bz #1305815)
-Patch0103: 0103-usb-check-RNDIS-message-length.patch
-Patch0104: 0104-usb-check-RNDIS-buffer-offsets-length.patch
-# CVE-2016-2841: ne2000: infinite loop (bz #1304047)
-Patch0105: 0105-net-ne2000-check-ring-buffer-control-registers.patch
-# CVE-2016-2857: net: out of bounds read (bz #1309564)
-Patch0106: 0106-net-check-packet-payload-length.patch
-# CVE-2016-2392: usb: null pointer dereference (bz #1307115)
-Patch0107: 0107-usb-check-USB-configuration-descriptor-object.patch
-# Fix external snapshot any more after active committing (bz #1300209)
-Patch0108: 0108-block-set-device_list.tqe_prev-to-NULL-on-BDS-remova.patch
-
 BuildRequires: SDL2-devel
 BuildRequires: zlib-devel
 BuildRequires: which
@@ -135,6 +92,9 @@ BuildRequires: rsync
 BuildRequires: pciutils-devel
 BuildRequires: pulseaudio-libs-devel
 BuildRequires: libiscsi-devel
+BuildRequires: libnfs-devel
+BuildRequires: snappy-devel
+BuildRequires: lzo-devel
 BuildRequires: ncurses-devel
 BuildRequires: libattr-devel
 BuildRequires: usbredir-devel >= 0.5.2
@@ -568,7 +528,7 @@ This package provides the system emulator for Tricore.
 
 
 %prep
-%setup -q -n qemu-%{version}
+%setup -q -n qemu-%{version}%{?rcstr}
 %autopatch -p1
 
 
@@ -1136,7 +1096,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-s390x
 %{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
 %{_mandir}/man1/qemu-system-s390x.1*
-%{_datadir}/%{name}/s390-zipl.rom
 %{_datadir}/%{name}/s390-ccw.img
 %ifarch s390x
 %{?kvm_files:}
@@ -1214,6 +1173,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Apr 07 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-0.1.rc1
+- Rebased to version 2.6.0-rc1
+
 * Thu Mar 17 2016 Cole Robinson <crobinso@redhat.com> - 2:2.5.0-11
 - CVE-2016-2857: net: out of bounds read (bz #1309564)
 - CVE-2016-2392: usb: null pointer dereference (bz #1307115)
