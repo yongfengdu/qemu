@@ -175,6 +175,8 @@ BuildRequires: libtasn1-devel
 BuildRequires: libcacard-devel >= 2.5.0
 # virgl 3d support
 BuildRequires: virglrenderer-devel
+# Needed explicitly for qemu 2.6 GL support
+BuildRequires: mesa-libgbm-devel
 
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
