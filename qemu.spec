@@ -39,7 +39,7 @@
 %endif
 
 # Release candidate version tracking
-%global rcver rc1
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcstr -%{rcver}
 %endif
@@ -1188,6 +1188,12 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Apr 14 2016 Cole Robinson <crobinso@redhat.com> 2:2.6.0-0.1.rc2
+- Rebased to version 2.6.0-rc2
+- Fix GL deps (bz 1325966)
+- Ship sysctl file to fix s390x kvm (bz 1290589)
+- Fix FTBFS on s390 (bz 1326247)
+
 * Thu Apr 07 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-0.1.rc1
 - Rebased to version 2.6.0-rc1
 
