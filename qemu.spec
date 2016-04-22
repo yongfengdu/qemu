@@ -39,7 +39,7 @@
 %endif
 
 # Release candidate version tracking
-%global rcver rc2
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcstr -%{rcver}
 %endif
@@ -79,6 +79,10 @@ Source13: qemu-kvm.sh
 Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
+
+# Adjust spice gl version check to expect F24 backported version
+# Not for upstream, f24 only
+Patch0001: 0001-spice-F24-spice-has-backported-gl-support.patch
 
 
 BuildRequires: SDL2-devel
@@ -658,7 +662,7 @@ install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
 
 %ifarch s390x
 install -d %{buildroot}%{_sysconfdir}/sysctl.d
-install -m 0644 %{_sourcedir}/50-kvm-s390.conf %{buildroot}%{_sysconfdir}/sysctl.d
+install -m 0644 %{_sourcedir}/50-kvm-s390x.conf %{buildroot}%{_sysconfdir}/sysctl.d
 %endif
 
 
@@ -1188,6 +1192,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Apr 18 2016 Cole Robinson <crobinso@redhat.com> 2:2.6.0-0.1.rc3
+- Rebased to version 2.6.0-rc3
+- Fix s390 sysctl file install (bz 1327870)
+- Adjust spice gl version check to expect F24 backported version
+
 * Thu Apr 14 2016 Cole Robinson <crobinso@redhat.com> 2:2.6.0-0.1.rc2
 - Rebased to version 2.6.0-rc2
 - Fix GL deps (bz 1325966)
