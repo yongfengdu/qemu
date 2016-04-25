@@ -48,7 +48,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.6.0
-Release: 0.1.%{rcver}%{?dist}
+Release: 0.2.%{rcver}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1192,6 +1192,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Apr 25 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-0.2.rc3
+- Rebuild to pick up spice GL support
+
 * Mon Apr 18 2016 Cole Robinson <crobinso@redhat.com> 2:2.6.0-0.1.rc3
 - Rebased to version 2.6.0-rc3
 - Fix s390 sysctl file install (bz 1327870)
