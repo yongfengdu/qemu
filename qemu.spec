@@ -39,7 +39,7 @@
 %endif
 
 # Release candidate version tracking
-%global rcver rc3
+%global rcver rc4
 %if 0%{?rcver:1}
 %global rcstr -%{rcver}
 %endif
@@ -1192,6 +1192,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon May 02 2016 Cole Robinson <crobinso@redhat.com> 2:2.6.0-0.2.rc4
+- Rebased to version 2.6.0-rc4
+- Fix test suite on big endian hosts (bz 1330174)
+
 * Mon Apr 25 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-0.2.rc3
 - Rebuild to pick up spice GL support
 
