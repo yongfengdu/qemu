@@ -39,7 +39,7 @@
 %endif
 
 # Release candidate version tracking
-%global rcver rc4
+%global rcver rc5
 %if 0%{?rcver:1}
 %global rcstr -%{rcver}
 %endif
@@ -83,6 +83,12 @@ Source21: 50-kvm-s390x.conf
 # Adjust spice gl version check to expect F24 backported version
 # Not for upstream, f24 only
 Patch0001: 0001-spice-F24-spice-has-backported-gl-support.patch
+# Fix gtk UI crash when switching to monitor (bz #1333424)
+# Not upstream yet
+Patch0002: 0002-ui-gtk-fix-crash-when-terminal-inner-border-is-NULL.patch
+# Fix sdl2 UI lockup lockup when switching to monitor
+# Not upstream yet
+Patch0003: 0003-ui-sdl2-Release-grab-before-opening-console-window.patch
 
 
 BuildRequires: SDL2-devel
@@ -1192,6 +1198,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon May 09 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-0.2.rc5
+- Fix gtk UI crash when switching to monitor (bz #1333424)
+- Fix sdl2 UI lockup lockup when switching to monitor
+- Rebased to qemu-2.6.0-rc5
+
 * Mon May 02 2016 Cole Robinson <crobinso@redhat.com> 2:2.6.0-0.2.rc4
 - Rebased to version 2.6.0-rc4
 - Fix test suite on big endian hosts (bz 1330174)
