@@ -39,8 +39,9 @@
 %endif
 
 # Release candidate version tracking
-%global rcver rc5
+# global rcver rc5
 %if 0%{?rcver:1}
+%global rcrel .%{rcver}
 %global rcstr -%{rcver}
 %endif
 
@@ -48,7 +49,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.6.0
-Release: 0.2.%{rcver}%{?dist}
+Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1198,6 +1199,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri May 13 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-1
+- Rebase to v2.6.0 GA
+
 * Mon May 09 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-0.2.rc5
 - Fix gtk UI crash when switching to monitor (bz #1333424)
 - Fix sdl2 UI lockup lockup when switching to monitor
