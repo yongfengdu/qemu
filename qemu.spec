@@ -49,7 +49,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.6.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -85,11 +85,13 @@ Source21: 50-kvm-s390x.conf
 # Not for upstream, f24 only
 Patch0001: 0001-spice-F24-spice-has-backported-gl-support.patch
 # Fix gtk UI crash when switching to monitor (bz #1333424)
-# Not upstream yet
 Patch0002: 0002-ui-gtk-fix-crash-when-terminal-inner-border-is-NULL.patch
 # Fix sdl2 UI lockup lockup when switching to monitor
-# Not upstream yet
 Patch0003: 0003-ui-sdl2-Release-grab-before-opening-console-window.patch
+# Explicitly error if spice GL setup fails
+Patch0004: 0004-ui-spice-Exit-if-gl-on-EGL-init-fails.patch
+# Fix monitor resizing with virgl (bz #1337564)
+Patch0005: 0005-spice-gl-add-use-qemu_spice_gl_monitor_config.patch
 
 
 # documentation deps
@@ -1213,6 +1215,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri May 20 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-2
+- Explicitly error if spice GL setup fails
+- Fix monitor resizing with virgl (bz #1337564)
+- Fix libvirt noise when introspecting qemu-kvm without hw virt
+
 * Fri May 13 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-1
 - Rebase to v2.6.0 GA
 
