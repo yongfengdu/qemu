@@ -1,0 +1,35 @@
+From: Cole Robinson <crobinso@redhat.com>
+Date: Thu, 26 May 2016 09:55:21 -0400
+Subject: [PATCH] hw/arm/virt: Reject gic-version=host for non-KVM
+
+If you try to gic-version=host with TCG on a KVM aarch64 host,
+qemu segfaults, since host requires KVM APIs.
+
+Explicitly reject gic-version=host if KVM is not enabled
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1339977
+(cherry picked from commit b1b3b0dd143b7995a7f4062966b80a2cf3e3c71e)
+---
+ hw/arm/virt.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index 56d35c7..a535285 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -1114,10 +1114,14 @@ static void machvirt_init(MachineState *machine)
+      * KVM is not available yet
+      */
+     if (!gic_version) {
++        if (!kvm_enabled()) {
++            error_report("gic-version=host requires KVM");
++            exit(1);
++        }
++
+         gic_version = kvm_arm_vgic_probe();
+         if (!gic_version) {
+             error_report("Unable to determine GIC version supported by host");
+-            error_printf("KVM acceleration is probably not supported\n");
+             exit(1);
+         }
+     }

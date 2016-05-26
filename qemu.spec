@@ -49,7 +49,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.6.0
-Release: 2%{?rcrel}%{?dist}
+Release: 3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -92,6 +92,16 @@ Patch0003: 0003-ui-sdl2-Release-grab-before-opening-console-window.patch
 Patch0004: 0004-ui-spice-Exit-if-gl-on-EGL-init-fails.patch
 # Fix monitor resizing with virgl (bz #1337564)
 Patch0005: 0005-spice-gl-add-use-qemu_spice_gl_monitor_config.patch
+# CVE-2016-4020: memory leak in kvmvapic.c (bz #1326904)
+Patch0006: 0006-i386-kvmvapic-initialise-imm32-variable.patch
+# CVE-2016-4439: scsi: esb: OOB write #1 (bz #1337503)
+Patch0007: 0007-esp-check-command-buffer-length-before-write-CVE-201.patch
+# CVE-2016-4441: scsi: esb: OOB write #2 (bz #1337506)
+Patch0008: 0008-esp-check-dma-length-before-reading-scsi-command-CVE.patch
+# Fix regression installing windows 7 with qxl/vga (bz #1339267)
+Patch0009: 0009-vga-add-sr_vbe-register-set.patch
+# Fix crash with aarch64 gic-version=host and accel=tcg (bz #1339977)
+Patch0010: 0010-hw-arm-virt-Reject-gic-version-host-for-non-KVM.patch
 
 
 # documentation deps
@@ -1215,6 +1225,13 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu May 26 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-3
+- CVE-2016-4020: memory leak in kvmvapic.c (bz #1326904)
+- CVE-2016-4439: scsi: esb: OOB write #1 (bz #1337503)
+- CVE-2016-4441: scsi: esb: OOB write #2 (bz #1337506)
+- Fix regression installing windows 7 with qxl/vga (bz #1339267)
+- Fix crash with aarch64 gic-version=host and accel=tcg (bz #1339977)
+
 * Fri May 20 2016 Cole Robinson <crobinso@redhat.com> - 2:2.6.0-2
 - Explicitly error if spice GL setup fails
 - Fix monitor resizing with virgl (bz #1337564)
