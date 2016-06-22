@@ -363,6 +363,7 @@ Requires: seavgabios-bin
 Requires: seabios-bin >= 1.7.5
 Requires: sgabios-bin
 Requires: ipxe-roms-qemu
+Requires: edk2-ovmf
 %if 0%{?have_seccomp:1}
 Requires: libseccomp >= 1.0.0
 %endif
@@ -549,6 +550,7 @@ This package provides the system emulator for Moxie boards.
 Summary: QEMU system emulator for AArch64
 Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: edk2-aarch64
 %description system-aarch64
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
