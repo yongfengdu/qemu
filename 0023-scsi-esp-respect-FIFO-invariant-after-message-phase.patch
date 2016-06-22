@@ -1,0 +1,26 @@
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Tue, 14 Jun 2016 15:10:24 +0200
+Subject: [PATCH] scsi: esp: respect FIFO invariant after message phase
+
+The FIFO contains two bytes; hence the write ptr should be two bytes ahead
+of the read pointer.
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+(cherry picked from commit d020aa504cec8f525b55ba2ef982c09dc847c72e)
+---
+ hw/scsi/esp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hw/scsi/esp.c b/hw/scsi/esp.c
+index c2f6f8f..6407844 100644
+--- a/hw/scsi/esp.c
++++ b/hw/scsi/esp.c
+@@ -222,7 +222,7 @@ static void write_response(ESPState *s)
+     } else {
+         s->ti_size = 2;
+         s->ti_rptr = 0;
+-        s->ti_wptr = 0;
++        s->ti_wptr = 2;
+         s->rregs[ESP_RFLAGS] = 2;
+     }
+     esp_raise_irq(s);
