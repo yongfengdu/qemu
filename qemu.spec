@@ -388,7 +388,7 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires(post): systemd-units
 Requires(postun): systemd-units
 # On upgrade, make qemu-user get replaced with qemu-user + qemu-user-binfmt
-Obsoletes: %{name}-user < %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-user < 2:2.6.0-5%{?dist}
 
 %description user
 QEMU is a generic and open source processor emulator which achieves a good
@@ -406,7 +406,7 @@ Requires(postun): systemd-units
 # qemu-user-binfmt + qemu-user-static both provide binfmt rules
 Conflicts: %{name}-user-static
 # On upgrade, make qemu-user get replaced with qemu-user + qemu-user-binfmt
-Obsoletes: %{name}-user < %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-user < 2:2.6.0-5%{?dist}
 
 %description user-binfmt
 QEMU is a generic and open source processor emulator which achieves a good
