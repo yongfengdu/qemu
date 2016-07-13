@@ -170,6 +170,8 @@ BuildRequires: cyrus-sasl-devel
 BuildRequires: libaio-devel
 # pulseaudio audio output
 BuildRequires: pulseaudio-libs-devel
+# alsa audio output
+BuildRequires: alsa-lib-devel
 # iscsi drive support
 BuildRequires: libiscsi-devel
 # NFS drive support
