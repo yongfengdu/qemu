@@ -804,7 +804,7 @@ pushd build-dynamic
 %ifarch s390
     --enable-tcg-interpreter \
 %endif
-    "$@"
+    "$@" || cat config.log
 
 echo "config-host.mak contents:"
 echo "==="
@@ -862,7 +862,7 @@ pushd build-static
 %ifarch s390
     --enable-tcg-interpreter \
 %endif
-    "$@"
+    "$@" || cat config.log
 
 make V=1 %{?_smp_mflags} $buildldflags
 
