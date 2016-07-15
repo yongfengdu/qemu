@@ -24,7 +24,7 @@
 %global user_static 1
 # glibc static libs are fubar on i386 & s390
 # https://bugzilla.redhat.com/show_bug.cgi?id=1352625
-%ifarch %{?ix86} s390
+%ifarch %{?ix86} s390 s390x
 %global user_static 0
 %endif
 
