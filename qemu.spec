@@ -60,7 +60,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.6.0
-Release: 5%{?rcrel}%{?dist}
+Release: 6%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1595,6 +1595,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Jul 23 2016 Richard W.M. Jones <rjones@redhat.com> - 2:2.6.0-6
+- Rebuild to attempt to fix '2:qemu-system-xtensa-2.6.0-5.fc25.x86_64 requires libxenctrl.so.4.6()(64bit)'
+
 * Wed Jul 13 2016 Daniel Berrange <berrange@redhat.com> - 2:2.6.0-5
 - Introduce qemu-user-static sub-RPM
 
