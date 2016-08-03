@@ -50,7 +50,7 @@
 %undefine _hardened_build
 
 # Release candidate version tracking
-# global rcver rc5
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -59,8 +59,8 @@
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.6.0
-Release: 6%{?rcrel}%{?dist}
+Version: 2.7.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -92,58 +92,8 @@ Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
 
-# Adjust spice gl version check to expect F24 backported version
-# Not for upstream, f24 only
-Patch0001: 0001-spice-F24-spice-has-backported-gl-support.patch
-# Fix gtk UI crash when switching to monitor (bz #1333424)
-Patch0002: 0002-ui-gtk-fix-crash-when-terminal-inner-border-is-NULL.patch
-# Fix sdl2 UI lockup lockup when switching to monitor
-Patch0003: 0003-ui-sdl2-Release-grab-before-opening-console-window.patch
-# Explicitly error if spice GL setup fails
-Patch0004: 0004-ui-spice-Exit-if-gl-on-EGL-init-fails.patch
-# Fix monitor resizing with virgl (bz #1337564)
-Patch0005: 0005-spice-gl-add-use-qemu_spice_gl_monitor_config.patch
-# CVE-2016-4020: memory leak in kvmvapic.c (bz #1326904)
-Patch0006: 0006-i386-kvmvapic-initialise-imm32-variable.patch
-# CVE-2016-4439: scsi: esb: OOB write #1 (bz #1337503)
-Patch0007: 0007-esp-check-command-buffer-length-before-write-CVE-201.patch
-# CVE-2016-4441: scsi: esb: OOB write #2 (bz #1337506)
-Patch0008: 0008-esp-check-dma-length-before-reading-scsi-command-CVE.patch
-# Fix regression installing windows 7 with qxl/vga (bz #1339267)
-Patch0009: 0009-vga-add-sr_vbe-register-set.patch
-# Fix crash with aarch64 gic-version=host and accel=tcg (bz #1339977)
-Patch0010: 0010-hw-arm-virt-Reject-gic-version-host-for-non-KVM.patch
-# CVE-2016-4002: net: buffer overflow in MIPSnet (bz #1326083)
-Patch0011: 0011-net-mipsnet-check-packet-length-against-buffer.patch
-# CVE-2016-4952 scsi: pvscsi: out-of-bounds access issue
-Patch0012: 0012-scsi-pvscsi-check-command-descriptor-ring-buffer-siz.patch
-# CVE-2016-4964: scsi: mptsas infinite loop (bz #1339157)
-Patch0013: 0013-scsi-mptsas-infinite-loop-while-fetching-requests.patch
-# CVE-2016-5106: scsi: megasas: out-of-bounds write (bz #1339581)
-Patch0014: 0014-scsi-megasas-use-appropriate-property-buffer-size.patch
-# CVE-2016-5105: scsi: megasas: stack information leakage (bz #1339585)
-Patch0015: 0015-scsi-megasas-initialise-local-configuration-data-buf.patch
-# CVE-2016-5107: scsi: megasas: out-of-bounds read (bz #1339573)
-Patch0016: 0016-scsi-megasas-check-read_queue_head-index-value.patch
-# CVE-2016-4454: display: vmsvga: out-of-bounds read (bz #1340740)
-Patch0017: 0017-vmsvga-move-fifo-sanity-checks-to-vmsvga_fifo_length.patch
-Patch0018: 0018-vmsvga-add-more-fifo-checks.patch
-Patch0019: 0019-vmsvga-shadow-fifo-registers.patch
-# CVE-2016-4453: display: vmsvga: infinite loop (bz #1340744)
-Patch0020: 0020-vmsvga-don-t-process-more-than-1024-fifo-commands-at.patch
-# CVE-2016-5126: block: iscsi: buffer overflow (bz #1340925)
-Patch0021: 0021-block-iscsi-avoid-potential-overflow-of-acb-task-cdb.patch
-# CVE-2016-5238: scsi: esp: OOB write (bz #1341932)
-Patch0022: 0022-scsi-esp-check-buffer-length-before-reading-scsi-com.patch
-Patch0023: 0023-scsi-esp-respect-FIFO-invariant-after-message-phase.patch
-Patch0024: 0024-scsi-esp-clean-up-handle_ti-esp_do_dma-if-s-do_cmd.patch
-# CVE-2016-5338: scsi: esp: OOB r/w access (bz #1343325)
-Patch0025: 0025-scsi-esp-make-cmdbuf-big-enough-for-maximum-CDB-size.patch
-# CVE-2016-5337: scsi: megasas: information leakage (bz #1343910)
-Patch0026: 0026-scsi-megasas-null-terminate-bios-version-buffer.patch
-# Fix crash with -nodefaults -sdl (bz #1340931)
-Patch0027: 0027-sdl2-skip-init-without-outputs.patch
-
+# Build fix, posted upstream
+Patch0001: for-2.7-virtio-gpu-fix-missing-log.h-include-file.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -371,15 +321,6 @@ Requires: qemu-%{kvm_package} = %{epoch}:%{version}-%{release}
 This is a meta-package that provides a qemu-system-<arch> package for native
 architectures where kvm can be enabled. For example, in an x86 system, this
 will install qemu-system-x86
-
-
-%package kvm-tools
-Summary: KVM debugging and diagnostics tools
-Group: Development/Tools
-
-%description kvm-tools
-This package contains some diagnostics and debugging tools for KVM,
-such as kvm_stat.
 %endif
 
 
@@ -783,6 +724,7 @@ pushd build-dynamic
     --localstatedir=%{_localstatedir} \
     --libexecdir=%{_libexecdir} \
     --with-pkgversion=%{name}-%{version}-%{release} \
+    --tls-priority=@QEMU,SYSTEM \
     --disable-strip \
 %ifnarch aarch64
     --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -pie -Wl,-z,relro -Wl,-z,now" \
@@ -906,7 +848,6 @@ install -m 0644 %{_sourcedir}/50-kvm-s390x.conf %{buildroot}%{_sysconfdir}/sysct
 # Install kvm specific bits
 %if %{have_kvm}
 mkdir -p %{buildroot}%{_bindir}/
-install -m 0755 scripts/kvm/kvm_stat %{buildroot}%{_bindir}/
 install -m 0644 %{_sourcedir}/80-kvm.rules %{buildroot}%{_udevdir}
 %endif
 
@@ -984,6 +925,9 @@ pxe_link ne2k_pci 10ec8029
 pxe_link pcnet 10222000
 pxe_link rtl8139 10ec8139
 pxe_link virtio 1af41000
+pxe_link eepro100 80861209
+pxe_link e1000e 808610d3
+pxe_link vmxnet3 15ad07b0
 
 rom_link() {
     ln -s $1 %{buildroot}%{_datadir}/%{name}/$2
@@ -1079,6 +1023,7 @@ done
 %global archs_skip_tests s390
 %global archs_ignore_test_failures 0
 
+pushd build-dynamic
 %ifnarch %{archs_skip_tests}
 
 # Check the binary runs (see eg RHBZ#998722).
@@ -1108,6 +1053,7 @@ hostqemu=x86_64-softmmu/qemu-system-x86_64
 if test -f "$hostqemu"; then qemu-sanity-check --qemu=$hostqemu ||: ; fi
 
 %endif  # archs_skip_tests
+popd
 
 
 %if %{have_kvm}
@@ -1179,7 +1125,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/qemu-icon.bmp
 %{_datadir}/%{name}/qemu_logo_no_text.svg
 %{_datadir}/%{name}/keymaps/
-%{_datadir}/%{name}/trace-events
+%{_datadir}/%{name}/trace-events-all
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_bindir}/virtfs-proxy-helper
@@ -1223,9 +1169,6 @@ getent passwd qemu >/dev/null || \
 %if %{have_kvm}
 %files kvm
 # Deliberately empty
-
-%files kvm-tools
-%{_bindir}/kvm_stat
 %endif
 
 
@@ -1429,6 +1372,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/bios-256k.bin
 %{_datadir}/%{name}/sgabios.bin
 %{_datadir}/%{name}/linuxboot.bin
+%{_datadir}/%{name}/linuxboot_dma.bin
 %{_datadir}/%{name}/multiboot.bin
 %{_datadir}/%{name}/kvmvapic.bin
 %{_datadir}/%{name}/vgabios.bin
@@ -1439,14 +1383,20 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/vgabios-virtio.bin
 %{_datadir}/%{name}/pxe-e1000.rom
 %{_datadir}/%{name}/efi-e1000.rom
-%{_datadir}/%{name}/pxe-virtio.rom
-%{_datadir}/%{name}/efi-virtio.rom
+%{_datadir}/%{name}/pxe-e1000e.rom
+%{_datadir}/%{name}/efi-e1000e.rom
+%{_datadir}/%{name}/pxe-eepro100.rom
+%{_datadir}/%{name}/efi-eepro100.rom
+%{_datadir}/%{name}/pxe-ne2k_pci.rom
+%{_datadir}/%{name}/efi-ne2k_pci.rom
 %{_datadir}/%{name}/pxe-pcnet.rom
 %{_datadir}/%{name}/efi-pcnet.rom
 %{_datadir}/%{name}/pxe-rtl8139.rom
 %{_datadir}/%{name}/efi-rtl8139.rom
-%{_datadir}/%{name}/pxe-ne2k_pci.rom
-%{_datadir}/%{name}/efi-ne2k_pci.rom
+%{_datadir}/%{name}/pxe-virtio.rom
+%{_datadir}/%{name}/efi-virtio.rom
+%{_datadir}/%{name}/pxe-vmxnet3.rom
+%{_datadir}/%{name}/efi-vmxnet3.rom
 %ifarch %{ix86} x86_64
 %{?kvm_files:}
 %endif
@@ -1595,6 +1545,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Aug 03 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-0.1.rc2
+- Rebase to qemu 2.7.0-rc2
+
 * Sat Jul 23 2016 Richard W.M. Jones <rjones@redhat.com> - 2:2.6.0-6
 - Rebuild to attempt to fix '2:qemu-system-xtensa-2.6.0-5.fc25.x86_64 requires libxenctrl.so.4.6()(64bit)'
 
