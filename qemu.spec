@@ -50,7 +50,7 @@
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc2
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -60,7 +60,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 0.1%{?rcrel}%{?dist}
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -91,9 +91,6 @@ Source13: qemu-kvm.sh
 Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
-
-# Build fix, posted upstream
-Patch0001: for-2.7-virtio-gpu-fix-missing-log.h-include-file.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -1545,6 +1542,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Aug 19 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-0.2.rc3
+- Rebase to qemu 2.7.0-rc3
+
 * Wed Aug 03 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-0.1.rc2
 - Rebase to qemu 2.7.0-rc2
 
