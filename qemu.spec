@@ -45,6 +45,11 @@
 %global have_xen 1
 %endif
 
+# Matches edk2.spec ExclusiveArch
+%ifarch %{ix86} x86_64 %{arm} aarch64
+%global have_edk2 1
+%endif
+
 # Temp hack for https://bugzilla.redhat.com/show_bug.cgi?id=1343892
 # We'll manually turn on hardened build later in this spec
 %undefine _hardened_build
@@ -385,7 +390,9 @@ Requires: seavgabios-bin
 Requires: seabios-bin >= 1.7.5
 Requires: sgabios-bin
 Requires: ipxe-roms-qemu
+%if 0%{?have_edk2:1}
 Requires: edk2-ovmf
+%endif
 %if 0%{?have_seccomp:1}
 Requires: libseccomp >= 1.0.0
 %endif
@@ -572,7 +579,9 @@ This package provides the system emulator for Moxie boards.
 Summary: QEMU system emulator for AArch64
 Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%if 0%{?have_edk2:1}
 Requires: edk2-aarch64
+%endif
 %description system-aarch64
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
