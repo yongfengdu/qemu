@@ -20,6 +20,9 @@
 %ifarch aarch64
 %global kvm_package   system-aarch64
 %endif
+%ifarch %{mips}
+%global kvm_package   system-mips
+%endif
 
 %global user_static 1
 # glibc static libs are fubar on i386, s390 & ppc64*
@@ -33,7 +36,7 @@
 %global have_kvm 1
 %endif
 
-%ifarch %{ix86} x86_64 %{arm} aarch64 %{power64} s390 s390x
+%ifarch %{ix86} x86_64 %{arm} aarch64 %{power64} s390 s390x %{mips}
 %global have_seccomp 1
 %endif
 %ifarch %{ix86} x86_64
@@ -65,7 +68,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -751,7 +754,7 @@ pushd build-dynamic
     %{spiceflag} \
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0" \
-%ifarch s390
+%ifarch s390 %{mips64}
     --enable-tcg-interpreter \
 %endif
     "$@" || cat config.log
@@ -809,7 +812,7 @@ pushd build-static
     --disable-brlapi \
     --disable-uuid \
     --disable-libnfs \
-%ifarch s390
+%ifarch s390 %{mips64}
     --enable-tcg-interpreter \
 %endif
     "$@" || cat config.log
@@ -966,11 +969,17 @@ for i in dummy \
     qemu-armeb \
     qemu-cris \
     qemu-microblaze qemu-microblazeel \
+%ifnarch mips64
+    qemu-mips64 \
 %ifnarch mips
-    qemu-mips qemu-mips64 \
+    qemu-mips \
 %endif
+%endif
+%ifnarch mips64el
+    qemu-mips64el \
 %ifnarch mipsel
-    qemu-mipsel qemu-mips64el \
+    qemu-mipsel \
+%endif
 %endif
 %ifnarch m68k
     qemu-m68k \
@@ -1434,6 +1443,9 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-mipsel.1*
 %{_mandir}/man1/qemu-system-mips64el.1*
 %{_mandir}/man1/qemu-system-mips64.1*
+%ifarch %{mips}
+%{?kvm_files:}
+%endif
 
 
 %files system-cris
@@ -1551,6 +1563,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Sep 20 2016 Michal Toman <mtoman@fedoraproject.org> - 2:2.7.0-2
+- Fix build on MIPS
+
 * Thu Sep 08 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-1
 - Rebase to qemu 2.7.0 GA
 
