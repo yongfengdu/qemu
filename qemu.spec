@@ -68,7 +68,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 2%{?rcrel}%{?dist}
+Release: 3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -99,6 +99,8 @@ Source13: qemu-kvm.sh
 Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
+
+Patch1:   qemu-2.7.0-usb-redirect-wakeup.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -1563,6 +1565,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Oct 10 2016 Hans de Goede <hdegoede@redhat.com> - 2:2.7.0-3
+- Fix interrupt endpoints not working with network/spice USB redirection
+  on guest with an emulated xhci controller (rhbz#1382331)
+
 * Tue Sep 20 2016 Michal Toman <mtoman@fedoraproject.org> - 2:2.7.0-2
 - Fix build on MIPS
 
