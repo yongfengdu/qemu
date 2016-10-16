@@ -68,7 +68,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -100,7 +100,33 @@ Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
 
-Patch1:   qemu-2.7.0-usb-redirect-wakeup.patch
+# CVE-2016-7155: pvscsi: OOB read and infinite loop (bz #1373463)
+Patch0001: 0001-vmw_pvscsi-check-page-count-while-initialising-descr.patch
+# CVE-2016-7156: pvscsi: infinite loop when building SG list (bz #1373480)
+Patch0002: 0002-scsi-pvscsi-limit-loop-to-fetch-SG-list.patch
+# CVE-2016-7156: pvscsi: infinite loop when processing IO requests (bz
+# #1373480)
+Patch0003: 0003-scsi-pvscsi-limit-process-IO-loop-to-ring-size.patch
+# CVE-2016-7170: vmware_vga: OOB stack memory access (bz #1374709)
+Patch0004: 0004-vmsvga-correct-bitmap-and-pixmap-size-checks.patch
+# CVE-2016-7157: mptsas: invalid memory access (bz #1373505)
+Patch0005: 0005-scsi-mptconfig-fix-an-assert-expression.patch
+Patch0006: 0006-scsi-mptconfig-fix-misuse-of-MPTSAS_CONFIG_PACK.patch
+# CVE-2016-7466: usb: xhci memory leakage during device unplug (bz #1377838)
+Patch0007: 0007-usb-xhci-fix-memory-leak-in-usb_xhci_exit.patch
+# CVE-2016-7423: scsi: mptsas: OOB access (bz #1376777)
+Patch0008: 0008-scsi-mptsas-use-g_new0-to-allocate-MPTSASRequest-obj.patch
+# CVE-2016-7422: virtio: null pointer dereference (bz #1376756)
+Patch0009: 0009-virtio-add-check-for-descriptor-s-mapped-address.patch
+# CVE-2016-7908: net: Infinite loop in mcf_fec_do_tx (bz #1381193)
+Patch0010: 0010-net-mcf-limit-buffer-descriptor-count.patch
+# CVE-2016-8576: usb: xHCI: infinite loop vulnerability (bz #1382322)
+Patch0011: 0011-xhci-limit-the-number-of-link-trbs-we-are-willing-to.patch
+# CVE-2016-7995: usb: hcd-ehci: memory leak (bz #1382669)
+Patch0012: 0012-usb-ehci-fix-memory-leak-in-ehci_process_itd.patch
+# Fix interrupt endpoints not working with network/spice USB redirection on
+# guest with an emulated xhci controller (bz #1382331)
+Patch0013: 0013-usb-redir-allocate-buffers-before-waking-up-the-host.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -1565,6 +1591,20 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Oct 15 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-4
+- CVE-2016-7155: pvscsi: OOB read and infinite loop (bz #1373463)
+- CVE-2016-7156: pvscsi: infinite loop when building SG list (bz #1373480)
+- CVE-2016-7156: pvscsi: infinite loop when processing IO requests (bz
+  #1373480)
+- CVE-2016-7170: vmware_vga: OOB stack memory access (bz #1374709)
+- CVE-2016-7157: mptsas: invalid memory access (bz #1373505)
+- CVE-2016-7466: usb: xhci memory leakage during device unplug (bz #1377838)
+- CVE-2016-7423: scsi: mptsas: OOB access (bz #1376777)
+- CVE-2016-7422: virtio: null pointer dereference (bz #1376756)
+- CVE-2016-7908: net: Infinite loop in mcf_fec_do_tx (bz #1381193)
+- CVE-2016-8576: usb: xHCI: infinite loop vulnerability (bz #1382322)
+- CVE-2016-7995: usb: hcd-ehci: memory leak (bz #1382669)
+
 * Mon Oct 10 2016 Hans de Goede <hdegoede@redhat.com> - 2:2.7.0-3
 - Fix interrupt endpoints not working with network/spice USB redirection
   on guest with an emulated xhci controller (rhbz#1382331)
