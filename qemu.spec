@@ -99,6 +99,8 @@ Source13: qemu-kvm.sh
 Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
+# /etc/security/limits.d/95-kvm-ppc64-memlock.conf
+Source22: 95-kvm-ppc64-memlock.conf
 
 # CVE-2016-7155: pvscsi: OOB read and infinite loop (bz #1373463)
 Patch0001: 0001-vmw_pvscsi-check-page-count-while-initialising-descr.patch
@@ -881,6 +883,11 @@ install -d %{buildroot}%{_sysconfdir}/sysctl.d
 install -m 0644 %{_sourcedir}/50-kvm-s390x.conf %{buildroot}%{_sysconfdir}/sysctl.d
 %endif
 
+%ifarch %{power64}
+install -d %{buildroot}%{_sysconfdir}/security/limits.d
+install -m 0644 %{_sourcedir}/50-kvm-ppc64-memlock.conf %{buildroot}%{_sysconfdir}/security/limits.d
+%endif
+
 
 # Install kvm specific bits
 %if %{have_kvm}
@@ -1552,6 +1559,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/u-boot.e500
 %ifarch %{power64}
 %{?kvm_files:}
+%{_sysconfdir}/security/limits.d/95-kvm-ppc64-memlock.conf
 %endif
 
 
