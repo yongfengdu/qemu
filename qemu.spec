@@ -68,7 +68,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 5%{?rcrel}%{?dist}
+Release: 6%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1043,8 +1043,9 @@ for i in dummy \
   chmod 644 %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-dynamic.conf
 
 %if %{user_static}
-  grep /$i:\$ %{_sourcedir}/qemu.binfmt > %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
-  perl -i -p -e "s/$i/$i-static/" %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
+  grep /$i:\$ %{_sourcedir}/qemu.binfmt | tr -d '\n' > %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
+  echo "F" >> %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
+  perl -i -p -e "s/$i:F/$i-static:F/" %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
   chmod 644 %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
 %endif
 
@@ -1603,6 +1604,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Oct 19 2016 Bastien Nocera <bnocera@redhat.com> - 2:2.7.0-6
+- Add "F" flag to static user emulators' binfmt, to make them
+  available in containers (#1384615)
+- Also fixes the path of those emulators in the binfmt configurations
+
 * Wed Oct 19 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-5
 - Fix nested PPC 'Unknown MMU model' error (bz #1374749)
 - Fix flickering display with boxes + wayland VM (bz #1266484)
