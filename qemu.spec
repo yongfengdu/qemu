@@ -8,7 +8,7 @@
 # need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
 %endif
-%ifarch ppc64 ppc64le
+%ifarch %{power64}
 %global kvm_package   system-ppc
 %endif
 %ifarch s390x
@@ -1012,7 +1012,7 @@ for i in dummy \
 %ifnarch m68k
     qemu-m68k \
 %endif
-%ifnarch ppc ppc64 ppc64le
+%ifnarch ppc %{power64}
     qemu-ppc qemu-ppc64abi32 qemu-ppc64 \
 %endif
 %ifnarch sparc sparc64
@@ -1550,7 +1550,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/ppc_rom.bin
 %{_datadir}/%{name}/spapr-rtas.bin
 %{_datadir}/%{name}/u-boot.e500
-%ifarch ppc64 ppc64le
+%ifarch %{power64}
 %{?kvm_files:}
 %endif
 
