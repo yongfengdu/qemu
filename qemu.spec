@@ -68,7 +68,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 4%{?rcrel}%{?dist}
+Release: 5%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -129,6 +129,10 @@ Patch0012: 0012-usb-ehci-fix-memory-leak-in-ehci_process_itd.patch
 # Fix interrupt endpoints not working with network/spice USB redirection on
 # guest with an emulated xhci controller (bz #1382331)
 Patch0013: 0013-usb-redir-allocate-buffers-before-waking-up-the-host.patch
+# Fix nested PPC 'Unknown MMU model' error (bz #1374749)
+Patch0014: 0014-ppc-kvm-Mark-64kB-page-size-support-as-disabled-if-n.patch
+# Fix flickering display with boxes + wayland VM (bz #1266484)
+Patch0015: 0015-qxl-Only-emit-QXL_INTERRUPT_CLIENT_MONITORS_CONFIG-o.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -1599,6 +1603,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Oct 19 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-5
+- Fix nested PPC 'Unknown MMU model' error (bz #1374749)
+- Fix flickering display with boxes + wayland VM (bz #1266484)
+- Add ppc64 kvm memlock file (bz #1293024)
+
 * Sat Oct 15 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-4
 - CVE-2016-7155: pvscsi: OOB read and infinite loop (bz #1373463)
 - CVE-2016-7156: pvscsi: infinite loop when building SG list (bz #1373480)
