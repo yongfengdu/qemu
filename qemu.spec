@@ -68,7 +68,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 6%{?rcrel}%{?dist}
+Release: 7%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -889,7 +889,7 @@ install -m 0644 %{_sourcedir}/50-kvm-s390x.conf %{buildroot}%{_sysconfdir}/sysct
 
 %ifarch %{power64}
 install -d %{buildroot}%{_sysconfdir}/security/limits.d
-install -m 0644 %{_sourcedir}/50-kvm-ppc64-memlock.conf %{buildroot}%{_sysconfdir}/security/limits.d
+install -m 0644 %{_sourcedir}/95-kvm-ppc64-memlock.conf %{buildroot}%{_sysconfdir}/security/limits.d
 %endif
 
 
@@ -1604,6 +1604,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Oct 25 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-7
+- Fix PPC64 build with memlock file (bz #1387601)
+
 * Wed Oct 19 2016 Bastien Nocera <bnocera@redhat.com> - 2:2.7.0-6
 - Add "F" flag to static user emulators' binfmt, to make them
   available in containers (#1384615)
