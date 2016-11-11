@@ -53,6 +53,20 @@
 %global have_edk2 1
 %endif
 
+# If we can run qemu-sanity-check, hostqemu gets defined.
+%ifarch %{arm}
+%global hostqemu arm-softmmu/qemu-system-arm
+%endif
+%ifarch aarch64
+%global hostqemu arm-softmmu/qemu-system-aarch64
+%endif
+%ifarch %{ix86}
+%global hostqemu i386-softmmu/qemu-system-i386
+%endif
+%ifarch x86_64
+%global hostqemu x86_64-softmmu/qemu-system-x86_64
+%endif
+
 # All block-* modules should be listed here.
 %global requires_all_block_modules                               \
 Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
@@ -260,6 +274,14 @@ BuildRequires: mesa-libgbm-devel
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
+%if 0%{?hostqemu:1}
+# For complicated reasons, this is required so that
+# /bin/kernel-install puts the kernel directly into /boot, instead of
+# into a /boot/<machine-id> subdirectory (in Fedora >= 23).  This is
+# so we can run qemu-sanity-check.  Read the kernel-install script to
+# understand why.
+BuildRequires: grubby
+%endif
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-alpha = %{epoch}:%{version}-%{release}
@@ -1388,21 +1410,11 @@ make check V=1
 make check V=1 || :
 %endif
 
+%if 0%{?hostqemu:1}
 # Sanity-check current kernel can boot on this qemu.
 # The results are advisory only.
-%ifarch %{arm}
-hostqemu=arm-softmmu/qemu-system-arm
+qemu-sanity-check --qemu=%{?hostqemu} ||:
 %endif
-%ifarch aarch64
-hostqemu=arm-softmmu/qemu-system-aarch64
-%endif
-%ifarch %{ix86}
-hostqemu=i386-softmmu/qemu-system-i386
-%endif
-%ifarch x86_64
-hostqemu=x86_64-softmmu/qemu-system-x86_64
-%endif
-if test -f "$hostqemu"; then qemu-sanity-check --qemu=$hostqemu ||: ; fi
 
 %endif  # archs_skip_tests
 popd
@@ -1985,6 +1997,7 @@ getent passwd qemu >/dev/null || \
 %changelog
 * Mon Nov 14 2016 Richard W.M. Jones <rjones@redhat.com> - 2:2.7.0-8
 - Create subpackages for modularized qemu block drivers (RHBZ#1393688).
+- Fix qemu-sanity-check.
 
 * Tue Oct 25 2016 Cole Robinson <crobinso@redhat.com> - 2:2.7.0-7
 - Fix PPC64 build with memlock file (bz #1387601)
