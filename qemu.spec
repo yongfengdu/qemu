@@ -91,7 +91,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 8%{?rcrel}%{?dist}
+Release: 9%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1317,6 +1317,9 @@ for i in dummy \
 %ifnarch alpha
     qemu-alpha \
 %endif
+%ifnarch aarch64
+    qemu-aarch64 \
+%endif
 %ifnarch %{arm}
     qemu-arm \
 %endif
@@ -1995,6 +1998,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Nov 15 2016 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.7.0-9
+- Clean up binfmt.d configuration files
+
 * Mon Nov 14 2016 Richard W.M. Jones <rjones@redhat.com> - 2:2.7.0-8
 - Create subpackages for modularized qemu block drivers (RHBZ#1393688).
 - Fix qemu-sanity-check.
