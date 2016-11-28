@@ -91,7 +91,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.7.0
-Release: 9%{?rcrel}%{?dist}
+Release: 10%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1085,12 +1085,10 @@ pushd build-dynamic
     --disable-strip \
 %ifnarch aarch64
     --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -pie -Wl,-z,relro -Wl,-z,now" \
-    --extra-cflags="%{optflags} -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1" \
-%endif
-%ifarch aarch64
+%else
     --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld" \
-    --extra-cflags="%{optflags} -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fPIC" \
 %endif
+    --extra-cflags="%{optflags} -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1" \
     --enable-pie \
     --disable-werror \
     --disable-xfsctl \
@@ -1132,12 +1130,10 @@ pushd build-static
     --disable-strip \
 %ifnarch aarch64
     --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
-    --extra-cflags="%{optflags}" \
-%endif
-%ifarch aarch64
+%else
     --extra-ldflags="$extraldflags" \
-    --extra-cflags="%{optflags} -fPIC" \
 %endif
+    --extra-cflags="%{optflags}" \
     --disable-pie \
     --disable-werror \
     --disable-xfsctl \
@@ -1998,6 +1994,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Nov 28 2016 Paolo Bonzini <pbonzini@redhat.com> - 2:2.7.0-10
+- Do not build aarch64 with -fPIC anymore (rhbz 1232499)
+
 * Tue Nov 15 2016 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.7.0-9
 - Clean up binfmt.d configuration files
 
