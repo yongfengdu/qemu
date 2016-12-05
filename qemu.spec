@@ -1053,41 +1053,45 @@ done
     %global spiceflag --disable-spice
 %endif
 
+run_configure() {
+    ../configure \
+        --prefix=%{_prefix} \
+        --libdir=%{_libdir} \
+        --sysconfdir=%{_sysconfdir} \
+        --interp-prefix=%{_prefix}/qemu-%%M \
+        --localstatedir=%{_localstatedir} \
+        --libexecdir=%{_libexecdir} \
+        --with-pkgversion=%{name}-%{version}-%{release} \
+        --disable-strip \
+        --disable-werror \
+        --enable-kvm \
+%ifarch s390 %{mips64}
+        --enable-tcg-interpreter \
+%endif
+        --enable-trace-backend=$tracebackends \
+        --disable-xfsctl \
+        "$@" || cat config.log
+}
+
 mkdir build-dynamic
 pushd build-dynamic
 
-../configure \
-    --prefix=%{_prefix} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
-    --interp-prefix=%{_prefix}/qemu-%%M \
-    --localstatedir=%{_localstatedir} \
-    --libexecdir=%{_libexecdir} \
-    --with-pkgversion=%{name}-%{version}-%{release} \
-    --tls-priority=@QEMU,SYSTEM \
-    --disable-strip \
+run_configure \
 %ifnarch aarch64
     --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -pie -Wl,-z,relro -Wl,-z,now" \
 %else
     --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld" \
 %endif
     --extra-cflags="%{optflags} -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1" \
-    --enable-pie \
-    --disable-werror \
-    --disable-xfsctl \
     --target-list="$dynamic_targets" \
-    --audio-drv-list=pa,sdl,alsa,oss \
-    --enable-trace-backend=$tracebackends \
-    --enable-kvm \
+    --enable-pie \
     --enable-modules \
+    --audio-drv-list=pa,sdl,alsa,oss \
+    --tls-priority=@QEMU,SYSTEM \
     %{tcmallocflag} \
     %{spiceflag} \
     --with-sdlabi="2.0" \
-    --with-gtkabi="3.0" \
-%ifarch s390 %{mips64}
-    --enable-tcg-interpreter \
-%endif
-    "$@" || cat config.log
+    --with-gtkabi="3.0"
 
 echo "config-host.mak contents:"
 echo "==="
@@ -1102,28 +1106,16 @@ popd
 mkdir build-static
 pushd build-static
 
-../configure \
-    --prefix=%{_prefix} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
-    --interp-prefix=%{_prefix}/qemu-%%M \
-    --localstatedir=%{_localstatedir} \
-    --libexecdir=%{_libexecdir} \
-    --with-pkgversion=%{name}-%{version}-%{release} \
-    --disable-strip \
+run_configure \
 %ifnarch aarch64
     --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
 %else
     --extra-ldflags="$extraldflags" \
 %endif
     --extra-cflags="%{optflags}" \
-    --disable-pie \
-    --disable-werror \
-    --disable-xfsctl \
     --target-list="$static_targets" \
     --static \
-    --enable-trace-backend=$tracebackends \
-    --enable-kvm \
+    --disable-pie \
     --disable-tcmalloc \
     --disable-sdl \
     --disable-gtk \
@@ -1138,11 +1130,7 @@ pushd build-static
     --disable-nettle \
     --disable-cap-ng \
     --disable-brlapi \
-    --disable-libnfs \
-%ifarch s390 %{mips64}
-    --enable-tcg-interpreter \
-%endif
-    "$@" || cat config.log
+    --disable-libnfs
 
 make V=1 %{?_smp_mflags} $buildldflags
 
