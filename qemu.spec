@@ -244,7 +244,7 @@ BuildRequires: libusbx-devel
 BuildRequires: libssh2-devel
 # GTK frontend
 BuildRequires: gtk3-devel
-BuildRequires: vte3-devel
+BuildRequires: vte291-devel
 # GTK translations
 BuildRequires: gettext
 # RDMA migration
