@@ -1069,7 +1069,6 @@ run_configure() {
         --enable-tcg-interpreter \
 %endif
         --enable-trace-backend=$tracebackends \
-        --disable-xfsctl \
         "$@" || cat config.log
 }
 
