@@ -73,6 +73,7 @@ Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
 Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
 Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
+Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-rbd = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 
@@ -81,7 +82,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-# global rcver rc3
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -90,8 +91,8 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.7.0
-Release: 10%{?rcrel}%{?dist}
+Version: 2.8.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -125,37 +126,9 @@ Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
 
-# CVE-2016-7155: pvscsi: OOB read and infinite loop (bz #1373463)
-Patch0001: 0001-vmw_pvscsi-check-page-count-while-initialising-descr.patch
-# CVE-2016-7156: pvscsi: infinite loop when building SG list (bz #1373480)
-Patch0002: 0002-scsi-pvscsi-limit-loop-to-fetch-SG-list.patch
-# CVE-2016-7156: pvscsi: infinite loop when processing IO requests (bz
-# #1373480)
-Patch0003: 0003-scsi-pvscsi-limit-process-IO-loop-to-ring-size.patch
-# CVE-2016-7170: vmware_vga: OOB stack memory access (bz #1374709)
-Patch0004: 0004-vmsvga-correct-bitmap-and-pixmap-size-checks.patch
-# CVE-2016-7157: mptsas: invalid memory access (bz #1373505)
-Patch0005: 0005-scsi-mptconfig-fix-an-assert-expression.patch
-Patch0006: 0006-scsi-mptconfig-fix-misuse-of-MPTSAS_CONFIG_PACK.patch
-# CVE-2016-7466: usb: xhci memory leakage during device unplug (bz #1377838)
-Patch0007: 0007-usb-xhci-fix-memory-leak-in-usb_xhci_exit.patch
-# CVE-2016-7423: scsi: mptsas: OOB access (bz #1376777)
-Patch0008: 0008-scsi-mptsas-use-g_new0-to-allocate-MPTSASRequest-obj.patch
-# CVE-2016-7422: virtio: null pointer dereference (bz #1376756)
-Patch0009: 0009-virtio-add-check-for-descriptor-s-mapped-address.patch
-# CVE-2016-7908: net: Infinite loop in mcf_fec_do_tx (bz #1381193)
-Patch0010: 0010-net-mcf-limit-buffer-descriptor-count.patch
-# CVE-2016-8576: usb: xHCI: infinite loop vulnerability (bz #1382322)
-Patch0011: 0011-xhci-limit-the-number-of-link-trbs-we-are-willing-to.patch
-# CVE-2016-7995: usb: hcd-ehci: memory leak (bz #1382669)
-Patch0012: 0012-usb-ehci-fix-memory-leak-in-ehci_process_itd.patch
-# Fix interrupt endpoints not working with network/spice USB redirection on
-# guest with an emulated xhci controller (bz #1382331)
-Patch0013: 0013-usb-redir-allocate-buffers-before-waking-up-the-host.patch
-# Fix nested PPC 'Unknown MMU model' error (bz #1374749)
-Patch0014: 0014-ppc-kvm-Mark-64kB-page-size-support-as-disabled-if-n.patch
-# Fix flickering display with boxes + wayland VM (bz #1266484)
-Patch0015: 0015-qxl-Only-emit-QXL_INTERRUPT_CLIENT_MONITORS_CONFIG-o.patch
+# Fix flickering display with boxes + wayland VM (bz #1392239)
+# Posted, but not yet upstream
+Patch0001: 0001-qxl-Only-emit-QXL_INTERRUPT_CLIENT_MONITORS_CONFIG-o.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -416,6 +389,17 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 This package provides the additional iSCSI block driver for QEMU.
 
 Install this package if you want to access iSCSI volumes.
+
+
+%package  block-nfs
+Summary: QEMU NFS block driver
+Group: Development/Tools
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+
+%description block-nfs
+This package provides the additional NFS block driver for QEMU.
+
+Install this package if you want to access remote NFS storage.
 
 
 %package  block-rbd
@@ -1039,7 +1023,6 @@ user_arch="\
   sparc \
   sparc32plus \
   sparc64 \
-  unicore32 \
   x86_64"
 
 dynamic_targets=
@@ -1155,7 +1138,6 @@ pushd build-static
     --disable-nettle \
     --disable-cap-ng \
     --disable-brlapi \
-    --disable-uuid \
     --disable-libnfs \
 %ifarch s390 %{mips64}
     --enable-tcg-interpreter \
@@ -1266,14 +1248,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/vgabios*bin
 # Provided by package seabios
 rm -rf %{buildroot}%{_datadir}/%{name}/bios.bin
 rm -rf %{buildroot}%{_datadir}/%{name}/bios-256k.bin
-rm -rf %{buildroot}%{_datadir}/%{name}/acpi-dsdt.aml
-rm -rf %{buildroot}%{_datadir}/%{name}/q35-acpi-dsdt.aml
 # Provided by package sgabios
 rm -rf %{buildroot}%{_datadir}/%{name}/sgabios.bin
 
-# the pxe gpxe images will be symlinks to the images on
-# /usr/share/ipxe, as QEMU doesn't know how to look
-# for other paths, yet.
 pxe_link() {
   ln -s ../ipxe/$2.rom %{buildroot}%{_datadir}/%{name}/pxe-$1.rom
   ln -s ../ipxe.efi/$2.rom %{buildroot}%{_datadir}/%{name}/efi-$1.rom
@@ -1300,8 +1277,6 @@ rom_link ../seavgabios/vgabios-vmware.bin vgabios-vmware.bin
 rom_link ../seavgabios/vgabios-virtio.bin vgabios-virtio.bin
 rom_link ../seabios/bios.bin bios.bin
 rom_link ../seabios/bios-256k.bin bios-256k.bin
-rom_link ../seabios/acpi-dsdt.aml acpi-dsdt.aml
-rom_link ../seabios/q35-acpi-dsdt.aml q35-acpi-dsdt.aml
 rom_link ../sgabios/sgabios.bin sgabios.bin
 
 # Install binfmt
@@ -1479,7 +1454,6 @@ getent passwd qemu >/dev/null || \
 %doc %{qemudocdir}/Changelog
 %doc %{qemudocdir}/README
 %doc %{qemudocdir}/qemu-doc.html
-%doc %{qemudocdir}/qemu-tech.html
 %doc %{qemudocdir}/qmp-commands.txt
 %doc %{qemudocdir}/COPYING
 %doc %{qemudocdir}/COPYING.LIB
@@ -1510,7 +1484,6 @@ getent passwd qemu >/dev/null || \
 
 
 %files guest-agent
-%doc COPYING README
 %{_bindir}/qemu-ga
 %{_mandir}/man8/qemu-ga.8*
 %{_unitdir}/qemu-guest-agent.service
@@ -1530,7 +1503,7 @@ getent passwd qemu >/dev/null || \
 
 
 %files block-dmg
-%{_libdir}/qemu/block-dmg.so
+%{_libdir}/qemu/block-dmg-bz2.so
 
 
 %files block-gluster
@@ -1539,6 +1512,10 @@ getent passwd qemu >/dev/null || \
 
 %files block-iscsi
 %{_libdir}/qemu/block-iscsi.so
+
+
+%files block-nfs
+%{_libdir}/qemu/block-nfs.so
 
 
 %files block-rbd
@@ -1591,7 +1568,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-sparc
 %{_bindir}/qemu-sparc32plus
 %{_bindir}/qemu-sparc64
-%{_bindir}/qemu-unicore32
 
 %{_datadir}/systemtap/tapset/qemu-i386.stp
 %{_datadir}/systemtap/tapset/qemu-i386-simpletrace.stp
@@ -1647,8 +1623,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-unicore32.stp
-%{_datadir}/systemtap/tapset/qemu-unicore32-simpletrace.stp
 
 %files user-binfmt
 %{_exec_prefix}/lib/binfmt.d/qemu-*-dynamic.conf
@@ -1683,7 +1657,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-sparc-static
 %{_bindir}/qemu-sparc32plus-static
 %{_bindir}/qemu-sparc64-static
-%{_bindir}/qemu-unicore32-static
 
 %{_datadir}/systemtap/tapset/qemu-i386-static.stp
 %{_datadir}/systemtap/tapset/qemu-i386-simpletrace-static.stp
@@ -1739,8 +1712,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-unicore32-static.stp
-%{_datadir}/systemtap/tapset/qemu-unicore32-simpletrace-static.stp
 %endif
 
 
@@ -1761,7 +1732,6 @@ getent passwd qemu >/dev/null || \
 %endif
 
 %{_datadir}/%{name}/acpi-dsdt.aml
-%{_datadir}/%{name}/q35-acpi-dsdt.aml
 %{_datadir}/%{name}/bios.bin
 %{_datadir}/%{name}/bios-256k.bin
 %{_datadir}/%{name}/sgabios.bin
@@ -1935,6 +1905,7 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-ppcemb.1*
 %{_datadir}/%{name}/bamboo.dtb
 %{_datadir}/%{name}/ppc_rom.bin
+%{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/spapr-rtas.bin
 %{_datadir}/%{name}/u-boot.e500
 %ifarch %{power64}
@@ -1994,6 +1965,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Dec 05 2016 Cole Robinson <crobinso@redhat.com> - 2:2.8.0-0.1-rc2
+- Rebase to qemu-2.8.0-rc2
+
 * Mon Nov 28 2016 Paolo Bonzini <pbonzini@redhat.com> - 2:2.7.0-10
 - Do not build aarch64 with -fPIC anymore (rhbz 1232499)
 
