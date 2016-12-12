@@ -82,7 +82,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc2
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.8.0
-Release: 0.2%{?rcrel}%{?dist}
+Release: 0.3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -125,10 +125,6 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
-
-# Fix flickering display with boxes + wayland VM (bz #1392239)
-# Posted, but not yet upstream
-Patch0001: 0001-qxl-Only-emit-QXL_INTERRUPT_CLIENT_MONITORS_CONFIG-o.patch
 
 # documentation deps
 BuildRequires: texi2html
@@ -1952,6 +1948,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Dec 12 2016 Cole Robinson <crobinso@redhat.com> - 2:2.8.0-0.3-rc3
+- Rebase to qemu-2.8.0-rc3
+
 * Mon Dec 05 2016 Cole Robinson <crobinso@redhat.com> - 2:2.8.0-0.2-rc2
 - Rebuild to pick up changed libxen* sonames
 
