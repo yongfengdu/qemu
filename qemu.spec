@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.8.0
-Release: 1%{?rcrel}%{?dist}
+Release: 1%{?rcrel}%{?dist}.1
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1948,6 +1948,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.8.0-1.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Tue Dec 20 2016 Cole Robinson <crobinso@redhat.com> - 2:2.8.0-1
 - Rebase to qemu-2.8.0 GA
 
