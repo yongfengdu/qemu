@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.8.0
-Release: 1%{?rcrel}%{?dist}.1
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -127,7 +127,6 @@ Source21: 50-kvm-s390x.conf
 Source22: 95-kvm-ppc64-memlock.conf
 
 # documentation deps
-BuildRequires: texi2html
 BuildRequires: texinfo
 # For /usr/bin/pod2man
 BuildRequires: perl-podlators
@@ -1948,6 +1947,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Feb 20 2017 Daniel Berrange <berrange@redhat.com> - 2:2.8.0-2
+- Drop texi2html BR, since QEMU switched to using makeinfo back in 2010
+
 * Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.8.0-1.1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
