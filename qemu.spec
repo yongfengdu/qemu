@@ -82,7 +82,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-#global rcver rc3
+%global rcver rc0
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -91,14 +91,14 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.8.0
-Release: 2%{?rcrel}%{?dist}
+Version: 2.9.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.bz2
+Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
 
 Source1: qemu.binfmt
 
@@ -259,7 +259,7 @@ Requires: %{name}-system-lm32 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-m68k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-microblaze = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-mips = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-or32 = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-or1k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-ppc = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-s390x = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sh4 = %{epoch}:%{version}-%{release}
@@ -270,6 +270,7 @@ Requires: %{name}-system-xtensa = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-moxie = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-aarch64 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-tricore = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-nios2 = %{epoch}:%{version}-%{release}
 Requires: %{name}-img = %{epoch}:%{version}-%{release}
 
 
@@ -704,22 +705,22 @@ emulation speed by using dynamic translation.
 This package provides the system emulator for Microblaze boards.
 
 
-%package system-or32
+%package system-or1k
 Summary: QEMU system emulator for OpenRisc32
 Group: Development/Tools
-Requires: %{name}-system-or32-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
-%description system-or32
+%description system-or1k
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
 
 This package provides the system emulator for OpenRisc32 boards.
 
-%package system-or32-core
+%package system-or1k-core
 Summary: QEMU system emulator for OpenRisc32
 Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-or32-core
+%description system-or1k-core
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
 
@@ -842,7 +843,7 @@ This package provides the system emulator for Xtensa boards.
 %package system-unicore32
 Summary: QEMU system emulator for Unicore32
 Group: Development/Tools
-Requires: %{name}-system-xtensa-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-unicore32-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-unicore32
 QEMU is a generic and open source processor emulator which achieves a good
@@ -911,7 +912,7 @@ This package provides the system emulator for AArch64.
 %package system-tricore
 Summary: QEMU system emulator for tricore
 Group: Development/Tools
-Requires: %{name}-system-aarch64-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-tricore-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-tricore
 QEMU is a generic and open source processor emulator which achieves a good
@@ -928,6 +929,28 @@ QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
 
 This package provides the system emulator for Tricore.
+
+
+%package system-nios2
+Summary: QEMU system emulator for nios2
+Group: Development/Tools
+Requires: %{name}-system-nios2-core = %{epoch}:%{version}-%{release}
+%{requires_all_block_modules}
+%description system-nios2
+QEMU is a generic and open source processor emulator which achieves a good
+emulation speed by using dynamic translation.
+
+This package provides the system emulator for NIOS2.
+
+%package system-nios2-core
+Summary: QEMU system emulator for nios2
+Group: Development/Tools
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-nios2-core
+QEMU is a generic and open source processor emulator which achieves a good
+emulation speed by using dynamic translation.
+
+This package provides the system emulator for NIOS2.
 
 
 
@@ -976,7 +999,8 @@ system_arch="\
   mips64el \
   mipsel \
   moxie \
-  or32 \
+  nios2 \
+  or1k \
   ppc \
   ppc64 \
   ppcemb \
@@ -998,6 +1022,7 @@ user_arch="\
   armeb \
   cris \
   i386 \
+  hppa \
   m68k \
   microblaze \
   microblazeel \
@@ -1007,7 +1032,8 @@ user_arch="\
   mipsel \
   mipsn32 \
   mipsn32el \
-  or32 \
+  nios2 \
+  or1k \
   ppc \
   ppc64 \
   ppc64abi32 \
@@ -1434,12 +1460,16 @@ getent passwd qemu >/dev/null || \
 %files common -f %{name}.lang
 %dir %{qemudocdir}
 %doc %{qemudocdir}/Changelog
-%doc %{qemudocdir}/README
-%doc %{qemudocdir}/qemu-doc.html
-%doc %{qemudocdir}/qmp-commands.txt
 %doc %{qemudocdir}/COPYING
 %doc %{qemudocdir}/COPYING.LIB
 %doc %{qemudocdir}/LICENSE
+%doc %{qemudocdir}/qemu-doc.html
+%doc %{qemudocdir}/qemu-doc.txt
+%doc %{qemudocdir}/qemu-ga-ref.html
+%doc %{qemudocdir}/qemu-ga-ref.txt
+%doc %{qemudocdir}/qemu-qmp-ref.html
+%doc %{qemudocdir}/qemu-qmp-ref.txt
+%doc %{qemudocdir}/README
 %dir %{_datadir}/%{name}/
 %{_datadir}/%{name}/qemu-icon.bmp
 %{_datadir}/%{name}/qemu_logo_no_text.svg
@@ -1447,6 +1477,8 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/trace-events-all
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
+%{_mandir}/man7/qemu-ga-ref.7*
+%{_mandir}/man7/qemu-qmp-ref.7*
 %{_bindir}/virtfs-proxy-helper
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
 %config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
@@ -1530,6 +1562,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-arm
 %{_bindir}/qemu-armeb
 %{_bindir}/qemu-cris
+%{_bindir}/qemu-hppa
 %{_bindir}/qemu-m68k
 %{_bindir}/qemu-microblaze
 %{_bindir}/qemu-microblazeel
@@ -1539,7 +1572,8 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-mips64el
 %{_bindir}/qemu-mipsn32
 %{_bindir}/qemu-mipsn32el
-%{_bindir}/qemu-or32
+%{_bindir}/qemu-nios2
+%{_bindir}/qemu-or1k
 %{_bindir}/qemu-ppc
 %{_bindir}/qemu-ppc64
 %{_bindir}/qemu-ppc64abi32
@@ -1565,6 +1599,8 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-armeb-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-cris.stp
 %{_datadir}/systemtap/tapset/qemu-cris-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-hppa.stp
+%{_datadir}/systemtap/tapset/qemu-hppa-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-m68k.stp
 %{_datadir}/systemtap/tapset/qemu-m68k-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-microblaze.stp
@@ -1583,8 +1619,10 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-or32.stp
-%{_datadir}/systemtap/tapset/qemu-or32-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-nios2.stp
+%{_datadir}/systemtap/tapset/qemu-nios2-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-or1k.stp
+%{_datadir}/systemtap/tapset/qemu-or1k-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64.stp
@@ -1619,6 +1657,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-arm-static
 %{_bindir}/qemu-armeb-static
 %{_bindir}/qemu-cris-static
+%{_bindir}/qemu-hppa-static
 %{_bindir}/qemu-m68k-static
 %{_bindir}/qemu-microblaze-static
 %{_bindir}/qemu-microblazeel-static
@@ -1628,7 +1667,8 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-mips64el-static
 %{_bindir}/qemu-mipsn32-static
 %{_bindir}/qemu-mipsn32el-static
-%{_bindir}/qemu-or32-static
+%{_bindir}/qemu-nios2-static
+%{_bindir}/qemu-or1k-static
 %{_bindir}/qemu-ppc-static
 %{_bindir}/qemu-ppc64-static
 %{_bindir}/qemu-ppc64abi32-static
@@ -1654,6 +1694,8 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-armeb-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-cris-static.stp
 %{_datadir}/systemtap/tapset/qemu-cris-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-hppa-static.stp
+%{_datadir}/systemtap/tapset/qemu-hppa-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-m68k-static.stp
 %{_datadir}/systemtap/tapset/qemu-m68k-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-microblaze-static.stp
@@ -1672,8 +1714,10 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-or32-static.stp
-%{_datadir}/systemtap/tapset/qemu-or32-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-nios2-static.stp
+%{_datadir}/systemtap/tapset/qemu-nios2-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-or1k-static.stp
+%{_datadir}/systemtap/tapset/qemu-or1k-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64-static.stp
@@ -1827,13 +1871,13 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/petalogix*.dtb
 
 
-%files system-or32
+%files system-or1k
 # Deliberately empty
 
-%files system-or32-core
-%{_bindir}/qemu-system-or32
-%{_datadir}/systemtap/tapset/qemu-system-or32*.stp
-%{_mandir}/man1/qemu-system-or32.1*
+%files system-or1k-core
+%{_bindir}/qemu-system-or1k
+%{_datadir}/systemtap/tapset/qemu-system-or1k*.stp
+%{_mandir}/man1/qemu-system-or1k.1*
 
 
 %files system-s390x
@@ -1946,7 +1990,19 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-tricore.1*
 
 
+%files system-nios2
+# Deliberately empty
+
+%files system-nios2-core
+%{_bindir}/qemu-system-nios2
+%{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
+%{_mandir}/man1/qemu-system-nios2.1*
+
+
 %changelog
+* Wed Mar 15 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc0
+* Rebase to qemu-2.9.0-rc0
+
 * Mon Feb 20 2017 Daniel Berrange <berrange@redhat.com> - 2:2.8.0-2
 - Drop texi2html BR, since QEMU switched to using makeinfo back in 2010
 

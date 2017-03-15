@@ -2,3 +2,4 @@
 /x86_64/
 /*.src.rpm
 /qemu-*.tar.bz2
+/qemu-2.9.0-rc0.tar.xz
