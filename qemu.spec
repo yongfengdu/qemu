@@ -526,13 +526,9 @@ platform.
 Summary: QEMU system emulator for x86
 Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Provides: kvm = 85
-Obsoletes: kvm < 85
-Requires: seavgabios-bin
-# virtio-blk booting is broken for Windows guests
-# if you mix seabios 1.7.4 and qemu 2.1.x
-Requires: seabios-bin >= 1.7.5
+Requires: seabios-bin
 Requires: sgabios-bin
+Requires: seavgabios-bin
 Requires: ipxe-roms-qemu
 %if 0%{?have_edk2:1}
 Requires: edk2-ovmf
@@ -811,6 +807,8 @@ Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: openbios
 Requires: SLOF
+Requires: seavgabios-bin
+Requires: ipxe-roms-qemu
 %description system-ppc-core
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -1475,6 +1473,28 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/qemu_logo_no_text.svg
 %{_datadir}/%{name}/keymaps/
 %{_datadir}/%{name}/trace-events-all
+%{_datadir}/%{name}/vgabios.bin
+%{_datadir}/%{name}/vgabios-cirrus.bin
+%{_datadir}/%{name}/vgabios-qxl.bin
+%{_datadir}/%{name}/vgabios-stdvga.bin
+%{_datadir}/%{name}/vgabios-vmware.bin
+%{_datadir}/%{name}/vgabios-virtio.bin
+%{_datadir}/%{name}/pxe-e1000.rom
+%{_datadir}/%{name}/efi-e1000.rom
+%{_datadir}/%{name}/pxe-e1000e.rom
+%{_datadir}/%{name}/efi-e1000e.rom
+%{_datadir}/%{name}/pxe-eepro100.rom
+%{_datadir}/%{name}/efi-eepro100.rom
+%{_datadir}/%{name}/pxe-ne2k_pci.rom
+%{_datadir}/%{name}/efi-ne2k_pci.rom
+%{_datadir}/%{name}/pxe-pcnet.rom
+%{_datadir}/%{name}/efi-pcnet.rom
+%{_datadir}/%{name}/pxe-rtl8139.rom
+%{_datadir}/%{name}/efi-rtl8139.rom
+%{_datadir}/%{name}/pxe-virtio.rom
+%{_datadir}/%{name}/efi-virtio.rom
+%{_datadir}/%{name}/pxe-vmxnet3.rom
+%{_datadir}/%{name}/efi-vmxnet3.rom
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_mandir}/man7/qemu-ga-ref.7*
@@ -1765,28 +1785,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/linuxboot_dma.bin
 %{_datadir}/%{name}/multiboot.bin
 %{_datadir}/%{name}/kvmvapic.bin
-%{_datadir}/%{name}/vgabios.bin
-%{_datadir}/%{name}/vgabios-cirrus.bin
-%{_datadir}/%{name}/vgabios-qxl.bin
-%{_datadir}/%{name}/vgabios-stdvga.bin
-%{_datadir}/%{name}/vgabios-vmware.bin
-%{_datadir}/%{name}/vgabios-virtio.bin
-%{_datadir}/%{name}/pxe-e1000.rom
-%{_datadir}/%{name}/efi-e1000.rom
-%{_datadir}/%{name}/pxe-e1000e.rom
-%{_datadir}/%{name}/efi-e1000e.rom
-%{_datadir}/%{name}/pxe-eepro100.rom
-%{_datadir}/%{name}/efi-eepro100.rom
-%{_datadir}/%{name}/pxe-ne2k_pci.rom
-%{_datadir}/%{name}/efi-ne2k_pci.rom
-%{_datadir}/%{name}/pxe-pcnet.rom
-%{_datadir}/%{name}/efi-pcnet.rom
-%{_datadir}/%{name}/pxe-rtl8139.rom
-%{_datadir}/%{name}/efi-rtl8139.rom
-%{_datadir}/%{name}/pxe-virtio.rom
-%{_datadir}/%{name}/efi-virtio.rom
-%{_datadir}/%{name}/pxe-vmxnet3.rom
-%{_datadir}/%{name}/efi-vmxnet3.rom
 %ifarch %{ix86} x86_64
 %{?kvm_files:}
 %endif
