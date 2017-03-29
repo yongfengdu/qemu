@@ -82,7 +82,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc1
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -705,6 +705,7 @@ This package provides the system emulator for Microblaze boards.
 Summary: QEMU system emulator for OpenRisc32
 Group: Development/Tools
 Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-or32 < 2:2.9.0
 %{requires_all_block_modules}
 %description system-or1k
 QEMU is a generic and open source processor emulator which achieves a good
@@ -716,6 +717,7 @@ This package provides the system emulator for OpenRisc32 boards.
 Summary: QEMU system emulator for OpenRisc32
 Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-or32-core < 2:2.9.0
 %description system-or1k-core
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -1998,6 +2000,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Mar 29 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc2
+- Rebase to qemu-2.9.0-rc2
+- Add Obsoletes for or32-or1k rename (bz 1435016)
+- spec: Pull in vga and pxe roms for ppc64 (bz 1431403)
+
 * Tue Mar 21 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc1
 - Rebase to qemu-2.9.0-rc1
 
