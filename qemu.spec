@@ -82,7 +82,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc2
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -2000,6 +2000,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Apr 04 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc3
+- Rebase to qemu-2.9.0-rc3
+
 * Wed Mar 29 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc2
 - Rebase to qemu-2.9.0-rc2
 - Add Obsoletes for or32-or1k rename (bz 1435016)
