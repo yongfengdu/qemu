@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 0.1%{?rcrel}%{?dist}
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -125,6 +125,9 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
+
+# Upstream commit 1bf03e66fd03af46ff0f98dd04b6e28f432ac1e3.
+Patch1: 0001-block-Don-t-check-permissions-for-copy-on-read.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -2000,6 +2003,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Apr 08 2017 Richard W.M. Jones <rjones@redhat.com> - 2:2.9.0-0.2-rc3
+- Backport upstream fix for assertion when copy-on-read=true (RHBZ#1439922).
+
 * Tue Apr 04 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.1-rc3
 - Rebase to qemu-2.9.0-rc3
 
