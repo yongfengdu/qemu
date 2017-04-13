@@ -82,7 +82,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc3
+%global rcver rc4
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -126,8 +126,6 @@ Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
 
-# Upstream commit 1bf03e66fd03af46ff0f98dd04b6e28f432ac1e3.
-Patch1: 0001-block-Don-t-check-permissions-for-copy-on-read.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -294,6 +292,7 @@ As QEMU requires no host kernel patches to run, it is safe and easy to use.
 %package  common
 Summary: QEMU common files needed by all QEMU targets
 Group: Development/Tools
+Requires: ipxe-roms-qemu
 Requires(post): /usr/bin/getent
 Requires(post): /usr/sbin/groupadd
 Requires(post): /usr/sbin/useradd
@@ -532,7 +531,6 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: seabios-bin
 Requires: sgabios-bin
 Requires: seavgabios-bin
-Requires: ipxe-roms-qemu
 %if 0%{?have_edk2:1}
 Requires: edk2-ovmf
 %endif
@@ -813,7 +811,6 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: openbios
 Requires: SLOF
 Requires: seavgabios-bin
-Requires: ipxe-roms-qemu
 %description system-ppc-core
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -2003,6 +2000,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Apr 13 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.2-rc4
+- Rebase to qemu-2.9.0-rc4
+- Fix ipxe rom links for aarch64
+
 * Sat Apr 08 2017 Richard W.M. Jones <rjones@redhat.com> - 2:2.9.0-0.2-rc3
 - Backport upstream fix for assertion when copy-on-read=true (RHBZ#1439922).
 
