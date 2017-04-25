@@ -82,11 +82,11 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-# %global rcver rc4
-# %if 0%{?rcver:1}
-# %global rcrel .%{rcver}
-# %global rcstr -%{rcver}
-# %endif
+#global rcver rc4
+#if 0%{?rcver:1}
+#global rcrel .%{rcver}
+#global rcstr -%{rcver}
+#endif
 
 
 Summary: QEMU is a FAST! processor emulator
