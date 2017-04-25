@@ -82,17 +82,17 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc4
-%if 0%{?rcver:1}
-%global rcrel .%{rcver}
-%global rcstr -%{rcver}
-%endif
+# %global rcver rc4
+# %if 0%{?rcver:1}
+# %global rcrel .%{rcver}
+# %global rcstr -%{rcver}
+# %endif
 
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 0.2%{?rcrel}%{?dist}
+Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2000,6 +2000,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Apr 25 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-1
+- Rebase to qemu-2.9.0 GA
+
 * Thu Apr 13 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-0.2-rc4
 - Rebase to qemu-2.9.0-rc4
 - Fix ipxe rom links for aarch64
