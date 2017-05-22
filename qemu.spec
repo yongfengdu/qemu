@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2000,6 +2000,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon May 22 2017 Richard W.M. Jones <rjones@redhat.com> - 2:2.9.0-2
+- Bump release and rebuild to try to fix _ZdlPvm symbol (see RHBZ#1452813).
+
 * Tue Apr 25 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-1
 - Rebase to qemu-2.9.0 GA
 
