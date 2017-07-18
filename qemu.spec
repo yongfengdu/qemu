@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2030,6 +2030,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Jul 18 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.9.0-4
+- Rebuild for changed Xen sonames
+
 * Wed Jul 12 2017 Cole Robinson <crobinso@redhat.com> - 2:2.9.0-3
 - CVE-2017-8112: vmw_pvscsi: infinite loop in pvscsi_log2 (bz #1445622)
 - CVE-2017-8309: audio: host memory lekage via capture buffer (bz #1446520)
