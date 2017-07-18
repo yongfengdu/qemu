@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 4%{?rcrel}%{?dist}
+Release: 5%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -156,6 +156,9 @@ Patch0103: 0103-nbd-Fix-regression-on-resiliency-to-port-scan.patch
 # CVE-2017-10664: qemu-nbd: server breaks with SIGPIPE upon client abort (bz
 # #1466192)
 Patch0104: 0104-qemu-nbd-Ignore-SIGPIPE.patch
+
+# Build fix; https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg06005.html
+Patch0200: 0200-Update-references-of-struct-ucontext-to-ucontext_t.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -2030,6 +2033,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Jul 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-5
+- Fix ucontext_t references
+
 * Tue Jul 18 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.9.0-4
 - Rebuild for changed Xen sonames
 
