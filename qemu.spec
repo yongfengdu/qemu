@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 5%{?rcrel}%{?dist}
+Release: 6%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -159,6 +159,13 @@ Patch0104: 0104-qemu-nbd-Ignore-SIGPIPE.patch
 
 # Build fix; https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg06005.html
 Patch0200: 0200-Update-references-of-struct-ucontext-to-ucontext_t.patch
+
+Patch1001: 0001-xen-make-use-of-xen_xc-implicit-in-xen_common.h-inli.patch
+Patch1002: 0002-xen-rename-xen_modified_memory-to-xen_hvm_modified_m.patch
+Patch1003: 0003-xen-create-wrappers-for-all-other-uses-of-xc_hvm_XXX.patch
+Patch1004: 0004-configure-detect-presence-of-libxendevicemodel.patch
+Patch1005: 0005-xen-use-libxendevicemodel-when-available.patch
+Patch1006: 0006-xen-use-5-digit-xen-versions.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -2033,6 +2040,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Jul 19 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-6
+- Fixes for compat with Xen 4.9
+
 * Tue Jul 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-5
 - Fix ucontext_t references
 
