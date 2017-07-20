@@ -92,7 +92,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 6%{?rcrel}%{?dist}
+Release: 7%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -500,8 +500,6 @@ x86 system, this will install qemu-system-x86-core
 Summary: QEMU user mode emulation of qemu targets
 Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires(post): systemd-units
-Requires(postun): systemd-units
 # On upgrade, make qemu-user get replaced with qemu-user + qemu-user-binfmt
 Obsoletes: %{name}-user < 2:2.6.0-5%{?dist}
 
@@ -1361,7 +1359,7 @@ for i in dummy \
     qemu-m68k \
 %endif
 %ifnarch ppc %{power64}
-    qemu-ppc qemu-ppc64abi32 qemu-ppc64 \
+    qemu-ppc qemu-ppc64abi32 qemu-ppc64le qemu-ppc64 \
 %endif
 %ifnarch sparc sparc64
     qemu-sparc qemu-sparc32plus qemu-sparc64 \
@@ -1475,9 +1473,14 @@ getent passwd qemu >/dev/null || \
 %systemd_postun_with_restart ksmtuned.service
 
 
-%post user
+%post user-binfmt
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-%postun user
+%postun user-binfmt
+/bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
+
+%post user-static
+/bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
+%postun user-static
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 
 
@@ -2040,7 +2043,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed Jul 19 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-6
+* Thu Jul 20 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-7
+- Fix binfmt dependencies and post scriptlets
+- Add binfmt for ppc64le
+
+* Wed Jul 19 2017 Daniel Berrange <berrange@redhat.com> - 2:2.9.0-6
 - Fixes for compat with Xen 4.9
 
 * Tue Jul 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-5
