@@ -1478,11 +1478,12 @@ getent passwd qemu >/dev/null || \
 %postun user-binfmt
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 
+%if %{user_static}
 %post user-static
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 %postun user-static
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-
+%endif
 
 %post guest-agent
 %systemd_post qemu-guest-agent.service
