@@ -226,7 +226,8 @@ BuildRequires: libseccomp-devel >= 2.3.0
 # For network block driver
 BuildRequires: libcurl-devel
 # For rbd block driver
-BuildRequires: ceph-devel >= 0.61
+BuildRequires: librados2-devel
+BuildRequires: librbd1-devel
 # We need both because the 'stap' binary is probed for by configure
 BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
