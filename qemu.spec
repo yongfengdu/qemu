@@ -43,6 +43,11 @@
 %global have_spice   1
 %endif
 
+%global have_rbd 1
+%ifarch %{arm} ppc64 %{ix86}
+%global have_rbd 0
+%endif
+
 # Xen is available only on i386 x86_64 (from libvirt spec)
 %ifarch %{ix86} x86_64
 %global have_xen 1
@@ -68,6 +73,7 @@
 %endif
 
 # All block-* modules should be listed here.
+%if %{have_rbd}
 %global requires_all_block_modules                               \
 Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
 Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
@@ -76,6 +82,15 @@ Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
 Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-rbd = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
+%else
+%global requires_all_block_modules                               \
+Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
+Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
+Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
+Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
+%endif
 
 # Temp hack for https://bugzilla.redhat.com/show_bug.cgi?id=1343892
 # We'll manually turn on hardened build later in this spec
@@ -225,9 +240,11 @@ BuildRequires: libseccomp-devel >= 2.3.0
 %endif
 # For network block driver
 BuildRequires: libcurl-devel
+%if %{have_rbd}
 # For rbd block driver
 BuildRequires: librados2-devel
 BuildRequires: librbd1-devel
+%endif
 # We need both because the 'stap' binary is probed for by configure
 BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
@@ -440,7 +457,7 @@ This package provides the additional NFS block driver for QEMU.
 
 Install this package if you want to access remote NFS storage.
 
-
+%if %{have_rbd}
 %package  block-rbd
 Summary: QEMU Ceph/RBD block driver
 Group: Development/Tools
@@ -451,6 +468,7 @@ This package provides the additional Ceph/RBD block driver for QEMU.
 
 Install this package if you want to access remote Ceph volumes
 using the rbd protocol.
+%endif
 
 
 %package  block-ssh
@@ -1598,9 +1616,10 @@ getent passwd qemu >/dev/null || \
 %files block-nfs
 %{_libdir}/qemu/block-nfs.so
 
-
+%if %{have_rbd}
 %files block-rbd
 %{_libdir}/qemu/block-rbd.so
+%endif
 
 
 %files block-ssh
@@ -2046,7 +2065,7 @@ getent passwd qemu >/dev/null || \
 
 %changelog
 * Tue Jul 25 2017 Daniel Berrange <berrange@redhat.com> - 2:2.9.0-8
-- Rebuild for changed rbd soname
+- Disabled RBD on i386, arm, ppc64 (rhbz #1474743)
 
 * Thu Jul 20 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-7
 - Fix binfmt dependencies and post scriptlets
