@@ -44,7 +44,7 @@
 %endif
 
 %global have_rbd 1
-%ifarch %{arm} ppc64 %{ix86}
+%ifarch %{arm} ppc64
 %global have_rbd 0
 %endif
 
@@ -2065,7 +2065,7 @@ getent passwd qemu >/dev/null || \
 
 %changelog
 * Tue Jul 25 2017 Daniel Berrange <berrange@redhat.com> - 2:2.9.0-8
-- Disabled RBD on i386, arm, ppc64 (rhbz #1474743)
+- Disabled RBD on arm & ppc64 (rhbz #1474743)
 
 * Thu Jul 20 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.9.0-7
 - Fix binfmt dependencies and post scriptlets
