@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.9.0
-Release: 8%{?rcrel}%{?dist}
+Release: 9%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2064,6 +2064,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 2:2.9.0-9
+- Rebuild with binutils fix for ppc64le (#1475636)
+
 * Tue Jul 25 2017 Daniel Berrange <berrange@redhat.com> - 2:2.9.0-8
 - Disabled RBD on arm & ppc64 (rhbz #1474743)
 
