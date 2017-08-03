@@ -117,8 +117,6 @@ Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.x
 
 Source1: qemu.binfmt
 
-# Creates /dev/kvm
-Source3: 80-kvm.rules
 # KSM control scripts
 Source4: ksm.service
 Source5: ksm.sysconfig
@@ -1213,7 +1211,6 @@ install -m 0644 %{_sourcedir}/95-kvm-ppc64-memlock.conf %{buildroot}%{_sysconfdi
 # Install kvm specific bits
 %if %{have_kvm}
 mkdir -p %{buildroot}%{_bindir}/
-install -m 0644 %{_sourcedir}/80-kvm.rules %{buildroot}%{_udevdir}
 %endif
 
 %if %{user_static}
@@ -1420,11 +1417,6 @@ popd
 
 %if %{have_kvm}
 %post %{kvm_package}
-# Default /dev/kvm permissions are 660, we install a udev rule changing that
-# to 666. However trying to trigger the re-permissioning via udev has been
-# a neverending source of trouble, so we just force it with chmod. For
-# more info see: https://bugzilla.redhat.com/show_bug.cgi?id=950436
-chmod --quiet 666 /dev/kvm || :
 
 %ifarch s390x
 %sysctl_apply 50-kvm-s390x.conf
@@ -1471,9 +1463,6 @@ getent passwd qemu >/dev/null || \
 %systemd_postun_with_restart qemu-guest-agent.service
 
 
-
-%global kvm_files \
-%{_udevdir}/80-kvm.rules
 
 %files
 # Deliberately empty
@@ -1810,9 +1799,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/linuxboot_dma.bin
 %{_datadir}/%{name}/multiboot.bin
 %{_datadir}/%{name}/kvmvapic.bin
-%ifarch %{ix86} x86_64
-%{?kvm_files:}
-%endif
 
 
 %files system-alpha
@@ -1832,9 +1818,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-arm
 %{_datadir}/systemtap/tapset/qemu-system-arm*.stp
 %{_mandir}/man1/qemu-system-arm.1*
-%ifarch armv7hl
-%{?kvm_files:}
-%endif
 
 
 %files system-mips
@@ -1850,9 +1833,6 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-mipsel.1*
 %{_mandir}/man1/qemu-system-mips64el.1*
 %{_mandir}/man1/qemu-system-mips64.1*
-%ifarch %{mips}
-%{?kvm_files:}
-%endif
 
 
 %files system-cris
@@ -1913,7 +1893,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/s390-ccw.img
 %{_datadir}/%{name}/s390-netboot.img
 %ifarch s390x
-%{?kvm_files:}
 %{_sysconfdir}/sysctl.d/50-kvm-s390x.conf
 %endif
 
@@ -1960,7 +1939,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/spapr-rtas.bin
 %{_datadir}/%{name}/u-boot.e500
 %ifarch %{power64}
-%{?kvm_files:}
 %{_sysconfdir}/security/limits.d/95-kvm-ppc64-memlock.conf
 %endif
 
@@ -2001,9 +1979,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-aarch64
 %{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
 %{_mandir}/man1/qemu-system-aarch64.1*
-%ifarch aarch64
-%{?kvm_files:}
-%endif
 
 
 %files system-tricore
