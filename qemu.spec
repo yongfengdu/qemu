@@ -97,17 +97,17 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-#global rcver rc4
-#if 0%{?rcver:1}
-#global rcrel .%{rcver}
-#global rcstr -%{rcver}
-#endif
+%global rcver rc1
+%if 0%{?rcver:1}
+%global rcrel .%{rcver}
+%global rcstr -%{rcver}
+%endif
 
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.9.0
-Release: 9%{?rcrel}%{?dist}
+Version: 2.10.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -140,47 +140,6 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
-
-# CVE-2017-8112: vmw_pvscsi: infinite loop in pvscsi_log2 (bz #1445622)
-Patch0001: 0001-vmw_pvscsi-check-message-ring-page-count-at-initiali.patch
-# CVE-2017-8309: audio: host memory lekage via capture buffer (bz #1446520)
-Patch0002: 0002-audio-release-capture-buffers.patch
-# CVE-2017-8379: input: host memory lekage via keyboard events (bz #1446560)
-Patch0003: 0003-input-limit-kbd-queue-depth.patch
-# CVE-2017-8380: scsi: megasas: out-of-bounds read in megasas_mmio_write (bz
-# #1446578)
-Patch0004: 0004-scsi-avoid-an-off-by-one-error-in-megasas_mmio_write.patch
-# CVE-2017-7493: 9pfs: guest privilege escalation in virtfs mapped-file mode
-# (bz #1451711)
-Patch0005: 0005-9pfs-local-forbid-client-access-to-metadata-CVE-2017.patch
-# CVE-2017-9503: megasas: null pointer dereference while processing megasas
-# command (bz #1459478)
-Patch0006: 0006-megasas-do-not-read-sense-length-more-than-once-from.patch
-Patch0007: 0007-megasas-do-not-read-iovec-count-more-than-once-from-.patch
-Patch0008: 0008-megasas-do-not-read-DCMD-opcode-more-than-once-from-.patch
-Patch0009: 0009-megasas-do-not-read-command-more-than-once-from-fram.patch
-Patch0010: 0010-megasas-do-not-read-SCSI-req-parameters-more-than-on.patch
-Patch0011: 0011-megasas-always-store-SCSIRequest-into-MegasasCmd.patch
-
-# CVE-2017-10806: usb-redirect: stack buffer overflow in debug logging (bz
-# #1468497)
-Patch0101: 0101-usb-redir-fix-stack-overflow-in-usbredir_log_data.patch
-# CVE-2017-9524: nbd: segfault due to client non-negotiation (bz #1460172)
-Patch0102: 0102-nbd-Fully-initialize-client-in-case-of-failed-negoti.patch
-Patch0103: 0103-nbd-Fix-regression-on-resiliency-to-port-scan.patch
-# CVE-2017-10664: qemu-nbd: server breaks with SIGPIPE upon client abort (bz
-# #1466192)
-Patch0104: 0104-qemu-nbd-Ignore-SIGPIPE.patch
-
-# Build fix; https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg06005.html
-Patch0200: 0200-Update-references-of-struct-ucontext-to-ucontext_t.patch
-
-Patch1001: 0001-xen-make-use-of-xen_xc-implicit-in-xen_common.h-inli.patch
-Patch1002: 0002-xen-rename-xen_modified_memory-to-xen_hvm_modified_m.patch
-Patch1003: 0003-xen-create-wrappers-for-all-other-uses-of-xc_hvm_XXX.patch
-Patch1004: 0004-configure-detect-presence-of-libxendevicemodel.patch
-Patch1005: 0005-xen-use-libxendevicemodel-when-available.patch
-Patch1006: 0006-xen-use-5-digit-xen-versions.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1952,6 +1911,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
 %{_mandir}/man1/qemu-system-s390x.1*
 %{_datadir}/%{name}/s390-ccw.img
+%{_datadir}/%{name}/s390-netboot.img
 %ifarch s390x
 %{?kvm_files:}
 %{_sysconfdir}/sysctl.d/50-kvm-s390x.conf
@@ -1995,6 +1955,7 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-ppcemb.1*
 %{_datadir}/%{name}/bamboo.dtb
 %{_datadir}/%{name}/ppc_rom.bin
+%{_datadir}/%{name}/qemu_vga.ndrv
 %{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/spapr-rtas.bin
 %{_datadir}/%{name}/u-boot.e500
@@ -2064,6 +2025,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Aug 03 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.1-rc1
+- Rebase to 2.10.0-rc1
+
 * Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 2:2.9.0-9
 - Rebuild with binutils fix for ppc64le (#1475636)
 
