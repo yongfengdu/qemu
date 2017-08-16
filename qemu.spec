@@ -97,7 +97,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc1
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 0.1%{?rcrel}%{?dist}
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2000,6 +2000,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Aug 16 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.2-rc3
+- Rebase to 2.10.0-rc3
+
 * Thu Aug 03 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.1-rc1
 - Rebase to 2.10.0-rc1
 
