@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 0.2%{?rcrel}%{?dist}
+Release: 0.3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -232,7 +232,7 @@ BuildRequires: vte291-devel
 # GTK translations
 BuildRequires: gettext
 # RDMA migration
-%ifnarch s390 s390x
+%ifnarch s390 s390x %{arm}
 BuildRequires: librdmacm-devel
 %endif
 %if 0%{?have_xen:1}
@@ -2000,10 +2000,13 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed Aug 16 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.2-rc3
+* Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 2:2.10.0-0.3.rc3
+- Don't build against rdma on 32-bit ARM (#1484155)
+
+* Wed Aug 16 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.2.rc3
 - Rebase to 2.10.0-rc3
 
-* Thu Aug 03 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.1-rc1
+* Thu Aug 03 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.1.rc1
 - Rebase to 2.10.0-rc1
 
 * Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 2:2.9.0-9
