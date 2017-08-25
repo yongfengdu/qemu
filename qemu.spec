@@ -97,7 +97,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-%global rcver rc3
+%global rcver rc4
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 0.3%{?rcrel}%{?dist}
+Release: 0.4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2000,6 +2000,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Aug 16 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.4.rc4
+- Rebase to 2.10.0-rc4
+
 * Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 2:2.10.0-0.3.rc3
 - Don't build against rdma on 32-bit ARM (#1484155)
 
