@@ -2000,7 +2000,7 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed Aug 16 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.4.rc4
+* Fri Aug 25 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-0.4.rc4
 - Rebase to 2.10.0-rc4
 
 * Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 2:2.10.0-0.3.rc3
