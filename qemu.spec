@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -2000,6 +2000,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Sep 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.10.0-2
+- Fix endianness of e_type in the ppc64le binfmt
+
 * Thu Sep 07 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.0-1
 - Rebase to 2.10.0 GA
 
