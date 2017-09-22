@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 2%{?rcrel}%{?dist}
+Release: 3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -132,12 +132,31 @@ Source11: 99-qemu-guest-agent.rules
 Source12: bridge.conf
 # qemu-kvm back compat wrapper installed as /usr/bin/qemu-kvm
 Source13: qemu-kvm.sh
+# PR manager service
+Source14: qemu-pr-helper.service
+Source15: qemu-pr-helper.socket
 # /etc/modprobe.d/kvm.conf
 Source20: kvm.conf
 # /etc/sysctl.d/50-kvm-s390x.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
+
+Patch1001: 1001-io-add-new-qio_channel_-readv-writev-read-write-_all.patch
+Patch1002: 1002-io-Yield-rather-than-wait-when-already-in-coroutine.patch
+Patch1003: 1003-scsi-bus-correct-responses-for-INQUIRY-and-REQUEST-S.patch
+Patch1004: 1004-scsi-Refactor-scsi-sense-interpreting-code.patch
+Patch1005: 1005-scsi-Improve-scsi_sense_to_errno.patch
+Patch1006: 1006-scsi-Introduce-scsi_sense_buf_to_errno.patch
+Patch1007: 1007-scsi-rename-scsi_build_sense-to-scsi_convert_sense.patch
+Patch1008: 1008-scsi-move-non-emulation-specific-code-to-scsi.patch
+Patch1009: 1009-scsi-introduce-scsi_build_sense.patch
+Patch1010: 1010-scsi-introduce-sg_io_sense_from_errno.patch
+Patch1011: 1011-scsi-move-block-scsi.h-to-include-scsi-constants.h.patch
+Patch1012: 1012-scsi-file-posix-add-support-for-persistent-reservati.patch
+Patch1013: 1013-scsi-build-qemu-pr-helper.patch
+Patch1014: 1014-scsi-add-multipath-support-to-qemu-pr-helper.patch
+Patch1015: 1015-scsi-add-persistent-reservation-manager-using-qemu-p.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -165,6 +184,9 @@ BuildRequires: libaio-devel
 BuildRequires: pulseaudio-libs-devel
 # alsa audio output
 BuildRequires: alsa-lib-devel
+# qemu-pr-helper multipath support (requires libudev too)
+BuildRequires: device-mapper-multipath-devel
+BuildRequires: systemd-devel
 # iscsi drive support
 BuildRequires: libiscsi-devel
 # NFS drive support
@@ -178,7 +200,7 @@ BuildRequires: ncurses-devel
 # used by 9pfs
 BuildRequires: libattr-devel
 BuildRequires: libcap-devel
-# used by qemu-bridge-helper
+# used by qemu-bridge-helper and qemu-pr-helper
 BuildRequires: libcap-ng-devel
 # spice usb redirection support
 BuildRequires: usbredir-devel >= 0.5.2
@@ -1197,6 +1219,10 @@ install -D -p -m 0644 %{_sourcedir}/kvm.conf %{buildroot}%{_sysconfdir}/modprobe
 install -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
 install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
 
+# Install qemu-pr-helper service
+install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
+install -m 0644 %{_sourcedir}/qemu-pr-helper.socket %{buildroot}%{_unitdir}
+
 %ifarch s390x
 install -d %{buildroot}%{_sysconfdir}/sysctl.d
 install -m 0644 %{_sourcedir}/50-kvm-s390x.conf %{buildroot}%{_sysconfdir}/sysctl.d
@@ -1513,6 +1539,9 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man7/qemu-ga-ref.7*
 %{_mandir}/man7/qemu-qmp-ref.7*
 %{_bindir}/virtfs-proxy-helper
+%{_bindir}/qemu-pr-helper
+%{_unitdir}/qemu-pr-helper.service
+%{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
 %config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/kvm.conf
@@ -2000,6 +2029,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Sep 22 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-3
+- Backport persistent reservation manager in preparation for SELinux work
+- Fix previous patch
+
 * Mon Sep 18 2017 Nathaniel McCallum <npmccallum@redhat.com> - 2:2.10.0-2
 - Fix endianness of e_type in the ppc64le binfmt
 
