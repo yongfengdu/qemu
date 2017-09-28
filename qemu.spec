@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -204,10 +204,6 @@ BuildRequires: libcap-devel
 BuildRequires: libcap-ng-devel
 # spice usb redirection support
 BuildRequires: usbredir-devel >= 0.5.2
-%ifnarch s390 s390x
-# tcmalloc support
-BuildRequires: gperftools-devel
-%endif
 %if 0%{?have_spice:1}
 # spice graphics support
 BuildRequires: spice-protocol >= 0.12.2
@@ -1097,13 +1093,6 @@ do
 done
 
 
-# gperftools providing tcmalloc is not ported to s390(x)
-%ifarch s390 s390x
-    %global tcmallocflag --disable-tcmalloc
-%else
-    %global tcmallocflag --enable-tcmalloc
-%endif
-
 %if 0%{?have_spice:1}
     %global spiceflag --enable-spice
 %else
@@ -1144,7 +1133,6 @@ run_configure \
     --enable-modules \
     --audio-drv-list=pa,sdl,alsa,oss \
     --tls-priority=@QEMU,SYSTEM \
-    %{tcmallocflag} \
     %{spiceflag} \
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0"
@@ -1172,7 +1160,6 @@ run_configure \
     --target-list="$static_targets" \
     --static \
     --disable-pie \
-    --disable-tcmalloc \
     --disable-sdl \
     --disable-gtk \
     --disable-spice \
@@ -2029,6 +2016,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Sep 28 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-4
+- Stop using tcmalloc, glibc got faster
+
 * Fri Sep 22 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-3
 - Backport persistent reservation manager in preparation for SELinux work
 - Fix previous patch
