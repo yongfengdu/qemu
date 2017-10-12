@@ -169,7 +169,15 @@ BuildRequires: perl-podlators
 BuildRequires: qemu-sanity-check-nodeps
 BuildRequires: kernel
 # For acpi compilation
+#
+# Upstream disables iasl for big endian and QEMU checks
+# for this. Fedora has re-enabled it on BE circumventing
+# the QEMU checks, but it fails none the less:
+#
+# https://bugzilla.redhat.com/show_bug.cgi?id=1332449
+%ifnarch s390 s390x ppc ppc64
 BuildRequires: iasl
+%endif
 # For chrpath calls in specfile
 BuildRequires: chrpath
 
