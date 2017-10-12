@@ -1424,9 +1424,9 @@ b="./x86_64-softmmu/qemu-system-x86_64"
 if [ -x "$b" ]; then "$b" -help; fi
 
 %ifarch %{archs_ignore_test_failures}
-make check V=1
-%else
 make check V=1 || :
+%else
+make check V=1
 %endif
 
 %if 0%{?hostqemu:1}
