@@ -157,6 +157,9 @@ Patch1012: 1012-scsi-file-posix-add-support-for-persistent-reservati.patch
 Patch1013: 1013-scsi-build-qemu-pr-helper.patch
 Patch1014: 1014-scsi-add-multipath-support-to-qemu-pr-helper.patch
 Patch1015: 1015-scsi-add-persistent-reservation-manager-using-qemu-p.patch
+Patch1016: 1016-crypto-fix-test-cert-generation-to-not-use-SHA1-algo.patch
+Patch1017: 1017-io-fix-check-for-handshake-completion-in-TLS-test.patch
+Patch1018: 1018-io-fix-temp-directory-used-by-test-io-channel-tls-te.patch
 
 # documentation deps
 BuildRequires: texinfo
