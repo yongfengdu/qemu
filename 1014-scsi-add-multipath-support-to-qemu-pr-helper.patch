@@ -65,7 +65,7 @@ index becc21a0fe..f6edc2a33f 100755
    xen             xen backend driver support
    xen-pci-passthrough
    brlapi          BrlAPI (Braile)
-@@ -3300,6 +3306,30 @@ else
+@@ -3300,6 +3306,38 @@ else
  fi
  
  ##########################################
@@ -77,9 +77,17 @@ index becc21a0fe..f6edc2a33f 100755
 +#include <mpath_persist.h>
 +unsigned mpath_mx_alloc_len = 1024;
 +int logsink;
++static struct config *multipath_conf;
++extern struct udev *udev;
++extern struct config *get_multipath_config(void);
++extern void put_multipath_config(struct config *conf);
++struct udev *udev;
++struct config *get_multipath_config(void) { return multipath_conf; }
++void put_multipath_config(struct config *conf) { }
++
 +int main(void) {
-+    struct udev *udev = udev_new();
-+    mpath_lib_init(udev);
++    udev = udev_new();
++    multipath_conf = mpath_lib_init();
 +    return 0;
 +}
 +EOF
@@ -225,7 +233,7 @@ index e39efbd529..5f77c873e1 100644
  static int verbose;
  
  #ifdef CONFIG_LIBCAP
-@@ -204,9 +211,316 @@ static int do_sgio(int fd, const uint8_t *cdb, uint8_t *sense,
+@@ -204,9 +211,327 @@ static int do_sgio(int fd, const uint8_t *cdb, uint8_t *sense,
      return r;
  }
  
@@ -294,15 +302,26 @@ index e39efbd529..5f77c873e1 100644
 +
 +/* Variables required by libmultipath and libmpathpersist.  */
 +QEMU_BUILD_BUG_ON(PR_HELPER_DATA_SIZE > MPATH_MAX_PARAM_LEN);
++static struct config *multipath_conf;
 +unsigned mpath_mx_alloc_len = PR_HELPER_DATA_SIZE;
 +int logsink;
++struct udev *udev;
++
++extern struct config *get_multipath_config(void);
++struct config *get_multipath_config(void)
++{
++    return multipath_conf;
++}
++
++extern void put_multipath_config(struct config *conf);
++void put_multipath_config(struct config *conf)
++{
++}
 +
 +static void multipath_pr_init(void)
 +{
-+    static struct udev *udev;
-+
 +    udev = udev_new();
-+    mpath_lib_init(udev);
++    multipath_conf = mpath_lib_init();
 +}
 +
 +static int is_mpath(int fd)

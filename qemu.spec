@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.10.0
-Release: 6%{?rcrel}%{?dist}
+Release: 7%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 Group: Development/Tools
@@ -1144,6 +1144,7 @@ run_configure \
     --enable-modules \
     --audio-drv-list=pa,sdl,alsa,oss \
     --tls-priority=@QEMU,SYSTEM \
+    --enable-mpath \
     %{spiceflag} \
     --with-sdlabi="2.0" \
     --with-gtkabi="3.0"
@@ -1184,6 +1185,7 @@ run_configure \
     --disable-nettle \
     --disable-cap-ng \
     --disable-brlapi \
+    --disable-mpath \
     --disable-libnfs
 
 make V=1 %{?_smp_mflags} $buildldflags
@@ -2027,6 +2029,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Oct 17 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.10.0-7
+- Update patch 1014 for new libmultipath/libmpathpersist API
+- Force build to fail if multipath is not available
+- Tighten permissions on the qemu-pr-helper socket
+
 * Mon Oct  9 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.10.0-6
 - Rebuild for libiscsi changed soname again
 
