@@ -1,7 +1,6 @@
-From f35ef58b2bac932bbd379602fe23e7a190530075 Mon Sep 17 00:00:00 2001
 From: Fam Zheng <famz@redhat.com>
 Date: Mon, 21 Aug 2017 22:10:05 +0800
-Subject: [PATCH 04/15] scsi: Refactor scsi sense interpreting code
+Subject: [PATCH] scsi: Refactor scsi sense interpreting code
 
 So that it can be reused outside of iscsi.c.
 
@@ -189,6 +188,3 @@ index 0000000000..a6710799fc
 +        return EIO;
 +    }
 +}
--- 
-2.13.5
-

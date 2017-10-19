@@ -1,8 +1,7 @@
-From 5c4a4b825189c2e9f322c8673104add7f76e38d5 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Mon, 21 Aug 2017 18:58:56 +0200
-Subject: [PATCH 12/15] scsi, file-posix: add support for persistent
- reservation management
+Subject: [PATCH] scsi, file-posix: add support for persistent reservation
+ management
 
 It is a common requirement for virtual machine to send persistent
 reservations, but this currently requires either running QEMU with
@@ -422,7 +421,7 @@ index 0000000000..45f5b6e49b
 +pr_manager_execute(int fd, int cmd, int sa, void *opaque) "fd=%d cmd=0x%02x service action=0x%02x opaque=%p"
 +pr_manager_run(int fd, int cmd, int sa) "fd=%d cmd=0x%02x service action=0x%02x"
 diff --git a/vl.c b/vl.c
-index 8e247cc2a2..af0e6576ab 100644
+index d63269332f..acaf9eab39 100644
 --- a/vl.c
 +++ b/vl.c
 @@ -2811,7 +2811,8 @@ static int machine_set_property(void *opaque,
@@ -435,6 +434,3 @@ index 8e247cc2a2..af0e6576ab 100644
          return false;
      }
  
--- 
-2.13.5
-

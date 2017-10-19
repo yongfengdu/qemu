@@ -1,8 +1,6 @@
-From 3caf122d29ecc3317671a9f651a236e8d02e2e90 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Mon, 21 Aug 2017 18:58:56 +0200
-Subject: [PATCH 15/15] scsi: add persistent reservation manager using
- qemu-pr-helper
+Subject: [PATCH] scsi: add persistent reservation manager using qemu-pr-helper
 
 This adds a concrete subclass of pr-manager that talks to qemu-pr-helper.
 
@@ -330,6 +328,3 @@ index 0000000000..82ff6b6123
 +}
 +
 +type_init(pr_manager_helper_register_types);
--- 
-2.13.5
-

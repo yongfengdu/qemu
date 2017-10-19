@@ -1,7 +1,6 @@
-From eadabcbc81d44ee0bc0d0d80697cc1142df61178 Mon Sep 17 00:00:00 2001
 From: Fam Zheng <famz@redhat.com>
 Date: Mon, 21 Aug 2017 22:10:07 +0800
-Subject: [PATCH 06/15] scsi: Introduce scsi_sense_buf_to_errno
+Subject: [PATCH] scsi: Introduce scsi_sense_buf_to_errno
 
 This recognizes the "fixed" and "descriptor" format sense data, extracts
 the sense key/asc/ascq fields then converts them to an errno.
@@ -63,6 +62,3 @@ index 472eb5bea5..472293d59b 100644
 +    }
 +    return scsi_sense_to_errno(key, asc, ascq);
 +}
--- 
-2.13.5
-

@@ -1,7 +1,6 @@
-From 6949ca76b864b54a0ef1d2aa321c3df4dc102c90 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Tue, 22 Aug 2017 07:08:27 +0200
-Subject: [PATCH 08/15] scsi: move non-emulation specific code to scsi/
+Subject: [PATCH] scsi: move non-emulation specific code to scsi/
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1429,6 +1428,3 @@ index 472293d59b..0000000000
 -    }
 -    return scsi_sense_to_errno(key, asc, ascq);
 -}
--- 
-2.13.5
-

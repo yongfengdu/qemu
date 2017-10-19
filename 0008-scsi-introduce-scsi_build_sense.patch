@@ -1,7 +1,6 @@
-From 82e922c8be1b32eeb0c8c22165cdeff39e12d3ef Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Tue, 22 Aug 2017 09:42:59 +0200
-Subject: [PATCH 09/15] scsi: introduce scsi_build_sense
+Subject: [PATCH] scsi: introduce scsi_build_sense
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -72,6 +71,3 @@ index 2327e06da0..89d9167d9d 100644
  /*
   * Predefined sense codes
   */
--- 
-2.13.5
-

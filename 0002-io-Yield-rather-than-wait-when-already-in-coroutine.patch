@@ -1,7 +1,6 @@
-From 5171f2cd3612ce2772b272e4dd8119fdb0c06124 Mon Sep 17 00:00:00 2001
 From: Eric Blake <eblake@redhat.com>
 Date: Tue, 5 Sep 2017 14:11:12 -0500
-Subject: [PATCH 02/15] io: Yield rather than wait when already in coroutine
+Subject: [PATCH] io: Yield rather than wait when already in coroutine
 
 The new qio_channel_{read,write}{,v}_all functions are documented
 as yielding until data is available.  When used on a blocking
@@ -51,6 +50,3 @@ index 5e8c2f0a91..9e62794cab 100644
              continue;
          }
          if (len < 0) {
--- 
-2.13.5
-

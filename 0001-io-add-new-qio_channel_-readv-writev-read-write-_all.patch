@@ -1,8 +1,7 @@
-From 758d848ef10835108a75187d1a1a0418167f04b2 Mon Sep 17 00:00:00 2001
 From: "Daniel P. Berrange" <berrange@redhat.com>
 Date: Wed, 30 Aug 2017 14:53:59 +0100
-Subject: [PATCH 01/15] io: add new qio_channel_{readv, writev, read,
- write}_all functions
+Subject: [PATCH] io: add new qio_channel_{readv, writev, read, write}_all
+ functions
 
 These functions wait until they are able to read / write the full
 requested data buffer(s).
@@ -19,10 +18,11 @@ diff --git a/include/io/channel.h b/include/io/channel.h
 index db9bb022a1..e11a62ea50 100644
 --- a/include/io/channel.h
 +++ b/include/io/channel.h
-@@ -269,6 +269,58 @@ ssize_t qio_channel_writev_full(QIOChannel *ioc,
+@@ -268,6 +268,58 @@ ssize_t qio_channel_writev_full(QIOChannel *ioc,
+                                 size_t nfds,
                                  Error **errp);
  
- /**
++/**
 + * qio_channel_readv_all:
 + * @ioc: the channel object
 + * @iov: the array of memory regions to read data into
@@ -74,14 +74,14 @@ index db9bb022a1..e11a62ea50 100644
 +                           size_t niov,
 +                           Error **erp);
 +
-+/**
+ /**
   * qio_channel_readv:
   * @ioc: the channel object
-  * @iov: the array of memory regions to read data into
-@@ -331,6 +383,44 @@ ssize_t qio_channel_write(QIOChannel *ioc,
+@@ -330,6 +382,44 @@ ssize_t qio_channel_write(QIOChannel *ioc,
+                           size_t buflen,
                            Error **errp);
  
- /**
++/**
 + * qio_channel_read_all:
 + * @ioc: the channel object
 + * @buf: the memory region to read data into
@@ -119,10 +119,9 @@ index db9bb022a1..e11a62ea50 100644
 +                          size_t buflen,
 +                          Error **errp);
 +
-+/**
+ /**
   * qio_channel_set_blocking:
   * @ioc: the channel object
-  * @enabled: the blocking flag state
 diff --git a/io/channel.c b/io/channel.c
 index 1cfb8b33a2..5e8c2f0a91 100644
 --- a/io/channel.c
@@ -379,6 +378,3 @@ index 05e5579cf8..5430e1389d 100644
  
      return NULL;
  }
--- 
-2.13.5
-

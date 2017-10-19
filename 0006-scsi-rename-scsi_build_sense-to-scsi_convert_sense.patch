@@ -1,7 +1,6 @@
-From ba83805030e07cade8d17b5d1b4bd1d296caff1b Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Tue, 22 Aug 2017 09:31:36 +0200
-Subject: [PATCH 07/15] scsi: rename scsi_build_sense to scsi_convert_sense
+Subject: [PATCH] scsi: rename scsi_build_sense to scsi_convert_sense
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -87,6 +86,3 @@ index 6b85786dbf..6ef67fb504 100644
  
  SCSIRequest *scsi_req_alloc(const SCSIReqOps *reqops, SCSIDevice *d,
                              uint32_t tag, uint32_t lun, void *hba_private);
--- 
-2.13.5
-

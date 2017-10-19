@@ -1,7 +1,6 @@
-From 226e00649123536737dcd20ccb5bd3d54d074338 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Tue, 22 Aug 2017 06:50:18 +0200
-Subject: [PATCH 13/15] scsi: build qemu-pr-helper
+Subject: [PATCH] scsi: build qemu-pr-helper
 
 Introduce a privileged helper to run persistent reservation commands.
 This lets virtual machines send persistent reservations without using
@@ -30,10 +29,10 @@ Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
  create mode 100644 scsi/qemu-pr-helper.c
 
 diff --git a/Makefile b/Makefile
-index eb831b98d1..8406aeb8cb 100644
+index 81447b1f08..f07c0d7e9c 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -372,6 +372,8 @@ qemu-bridge-helper$(EXESUF): qemu-bridge-helper.o $(COMMON_LDADDS)
+@@ -382,6 +382,8 @@ qemu-bridge-helper$(EXESUF): qemu-bridge-helper.o $(COMMON_LDADDS)
  fsdev/virtfs-proxy-helper$(EXESUF): fsdev/virtfs-proxy-helper.o fsdev/9p-marshal.o fsdev/9p-iov-marshal.o $(COMMON_LDADDS)
  fsdev/virtfs-proxy-helper$(EXESUF): LIBS += -lcap
  
@@ -42,7 +41,7 @@ index eb831b98d1..8406aeb8cb 100644
  qemu-img-cmds.h: $(SRC_PATH)/qemu-img-cmds.hx $(SRC_PATH)/scripts/hxtool
  	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"GEN","$@")
  
-@@ -488,7 +490,7 @@ clean:
+@@ -489,7 +491,7 @@ clean:
  	rm -f *.msi
  	find . \( -name '*.so' -o -name '*.dll' -o -name '*.mo' -o -name '*.[oda]' \) -type f -exec rm {} +
  	rm -f $(filter-out %.tlb,$(TOOLS)) $(HELPERS-y) qemu-ga TAGS cscope.* *.pod *~ */*~
@@ -52,10 +51,10 @@ index eb831b98d1..8406aeb8cb 100644
  	rm -f ui/shader/*-vert.h ui/shader/*-frag.h
  	@# May not be present in GENERATED_FILES
 diff --git a/configure b/configure
-index cb0f7ed0ab..becc21a0fe 100755
+index dd73cce62f..14bdf9bb31 100755
 --- a/configure
 +++ b/configure
-@@ -5034,16 +5034,22 @@ if test "$want_tools" = "yes" ; then
+@@ -5070,16 +5070,22 @@ if test "$want_tools" = "yes" ; then
    fi
  fi
  if test "$softmmu" = yes ; then
@@ -81,7 +80,7 @@ index cb0f7ed0ab..becc21a0fe 100755
    fi
  fi
  
-@@ -6506,7 +6512,7 @@ fi
+@@ -6545,7 +6551,7 @@ fi
  
  # build tree in object directory in case the source is not in the current directory
  DIRS="tests tests/tcg tests/tcg/cris tests/tcg/lm32 tests/libqos tests/qapi-schema tests/tcg/xtensa tests/qemu-iotests"
@@ -1008,6 +1007,3 @@ index 0000000000..e39efbd529
 +
 +    exit(EXIT_SUCCESS);
 +}
--- 
-2.13.5
-

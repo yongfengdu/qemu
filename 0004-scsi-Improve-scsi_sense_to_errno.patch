@@ -1,7 +1,6 @@
-From a7dc92dac7cedb3ba6b6d724c7579f05399e2f2e Mon Sep 17 00:00:00 2001
 From: Fam Zheng <famz@redhat.com>
 Date: Mon, 21 Aug 2017 22:10:06 +0800
-Subject: [PATCH 05/15] scsi: Improve scsi_sense_to_errno
+Subject: [PATCH] scsi: Improve scsi_sense_to_errno
 
 Tweak the errno mapping to return more accurate/appropriate values.
 
@@ -56,6 +55,3 @@ index a6710799fc..472eb5bea5 100644
      default:
          return EIO;
      }
--- 
-2.13.5
-

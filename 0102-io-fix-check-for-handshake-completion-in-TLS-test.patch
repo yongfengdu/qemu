@@ -1,4 +1,3 @@
-From 689ed13e73bdb5a5ca3366524475e3065fae854a Mon Sep 17 00:00:00 2001
 From: "Daniel P. Berrange" <berrange@redhat.com>
 Date: Tue, 29 Aug 2017 17:04:52 +0100
 Subject: [PATCH] io: fix check for handshake completion in TLS test
@@ -17,7 +16,7 @@ Signed-off-by: Daniel P. Berrange <berrange@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tests/test-io-channel-tls.c b/tests/test-io-channel-tls.c
-index ff96877323..a210d01ba5 100644
+index 8eaa208e1b..e7c80f46cf 100644
 --- a/tests/test-io-channel-tls.c
 +++ b/tests/test-io-channel-tls.c
 @@ -218,7 +218,7 @@ static void test_io_channel_tls(const void *opaque)
@@ -29,6 +28,3 @@ index ff96877323..a210d01ba5 100644
               !serverHandshake.finished);
  
      g_assert(clientHandshake.failed == data->expectClientFail);
--- 
-2.13.5
-

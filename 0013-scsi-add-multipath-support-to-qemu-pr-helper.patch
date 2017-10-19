@@ -1,7 +1,6 @@
-From 43fedb8ae2c2b3bbb43023c118be708226e38179 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Tue, 22 Aug 2017 06:50:55 +0200
-Subject: [PATCH 14/15] scsi: add multipath support to qemu-pr-helper
+Subject: [PATCH] scsi: add multipath support to qemu-pr-helper
 
 Proper support of persistent reservation for multipath devices requires
 communication with the multipath daemon, so that the reservation is
@@ -13,18 +12,18 @@ to libmpathpersist.
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
  Makefile              |   3 +
- configure             |  46 +++++++
+ configure             |  54 ++++++++
  docs/pr-manager.rst   |  27 ++++
  include/scsi/utils.h  |   4 +
- scsi/qemu-pr-helper.c | 346 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ scsi/qemu-pr-helper.c | 357 +++++++++++++++++++++++++++++++++++++++++++++++++-
  scsi/utils.c          |  10 ++
- 6 files changed, 433 insertions(+), 3 deletions(-)
+ 6 files changed, 452 insertions(+), 3 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 8406aeb8cb..4eb40376d2 100644
+index f07c0d7e9c..060c089af9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -373,6 +373,9 @@ fsdev/virtfs-proxy-helper$(EXESUF): fsdev/virtfs-proxy-helper.o fsdev/9p-marshal
+@@ -383,6 +383,9 @@ fsdev/virtfs-proxy-helper$(EXESUF): fsdev/virtfs-proxy-helper.o fsdev/9p-marshal
  fsdev/virtfs-proxy-helper$(EXESUF): LIBS += -lcap
  
  scsi/qemu-pr-helper$(EXESUF): scsi/qemu-pr-helper.o scsi/utils.o $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
@@ -35,10 +34,10 @@ index 8406aeb8cb..4eb40376d2 100644
  qemu-img-cmds.h: $(SRC_PATH)/qemu-img-cmds.hx $(SRC_PATH)/scripts/hxtool
  	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"GEN","$@")
 diff --git a/configure b/configure
-index becc21a0fe..f6edc2a33f 100755
+index 14bdf9bb31..9eeb3ebf70 100755
 --- a/configure
 +++ b/configure
-@@ -290,6 +290,7 @@ netmap="no"
+@@ -286,6 +286,7 @@ pixman=""
  sdl=""
  sdlabi=""
  virtfs=""
@@ -46,7 +45,7 @@ index becc21a0fe..f6edc2a33f 100755
  vnc="yes"
  sparse="no"
  vde=""
-@@ -936,6 +937,10 @@ for opt do
+@@ -948,6 +949,10 @@ for opt do
    ;;
    --enable-virtfs) virtfs="yes"
    ;;
@@ -57,7 +56,7 @@ index becc21a0fe..f6edc2a33f 100755
    --disable-vnc) vnc="no"
    ;;
    --enable-vnc) vnc="yes"
-@@ -1479,6 +1484,7 @@ disabled with --disable-FEATURE, default is enabled if available:
+@@ -1491,6 +1496,7 @@ disabled with --disable-FEATURE, default is enabled if available:
    vnc-png         PNG compression for VNC server
    cocoa           Cocoa UI (Mac OS X only)
    virtfs          VirtFS
@@ -65,10 +64,11 @@ index becc21a0fe..f6edc2a33f 100755
    xen             xen backend driver support
    xen-pci-passthrough
    brlapi          BrlAPI (Braile)
-@@ -3300,6 +3306,38 @@ else
+@@ -3335,6 +3341,38 @@ else
+   pixman_libs="-L\$(BUILD_DIR)/pixman/pixman/.libs -lpixman-1"
  fi
  
- ##########################################
++##########################################
 +# libmpathpersist probe
 +
 +if test "$mpath" != "no" ; then
@@ -100,11 +100,10 @@ index becc21a0fe..f6edc2a33f 100755
 +  mpathpersist=no
 +fi
 +
-+##########################################
+ ##########################################
  # libcap probe
  
- if test "$cap" != "no" ; then
-@@ -5044,12 +5074,24 @@ if test "$softmmu" = yes ; then
+@@ -5080,12 +5118,24 @@ if test "$softmmu" = yes ; then
        fi
        virtfs=no
      fi
@@ -129,7 +128,7 @@ index becc21a0fe..f6edc2a33f 100755
    fi
  fi
  
-@@ -5295,6 +5337,7 @@ echo "Audio drivers     $audio_drv_list"
+@@ -5332,6 +5382,7 @@ echo "Audio drivers     $audio_drv_list"
  echo "Block whitelist (rw) $block_drv_rw_whitelist"
  echo "Block whitelist (ro) $block_drv_ro_whitelist"
  echo "VirtFS support    $virtfs"
@@ -137,7 +136,7 @@ index becc21a0fe..f6edc2a33f 100755
  echo "VNC support       $vnc"
  if test "$vnc" = "yes" ; then
      echo "VNC SASL support  $vnc_sasl"
-@@ -5738,6 +5781,9 @@ fi
+@@ -5779,6 +5830,9 @@ fi
  if test "$virtfs" = "yes" ; then
    echo "CONFIG_VIRTFS=y" >> $config_host_mak
  fi
@@ -209,7 +208,7 @@ index d301b31768..00a4bdb080 100644
  extern const struct SCSISense sense_code_UNIT_ATTENTION_NO_MEDIUM;
  /* Unit attention, Power on, reset or bus device reset occurred */
 diff --git a/scsi/qemu-pr-helper.c b/scsi/qemu-pr-helper.c
-index e39efbd529..5f77c873e1 100644
+index e39efbd529..be6d1fbade 100644
 --- a/scsi/qemu-pr-helper.c
 +++ b/scsi/qemu-pr-helper.c
 @@ -30,6 +30,12 @@
@@ -561,7 +560,7 @@ index e39efbd529..5f77c873e1 100644
      return do_sgio(fd, cdb, sense, data, resp_sz,
                     SG_DXFER_FROM_DEV);
  }
-@@ -214,7 +528,14 @@ static int do_pr_in(int fd, const uint8_t *cdb, uint8_t *sense,
+@@ -214,7 +539,14 @@ static int do_pr_in(int fd, const uint8_t *cdb, uint8_t *sense,
  static int do_pr_out(int fd, const uint8_t *cdb, uint8_t *sense,
                       const uint8_t *param, int sz)
  {
@@ -577,7 +576,7 @@ index e39efbd529..5f77c873e1 100644
      return do_sgio(fd, cdb, sense, (uint8_t *)param, &resp_sz,
                     SG_DXFER_TO_DEV);
  }
-@@ -525,6 +846,14 @@ static int drop_privileges(void)
+@@ -525,6 +857,14 @@ static int drop_privileges(void)
          return -1;
      }
  
@@ -592,7 +591,7 @@ index e39efbd529..5f77c873e1 100644
      /* Change user/group id, retaining the capabilities.  Because file descriptors
       * are passed via SCM_RIGHTS, we don't need supplementary groups (and in
       * fact the helper can run as "nobody").
-@@ -541,7 +870,7 @@ static int drop_privileges(void)
+@@ -541,7 +881,7 @@ static int drop_privileges(void)
  
  int main(int argc, char **argv)
  {
@@ -601,7 +600,7 @@ index e39efbd529..5f77c873e1 100644
      struct option lopt[] = {
          { "help", no_argument, NULL, 'h' },
          { "version", no_argument, NULL, 'V' },
-@@ -551,10 +880,12 @@ int main(int argc, char **argv)
+@@ -551,10 +891,12 @@ int main(int argc, char **argv)
          { "trace", required_argument, NULL, 'T' },
          { "user", required_argument, NULL, 'u' },
          { "group", required_argument, NULL, 'g' },
@@ -614,7 +613,7 @@ index e39efbd529..5f77c873e1 100644
      int quiet = 0;
      char ch;
      Error *local_err = NULL;
-@@ -631,6 +962,9 @@ int main(int argc, char **argv)
+@@ -631,6 +973,9 @@ int main(int argc, char **argv)
          case 'q':
              quiet = 1;
              break;
@@ -624,7 +623,7 @@ index e39efbd529..5f77c873e1 100644
          case 'T':
              g_free(trace_file);
              trace_file = trace_opt_parse(optarg);
-@@ -650,7 +984,8 @@ int main(int argc, char **argv)
+@@ -650,7 +995,8 @@ int main(int argc, char **argv)
      }
  
      /* set verbosity */
@@ -634,7 +633,7 @@ index e39efbd529..5f77c873e1 100644
  
      if (!trace_init_backends()) {
          exit(EXIT_FAILURE);
-@@ -658,6 +993,11 @@ int main(int argc, char **argv)
+@@ -658,6 +1004,11 @@ int main(int argc, char **argv)
      trace_init_file(trace_file);
      qemu_set_log(LOG_TRACE);
  
@@ -674,6 +673,3 @@ index fab60bdf20..5684951b12 100644
  /* Unit attention, No medium */
  const struct SCSISense sense_code_UNIT_ATTENTION_NO_MEDIUM = {
      .key = UNIT_ATTENTION, .asc = 0x3a, .ascq = 0x00
--- 
-2.13.5
-
