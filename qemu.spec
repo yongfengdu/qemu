@@ -110,7 +110,6 @@ Version: 2.10.1
 Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
-Group: Development/Tools
 URL: http://www.qemu.org/
 
 Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
@@ -345,7 +344,6 @@ As QEMU requires no host kernel patches to run, it is safe and easy to use.
 
 %package  common
 Summary: QEMU common files needed by all QEMU targets
-Group: Development/Tools
 Requires: ipxe-roms-qemu
 Requires(post): /usr/bin/getent
 Requires(post): /usr/sbin/groupadd
@@ -363,7 +361,6 @@ This package provides the common files needed by all QEMU targets
 
 %package -n ksm
 Summary: Kernel Samepage Merging services
-Group: Development/Tools
 Requires(post): systemd-units
 Requires(postun): systemd-units
 %description -n ksm
@@ -375,7 +372,6 @@ This package provides service files for disabling and tuning KSM.
 
 %package guest-agent
 Summary: QEMU guest agent
-Group: System Environment/Daemons
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
@@ -392,7 +388,6 @@ This package does not need to be installed on the host OS.
 
 %package  img
 Summary: QEMU command line tool for manipulating disk images
-Group: Development/Tools
 
 %description img
 This package provides a command line tool for manipulating disk images
@@ -400,7 +395,6 @@ This package provides a command line tool for manipulating disk images
 
 %package  block-curl
 Summary: QEMU CURL block driver
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-curl
@@ -412,7 +406,6 @@ http, https, ftp and other transports provided by the CURL library.
 
 %package  block-dmg
 Summary: QEMU block driver for DMG disk images
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-dmg
@@ -423,7 +416,6 @@ Install this package if you want to open '.dmg' files.
 
 %package  block-gluster
 Summary: QEMU Gluster block driver
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-gluster
@@ -434,7 +426,6 @@ Install this package if you want to access remote Gluster storage.
 
 %package  block-iscsi
 Summary: QEMU iSCSI block driver
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-iscsi
@@ -445,7 +436,6 @@ Install this package if you want to access iSCSI volumes.
 
 %package  block-nfs
 Summary: QEMU NFS block driver
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-nfs
@@ -456,7 +446,6 @@ Install this package if you want to access remote NFS storage.
 %if %{have_rbd}
 %package  block-rbd
 Summary: QEMU Ceph/RBD block driver
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-rbd
@@ -469,7 +458,6 @@ using the rbd protocol.
 
 %package  block-ssh
 Summary: QEMU SSH block driver
-Group: Development/Tools
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description block-ssh
@@ -481,7 +469,6 @@ the Secure Shell (SSH) protocol.
 
 %package -n ivshmem-tools
 Summary: Client and server for QEMU ivshmem device
-Group: Development/Tools
 
 %description -n ivshmem-tools
 This package provides client and server tools for QEMU's ivshmem device.
@@ -490,7 +477,6 @@ This package provides client and server tools for QEMU's ivshmem device.
 %if %{have_kvm}
 %package kvm
 Summary: QEMU metapackage for KVM support
-Group: Development/Tools
 Requires: qemu-%{kvm_package} = %{epoch}:%{version}-%{release}
 
 %description kvm
@@ -501,7 +487,6 @@ will install qemu-system-x86
 
 %package kvm-core
 Summary: QEMU metapackage for KVM support
-Group: Development/Tools
 Requires: qemu-%{kvm_package}-core = %{epoch}:%{version}-%{release}
 
 %description kvm-core
@@ -513,7 +498,6 @@ x86 system, this will install qemu-system-x86-core
 
 %package user
 Summary: QEMU user mode emulation of qemu targets
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 # On upgrade, make qemu-user get replaced with qemu-user + qemu-user-binfmt
 Obsoletes: %{name}-user < 2:2.6.0-5%{?dist}
@@ -527,7 +511,6 @@ This package provides the user mode emulation of qemu targets
 
 %package user-binfmt
 Summary: QEMU user mode emulation of qemu targets
-Group: Development/Tools
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
 Requires(post): systemd-units
 Requires(postun): systemd-units
@@ -545,7 +528,6 @@ This package provides the user mode emulation of qemu targets
 %if %{user_static}
 %package user-static
 Summary: QEMU user mode emulation of qemu targets static build
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires(post): systemd-units
 Requires(postun): systemd-units
@@ -564,7 +546,6 @@ static binaries
 
 %package system-x86
 Summary: QEMU system emulator for x86
-Group: Development/Tools
 Requires: %{name}-system-x86-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 
@@ -579,7 +560,6 @@ platform.
 
 %package system-x86-core
 Summary: QEMU system emulator for x86
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: seabios-bin
 Requires: sgabios-bin
@@ -603,7 +583,6 @@ platform.
 
 %package system-alpha
 Summary: QEMU system emulator for Alpha
-Group: Development/Tools
 Requires: %{name}-system-alpha-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-alpha
@@ -614,7 +593,6 @@ This package provides the system emulator for Alpha systems.
 
 %package system-alpha-core
 Summary: QEMU system emulator for Alpha
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-alpha-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -625,7 +603,6 @@ This package provides the system emulator for Alpha systems.
 
 %package system-arm
 Summary: QEMU system emulator for ARM
-Group: Development/Tools
 Requires: %{name}-system-arm-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-arm
@@ -636,7 +613,6 @@ This package provides the system emulator for ARM systems.
 
 %package system-arm-core
 Summary: QEMU system emulator for ARM
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-arm-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -647,7 +623,6 @@ This package provides the system emulator for ARM boards.
 
 %package system-mips
 Summary: QEMU system emulator for MIPS
-Group: Development/Tools
 Requires: %{name}-system-mips-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-mips
@@ -658,7 +633,6 @@ This package provides the system emulator for MIPS systems.
 
 %package system-mips-core
 Summary: QEMU system emulator for MIPS
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-mips-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -669,7 +643,6 @@ This package provides the system emulator for MIPS boards.
 
 %package system-cris
 Summary: QEMU system emulator for CRIS
-Group: Development/Tools
 Requires: %{name}-system-cris-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-cris
@@ -680,7 +653,6 @@ This package provides the system emulator for CRIS systems.
 
 %package system-cris-core
 Summary: QEMU system emulator for CRIS
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-cris-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -691,7 +663,6 @@ This package provides the system emulator for CRIS boards.
 
 %package system-lm32
 Summary: QEMU system emulator for LatticeMico32
-Group: Development/Tools
 Requires: %{name}-system-lm32-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-lm32
@@ -702,7 +673,6 @@ This package provides the system emulator for LatticeMico32 systems.
 
 %package system-lm32-core
 Summary: QEMU system emulator for LatticeMico32
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-lm32-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -713,7 +683,6 @@ This package provides the system emulator for LatticeMico32 boards.
 
 %package system-m68k
 Summary: QEMU system emulator for ColdFire (m68k)
-Group: Development/Tools
 Requires: %{name}-system-m68k-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-m68k
@@ -724,7 +693,6 @@ This package provides the system emulator for ColdFire boards.
 
 %package system-m68k-core
 Summary: QEMU system emulator for ColdFire (m68k)
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-m68k-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -735,7 +703,6 @@ This package provides the system emulator for ColdFire boards.
 
 %package system-microblaze
 Summary: QEMU system emulator for Microblaze
-Group: Development/Tools
 Requires: %{name}-system-microblaze-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-microblaze
@@ -746,7 +713,6 @@ This package provides the system emulator for Microblaze boards.
 
 %package system-microblaze-core
 Summary: QEMU system emulator for Microblaze
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-microblaze-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -757,7 +723,6 @@ This package provides the system emulator for Microblaze boards.
 
 %package system-or1k
 Summary: QEMU system emulator for OpenRisc32
-Group: Development/Tools
 Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
 Obsoletes: %{name}-system-or32 < 2:2.9.0
 %{requires_all_block_modules}
@@ -769,7 +734,6 @@ This package provides the system emulator for OpenRisc32 boards.
 
 %package system-or1k-core
 Summary: QEMU system emulator for OpenRisc32
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Obsoletes: %{name}-system-or32-core < 2:2.9.0
 %description system-or1k-core
@@ -781,7 +745,6 @@ This package provides the system emulator for OpenRisc32 boards.
 
 %package system-s390x
 Summary: QEMU system emulator for S390
-Group: Development/Tools
 Requires: %{name}-system-s390x-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-s390x
@@ -792,7 +755,6 @@ This package provides the system emulator for S390 systems.
 
 %package system-s390x-core
 Summary: QEMU system emulator for S390
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-s390x-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -803,7 +765,6 @@ This package provides the system emulator for S390 systems.
 
 %package system-sh4
 Summary: QEMU system emulator for SH4
-Group: Development/Tools
 Requires: %{name}-system-sh4-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-sh4
@@ -814,7 +775,6 @@ This package provides the system emulator for SH4 boards.
 
 %package system-sh4-core
 Summary: QEMU system emulator for SH4
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-sh4-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -825,7 +785,6 @@ This package provides the system emulator for SH4 boards.
 
 %package system-sparc
 Summary: QEMU system emulator for SPARC
-Group: Development/Tools
 Requires: %{name}-system-sparc-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-sparc
@@ -836,7 +795,6 @@ This package provides the system emulator for SPARC and SPARC64 systems.
 
 %package system-sparc-core
 Summary: QEMU system emulator for SPARC
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: openbios
 %description system-sparc-core
@@ -848,7 +806,6 @@ This package provides the system emulator for SPARC and SPARC64 systems.
 
 %package system-ppc
 Summary: QEMU system emulator for PPC
-Group: Development/Tools
 Requires: %{name}-system-ppc-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-ppc
@@ -859,7 +816,6 @@ This package provides the system emulator for PPC and PPC64 systems.
 
 %package system-ppc-core
 Summary: QEMU system emulator for PPC
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: openbios
 Requires: SLOF
@@ -873,7 +829,6 @@ This package provides the system emulator for PPC and PPC64 systems.
 
 %package system-xtensa
 Summary: QEMU system emulator for Xtensa
-Group: Development/Tools
 Requires: %{name}-system-xtensa-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-xtensa
@@ -884,7 +839,6 @@ This package provides the system emulator for Xtensa boards.
 
 %package system-xtensa-core
 Summary: QEMU system emulator for Xtensa
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-xtensa-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -895,7 +849,6 @@ This package provides the system emulator for Xtensa boards.
 
 %package system-unicore32
 Summary: QEMU system emulator for Unicore32
-Group: Development/Tools
 Requires: %{name}-system-unicore32-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-unicore32
@@ -906,7 +859,6 @@ This package provides the system emulator for Unicore32 boards.
 
 %package system-unicore32-core
 Summary: QEMU system emulator for Unicore32
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-unicore32-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -917,7 +869,6 @@ This package provides the system emulator for Unicore32 boards.
 
 %package system-moxie
 Summary: QEMU system emulator for Moxie
-Group: Development/Tools
 Requires: %{name}-system-moxie-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-moxie
@@ -928,7 +879,6 @@ This package provides the system emulator for Moxie boards.
 
 %package system-moxie-core
 Summary: QEMU system emulator for Moxie
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-moxie-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -939,7 +889,6 @@ This package provides the system emulator for Moxie boards.
 
 %package system-aarch64
 Summary: QEMU system emulator for AArch64
-Group: Development/Tools
 Requires: %{name}-system-aarch64-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-aarch64
@@ -950,7 +899,6 @@ This package provides the system emulator for AArch64.
 
 %package system-aarch64-core
 Summary: QEMU system emulator for AArch64
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %if 0%{?have_edk2:1}
 Requires: edk2-aarch64
@@ -964,7 +912,6 @@ This package provides the system emulator for AArch64.
 
 %package system-tricore
 Summary: QEMU system emulator for tricore
-Group: Development/Tools
 Requires: %{name}-system-tricore-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-tricore
@@ -975,7 +922,6 @@ This package provides the system emulator for Tricore.
 
 %package system-tricore-core
 Summary: QEMU system emulator for tricore
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-tricore-core
 QEMU is a generic and open source processor emulator which achieves a good
@@ -986,7 +932,6 @@ This package provides the system emulator for Tricore.
 
 %package system-nios2
 Summary: QEMU system emulator for nios2
-Group: Development/Tools
 Requires: %{name}-system-nios2-core = %{epoch}:%{version}-%{release}
 %{requires_all_block_modules}
 %description system-nios2
@@ -997,7 +942,6 @@ This package provides the system emulator for NIOS2.
 
 %package system-nios2-core
 Summary: QEMU system emulator for nios2
-Group: Development/Tools
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-nios2-core
 QEMU is a generic and open source processor emulator which achieves a good
