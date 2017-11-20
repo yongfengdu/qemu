@@ -97,7 +97,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %undefine _hardened_build
 
 # Release candidate version tracking
-# global rcver rc4
+%global rcver rc1
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -106,8 +106,8 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.10.1
-Release: 1%{?rcrel}%{?dist}
+Version: 2.11.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 URL: http://www.qemu.org/
@@ -140,35 +140,6 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
-
-# Backport persistent reservation manager in preparation for SELinux work
-Patch0001: 0001-io-add-new-qio_channel_-readv-writev-read-write-_all.patch
-Patch0002: 0002-io-Yield-rather-than-wait-when-already-in-coroutine.patch
-Patch0003: 0003-scsi-Refactor-scsi-sense-interpreting-code.patch
-Patch0004: 0004-scsi-Improve-scsi_sense_to_errno.patch
-Patch0005: 0005-scsi-Introduce-scsi_sense_buf_to_errno.patch
-Patch0006: 0006-scsi-rename-scsi_build_sense-to-scsi_convert_sense.patch
-Patch0007: 0007-scsi-move-non-emulation-specific-code-to-scsi.patch
-Patch0008: 0008-scsi-introduce-scsi_build_sense.patch
-Patch0009: 0009-scsi-introduce-sg_io_sense_from_errno.patch
-Patch0010: 0010-scsi-move-block-scsi.h-to-include-scsi-constants.h.patch
-Patch0011: 0011-scsi-file-posix-add-support-for-persistent-reservati.patch
-Patch0012: 0012-scsi-build-qemu-pr-helper.patch
-Patch0013: 0013-scsi-add-multipath-support-to-qemu-pr-helper.patch
-Patch0014: 0014-scsi-add-persistent-reservation-manager-using-qemu-p.patch
-
-# Add patches from git master to fix TLS test suite with new GNUTLS
-Patch0101: 0101-crypto-fix-test-cert-generation-to-not-use-SHA1-algo.patch
-Patch0102: 0102-io-fix-check-for-handshake-completion-in-TLS-test.patch
-Patch0103: 0103-io-fix-temp-directory-used-by-test-io-channel-tls-te.patch
-# Fix ppc64 KVM failure (bz #1501936)
-Patch0104: 0104-spapr-fallback-to-raw-mode-if-best-compat-mode-canno.patch
-# CVE-2017-15038: 9p: information disclosure when reading extended
-# attributes (bz #1499111)
-Patch0105: 0105-9pfs-use-g_malloc0-to-allocate-space-for-xattr.patch
-# CVE-2017-15268: potential memory exhaustion via websock connection to VNC
-# (bz #1496882)
-Patch0106: 0106-io-monitor-encoutput-buffer-size-from-websocket-GSou.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -293,6 +264,8 @@ BuildRequires: libcacard-devel >= 2.5.0
 BuildRequires: virglrenderer-devel
 # qemu 2.6: Needed for gtk GL support
 BuildRequires: mesa-libgbm-devel
+# qemu 2.11: preferred disassembler for TCG
+BuildRequires: capstone-devel
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -1140,7 +1113,8 @@ run_configure \
     --disable-cap-ng \
     --disable-brlapi \
     --disable-mpath \
-    --disable-libnfs
+    --disable-libnfs \
+    --disable-capstone
 
 make V=1 %{?_smp_mflags} $buildldflags
 
@@ -1234,6 +1208,9 @@ ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/qemu-kvm.1.gz
 %endif
 
 install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/qemu.conf
+
+# XXX With qemu 2.11 we can probably drop this symlinking with use of
+# configure --firmwarepath, see qemu git 3d5eecab4
 
 # Provided by package openbios
 rm -rf %{buildroot}%{_datadir}/%{name}/openbios-ppc
@@ -1490,9 +1467,11 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/efi-vmxnet3.rom
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
+%{_mandir}/man7/qemu-block-drivers.7*
 %{_mandir}/man7/qemu-ga-ref.7*
 %{_mandir}/man7/qemu-qmp-ref.7*
 %{_bindir}/virtfs-proxy-helper
+%{_bindir}/qemu-keymap
 %{_bindir}/qemu-pr-helper
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
