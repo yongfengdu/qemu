@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.11.0
-Release: 0.1%{?rcrel}%{?dist}
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 URL: http://www.qemu.org/
@@ -125,6 +125,7 @@ Source8: ksmtuned
 Source9: ksmtuned.conf
 # guest agent service
 Source10: qemu-guest-agent.service
+Source17: qemu-ga.sysconfig
 # guest agent udev rules
 Source11: 99-qemu-guest-agent.rules
 # /etc/qemu/bridge.conf
@@ -140,6 +141,9 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
+
+# fix compilation on newer glibc
+Patch0001: 0001-memfd-fix-configure-test.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1145,7 +1149,13 @@ install -D -p -m 0644 %{_sourcedir}/kvm.conf %{buildroot}%{_sysconfdir}/modprobe
 
 # Install qemu-guest-agent service and udev rules
 install -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
+install -m 0644 %{_sourcedir}/qemu-ga.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/qemu-ga
 install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
+
+mkdir -p %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d
+install -p -m 0755 scripts/qemu-guest-agent/fsfreeze-hook %{buildroot}%{_sysconfdir}/qemu-ga
+install -p -m 0644 scripts/qemu-guest-agent/fsfreeze-hook.d/*.sample %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d/
+touch %{buildroot}%{_localstatedir}/qga-fsfreeze-hook.log
 
 # Install qemu-pr-helper service
 install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
@@ -1497,6 +1507,9 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man8/qemu-ga.8*
 %{_unitdir}/qemu-guest-agent.service
 %{_udevdir}/99-qemu-guest-agent.rules
+%config(noreplace) %{_sysconfdir}/sysconfig/qemu-ga
+%{_sysconfdir}/qemu-ga
+%ghost %{_localstatedir}/qga-fsfreeze-hook.log
 
 
 %files img
@@ -1962,6 +1975,13 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Nov 28 2017 Paolo Bonzini <pbonzini@redhat.com> - 2:2.11.0-0.1.rc2
+- Fix compilation
+- Upgrade qemu-ga packaging based on RHEL 7
+
+* Mon Nov 20 2017 Cole Robinson <crobinso@redhat.com> - 2:2.11.0-0.1.rc1
+- Rebase to 2.11.0-rc1
+
 * Thu Oct 19 2017 Cole Robinson <crobinso@redhat.com> - 2:2.10.1-1
 - Fix ppc64 KVM failure (bz #1501936)
 - CVE-2017-15038: 9p: information disclosure when reading extended
