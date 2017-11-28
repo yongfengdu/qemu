@@ -1155,7 +1155,8 @@ install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
 mkdir -p %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d
 install -p -m 0755 scripts/qemu-guest-agent/fsfreeze-hook %{buildroot}%{_sysconfdir}/qemu-ga
 install -p -m 0644 scripts/qemu-guest-agent/fsfreeze-hook.d/*.sample %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d/
-touch %{buildroot}%{_localstatedir}/qga-fsfreeze-hook.log
+mkdir -p %{buildroot}%{_localstatedir}/log
+touch %{buildroot}%{_localstatedir}/log/qga-fsfreeze-hook.log
 
 # Install qemu-pr-helper service
 install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
@@ -1509,7 +1510,7 @@ getent passwd qemu >/dev/null || \
 %{_udevdir}/99-qemu-guest-agent.rules
 %config(noreplace) %{_sysconfdir}/sysconfig/qemu-ga
 %{_sysconfdir}/qemu-ga
-%ghost %{_localstatedir}/qga-fsfreeze-hook.log
+%ghost %{_localstatedir}/log/qga-fsfreeze-hook.log
 
 
 %files img
