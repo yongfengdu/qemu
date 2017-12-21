@@ -44,9 +44,6 @@
 %endif
 
 %global have_rbd 1
-%ifarch %{arm} ppc64
-%global have_rbd 0
-%endif
 
 # Xen is available only on i386 x86_64 (from libvirt spec)
 %ifarch %{ix86} x86_64
@@ -107,7 +104,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.11.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 URL: http://www.qemu.org/
@@ -1979,6 +1976,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Dec 21 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-4
+- Re-enable RBD on arm/ppc (rhbz #1528378)
+
 * Wed Dec 20 2017 Adam Williamson <awilliam@redhat.com> - 2:2.11.0-3
 - Fix problem with typing some characters via VNC (LP#1738283)
 
