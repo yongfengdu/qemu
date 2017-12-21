@@ -107,7 +107,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.11.0
-Release: 2%{?rcrel}%{?dist}
+Release: 3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2+ and LGPLv2+ and BSD
 URL: http://www.qemu.org/
@@ -144,6 +144,9 @@ Source22: 95-kvm-ppc64-memlock.conf
 
 # fix compilation on newer glibc
 Patch0001: 0001-memfd-fix-configure-test.patch
+
+# hacky fix for https://bugs.launchpad.net/qemu/+bug/1738283
+Patch0002: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1976,6 +1979,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Dec 20 2017 Adam Williamson <awilliam@redhat.com> - 2:2.11.0-3
+- Fix problem with typing some characters via VNC (LP#1738283)
+
 * Wed Dec 20 2017 Cole Robinson <crobinso@redhat.com> - 2:2.11.0-2
 - Rebuild for xen 4.10
 
