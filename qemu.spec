@@ -1976,7 +1976,7 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed Dec 21 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-4
+* Thu Dec 21 2017 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-4
 - Re-enable RBD on arm/ppc (rhbz #1528378)
 
 * Wed Dec 20 2017 Adam Williamson <awilliam@redhat.com> - 2:2.11.0-3
