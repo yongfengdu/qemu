@@ -104,7 +104,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.11.0
-Release: 4%{?rcrel}%{?dist}.1
+Release: 5%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -144,6 +144,9 @@ Patch0001: 0001-memfd-fix-configure-test.patch
 
 # hacky fix for https://bugs.launchpad.net/qemu/+bug/1738283
 Patch0002: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
+
+# Non-deterministic python hash iterator sort ordering
+Patch0003: 0001-qapi-ensure-stable-sort-ordering-when-checking-QAPI-.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1976,6 +1979,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Feb 27 2018 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-5
+- Improve License tag
+- Honour CC/LD flags for ksmctl
+- Fix non-deterministic test failure
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.11.0-4.1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
