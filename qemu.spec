@@ -106,7 +106,7 @@ Name: qemu
 Version: 2.11.0
 Release: 4%{?rcrel}%{?dist}.1
 Epoch: 2
-License: GPLv2+ and LGPLv2+ and BSD
+License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
 Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
