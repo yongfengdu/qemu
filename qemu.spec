@@ -1125,7 +1125,7 @@ make V=1 %{?_smp_mflags} $buildldflags
 popd
 %endif
 
-gcc %{_sourcedir}/ksmctl.c -O2 -g -o ksmctl
+gcc %{_sourcedir}/ksmctl.c $RPM_OPT_FLAGS $RPM_LD_FLAGS -o ksmctl
 
 
 %install
