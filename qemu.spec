@@ -103,8 +103,8 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.11.0
-Release: 5%{?rcrel}%{?dist}
+Version: 2.11.1
+Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1983,6 +1983,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Feb 28 2018 Cole Robinson <crobinso@redhat.com> - 2:2.11.1-1
+- Rebase to qemu 2.11.1 bugfix release
+
 * Tue Feb 27 2018 Daniel P. Berrange <berrange@redhat.com> - 2:2.11.0-5
 - Improve License tag
 - Honour CC/LD flags for ksmctl
