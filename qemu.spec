@@ -148,6 +148,9 @@ Patch0002: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
 # Non-deterministic python hash iterator sort ordering
 Patch0003: 0001-qapi-ensure-stable-sort-ordering-when-checking-QAPI-.patch
 
+# Avoid breakage in tests due to stricter crypto policies
+Patch0004: 0001-crypto-ensure-we-use-a-predictable-TLS-priority-sett.patch
+
 # documentation deps
 BuildRequires: texinfo
 # For /usr/bin/pod2man
@@ -1985,6 +1988,7 @@ getent passwd qemu >/dev/null || \
 - Honour CC/LD flags for ksmctl
 - Fix non-deterministic test failure
 - Use explicit "python2" binary to avoid "python" brokeness (rhbz#1550010)
+- Avoid breakage in TLS tests due to stricter crypto policies
 
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.11.0-4.1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild

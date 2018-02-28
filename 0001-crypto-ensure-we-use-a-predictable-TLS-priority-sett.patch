@@ -1,0 +1,48 @@
+From 11e1a77f98b2663a6fb0b640bff2ceedc6fc79f8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Daniel=20P=2E=20Berrang=C3=A9?= <berrange@redhat.com>
+Date: Wed, 28 Feb 2018 14:04:38 +0000
+Subject: [PATCH] crypto: ensure we use a predictable TLS priority setting
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The TLS test cert generation relies on a fixed set of algorithms that are
+only usable under GNUTLS' default priority setting. When building QEMU
+with a custom distro specific priority setting, this can cause the TLS
+tests to fail. By forcing the tests to always use "NORMAL" priority we
+can make them more robust.
+
+Reviewed-by: Eric Blake <eblake@redhat.com>
+Signed-off-by: Daniel P. Berrangé <berrange@redhat.com>
+---
+ tests/test-crypto-tlssession.c | 1 +
+ tests/test-io-channel-tls.c    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/tests/test-crypto-tlssession.c b/tests/test-crypto-tlssession.c
+index 1a4a066d76..82f21c27f2 100644
+--- a/tests/test-crypto-tlssession.c
++++ b/tests/test-crypto-tlssession.c
+@@ -75,6 +75,7 @@ static QCryptoTLSCreds *test_tls_creds_create(QCryptoTLSCredsEndpoint endpoint,
+                      "server" : "client"),
+         "dir", certdir,
+         "verify-peer", "yes",
++        "priority", "NORMAL",
+         /* We skip initial sanity checks here because we
+          * want to make sure that problems are being
+          * detected at the TLS session validation stage,
+diff --git a/tests/test-io-channel-tls.c b/tests/test-io-channel-tls.c
+index a210d01ba5..47ba603e8d 100644
+--- a/tests/test-io-channel-tls.c
++++ b/tests/test-io-channel-tls.c
+@@ -78,6 +78,7 @@ static QCryptoTLSCreds *test_tls_creds_create(QCryptoTLSCredsEndpoint endpoint,
+                      "server" : "client"),
+         "dir", certdir,
+         "verify-peer", "yes",
++        "priority", "NORMAL",
+         /* We skip initial sanity checks here because we
+          * want to make sure that problems are being
+          * detected at the TLS session validation stage,
+-- 
+2.14.3
+
