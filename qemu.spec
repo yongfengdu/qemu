@@ -1056,6 +1056,7 @@ run_configure() {
         --disable-strip \
         --disable-werror \
         --enable-kvm \
+        --python=/usr/bin/python2 \
 %ifarch s390 %{mips64}
         --enable-tcg-interpreter \
 %endif
@@ -1983,6 +1984,7 @@ getent passwd qemu >/dev/null || \
 - Improve License tag
 - Honour CC/LD flags for ksmctl
 - Fix non-deterministic test failure
+- Use explicit "python2" binary to avoid "python" brokeness (rhbz#1550010)
 
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.11.0-4.1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
