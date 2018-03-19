@@ -89,10 +89,6 @@ Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 %endif
 
-# Temp hack for https://bugzilla.redhat.com/show_bug.cgi?id=1343892
-# We'll manually turn on hardened build later in this spec
-%undefine _hardened_build
-
 # Release candidate version tracking
 # global rcver rc3
 %if 0%{?rcver:1}
@@ -104,7 +100,7 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.11.1
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -941,9 +937,6 @@ This package provides the system emulator for NIOS2.
 
 %build
 
-# QEMU already knows how to set _FORTIFY_SOURCE
-%global optflags %(echo %{optflags} | sed 's/-Wp,-D_FORTIFY_SOURCE=2//')
-
 # drop -g flag to prevent memory exhaustion by linker
 %ifarch s390
 %global optflags %(echo %{optflags} | sed 's/-g//')
@@ -1064,6 +1057,12 @@ run_configure() {
         --enable-tcg-interpreter \
 %endif
         --enable-trace-backend=$tracebackends \
+%ifnarch aarch64
+        --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
+%else
+        --extra-ldflags="$extraldflags" \
+%endif
+        --extra-cflags="%{optflags}" \
         "$@" || cat config.log
 }
 
@@ -1071,12 +1070,6 @@ mkdir build-dynamic
 pushd build-dynamic
 
 run_configure \
-%ifnarch aarch64
-    --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -pie -Wl,-z,relro -Wl,-z,now" \
-%else
-    --extra-ldflags="$extraldflags -specs=/usr/lib/rpm/redhat/redhat-hardened-ld" \
-%endif
-    --extra-cflags="%{optflags} -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1" \
     --target-list="$dynamic_targets" \
     --enable-pie \
     --enable-modules \
@@ -1101,12 +1094,6 @@ mkdir build-static
 pushd build-static
 
 run_configure \
-%ifnarch aarch64
-    --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
-%else
-    --extra-ldflags="$extraldflags" \
-%endif
-    --extra-cflags="%{optflags}" \
     --target-list="$static_targets" \
     --static \
     --disable-pie \
@@ -1983,6 +1970,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Mar 19 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:2.11.1-2
+- Re-enable normal hardened build macros to fix ksmctl.c hardening
+- Don't strip _FORTIFY_SOURCE from compiler flags
+- Don't pass -pie as an extra ldflags when we use --enable-pie
+
 * Wed Feb 28 2018 Cole Robinson <crobinso@redhat.com> - 2:2.11.1-1
 - Rebase to qemu 2.11.1 bugfix release
 
