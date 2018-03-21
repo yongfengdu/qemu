@@ -36,14 +36,9 @@
 %global have_kvm 1
 %endif
 
-%ifarch %{ix86} x86_64 %{arm} aarch64 %{power64} s390 s390x %{mips}
-%global have_seccomp 1
-%endif
 %ifarch %{ix86} x86_64
 %global have_spice   1
 %endif
-
-%global have_rbd 1
 
 # Xen is available only on i386 x86_64 (from libvirt spec)
 %ifarch %{ix86} x86_64
@@ -69,28 +64,25 @@
 %global hostqemu x86_64-softmmu/qemu-system-x86_64
 %endif
 
-# All block-* modules should be listed here.
-%if %{have_rbd}
-%global requires_all_block_modules                               \
+# All modules should be listed here.
+%global requires_all_modules                               \
 Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
 Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
 Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
 Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-rbd = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
-%else
-%global requires_all_block_modules                               \
-Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
-Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
-Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
-Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
-%endif
+Requires: %{name}-audio-alsa = %{epoch}:%{version}-%{release}    \
+Requires: %{name}-audio-oss = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-audio-pa = %{epoch}:%{version}-%{release}      \
+Requires: %{name}-audio-sdl = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-ui-curses = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-ui-gtk = %{epoch}:%{version}-%{release}        \
+Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
+
 
 # Release candidate version tracking
-# global rcver rc3
+%global rcver rc0
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -99,8 +91,8 @@ Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.11.1
-Release: 2%{?rcrel}%{?dist}
+Version: 2.12.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -135,17 +127,11 @@ Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
 
-# fix compilation on newer glibc
-Patch0001: 0001-memfd-fix-configure-test.patch
-
-# hacky fix for https://bugs.launchpad.net/qemu/+bug/1738283
-Patch0002: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
-
-# Non-deterministic python hash iterator sort ordering
-Patch0003: 0001-qapi-ensure-stable-sort-ordering-when-checking-QAPI-.patch
-
 # Avoid breakage in tests due to stricter crypto policies
-Patch0004: 0001-crypto-ensure-we-use-a-predictable-TLS-priority-sett.patch
+Patch0001: 0001-crypto-ensure-we-use-a-predictable-TLS-priority-sett.patch
+# RISC-V fix from rich:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1551452#c7
+Patch0002: 0002-riscv-force-float-save.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -206,17 +192,13 @@ BuildRequires: usbredir-devel >= 0.5.2
 BuildRequires: spice-protocol >= 0.12.2
 BuildRequires: spice-server-devel >= 0.12.0
 %endif
-%if 0%{?have_seccomp:1}
 # seccomp containment support
 BuildRequires: libseccomp-devel >= 2.3.0
-%endif
 # For network block driver
 BuildRequires: libcurl-devel
-%if %{have_rbd}
 # For rbd block driver
 BuildRequires: librados2-devel
 BuildRequires: librbd1-devel
-%endif
 # We need both because the 'stap' binary is probed for by configure
 BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
@@ -224,8 +206,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: libjpeg-devel
 # For VNC PNG support
 BuildRequires: libpng-devel
-# For uuid generation
-BuildRequires: libuuid-devel
 # For BlueZ device support
 BuildRequires: bluez-libs-devel
 # For Braille device support
@@ -272,6 +252,10 @@ BuildRequires: virglrenderer-devel
 BuildRequires: mesa-libgbm-devel
 # qemu 2.11: preferred disassembler for TCG
 BuildRequires: capstone-devel
+# qemu 2.12: parallels disk images require libxml2 now
+BuildRequires: libxml2-devel
+# python scripts in the build process
+BuildRequires: python3
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -285,6 +269,7 @@ BuildRequires: grubby
 %endif
 
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-aarch64 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-alpha = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-arm = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-cris = %{epoch}:%{version}-%{release}
@@ -292,18 +277,18 @@ Requires: %{name}-system-lm32 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-m68k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-microblaze = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-mips = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-moxie = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-nios2 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-or1k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-ppc = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-riscv = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-s390x = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sh4 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-sparc = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-tricore = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-unicore32 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-x86 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-xtensa = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-moxie = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-aarch64 = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-tricore = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-nios2 = %{epoch}:%{version}-%{release}
 Requires: %{name}-img = %{epoch}:%{version}-%{release}
 
 
@@ -422,7 +407,7 @@ This package provides the additional NFS block driver for QEMU.
 
 Install this package if you want to access remote NFS storage.
 
-%if %{have_rbd}
+
 %package  block-rbd
 Summary: QEMU Ceph/RBD block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
@@ -432,7 +417,6 @@ This package provides the additional Ceph/RBD block driver for QEMU.
 
 Install this package if you want to access remote Ceph volumes
 using the rbd protocol.
-%endif
 
 
 %package  block-ssh
@@ -444,6 +428,50 @@ This package provides the additional SSH block driver for QEMU.
 
 Install this package if you want to access remote disks using
 the Secure Shell (SSH) protocol.
+
+
+%package  audio-alsa
+Summary: QEMU ALSA audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-alsa
+This package provides the additional ALSA audio driver for QEMU.
+
+%package  audio-oss
+Summary: QEMU OSS audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-oss
+This package provides the additional OSS audio driver for QEMU.
+
+%package  audio-pa
+Summary: QEMU PulseAudio audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-pa
+This package provides the additional PulseAudi audio driver for QEMU.
+
+%package  audio-sdl
+Summary: QEMU SDL audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-sdl
+This package provides the additional SDL audio driver for QEMU.
+
+
+%package  ui-curses
+Summary: QEMU curses UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-curses
+This package provides the additional curses UI for QEMU.
+
+%package  ui-gtk
+Summary: QEMU GTK UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-gtk
+This package provides the additional GTK UI for QEMU.
+
+%package  ui-sdl
+Summary: QEMU SDL UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-sdl
+This package provides the additional SDL UI for QEMU.
 
 
 %package -n ivshmem-tools
@@ -526,7 +554,7 @@ static binaries
 %package system-x86
 Summary: QEMU system emulator for x86
 Requires: %{name}-system-x86-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 
 %description system-x86
 QEMU is a generic and open source processor emulator which achieves a good
@@ -546,9 +574,6 @@ Requires: seavgabios-bin
 %if 0%{?have_edk2:1}
 Requires: edk2-ovmf
 %endif
-%if 0%{?have_seccomp:1}
-Requires: libseccomp >= 1.0.0
-%endif
 
 
 %description system-x86-core
@@ -563,7 +588,7 @@ platform.
 %package system-alpha
 Summary: QEMU system emulator for Alpha
 Requires: %{name}-system-alpha-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-alpha
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -583,7 +608,7 @@ This package provides the system emulator for Alpha systems.
 %package system-arm
 Summary: QEMU system emulator for ARM
 Requires: %{name}-system-arm-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-arm
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -603,7 +628,7 @@ This package provides the system emulator for ARM boards.
 %package system-mips
 Summary: QEMU system emulator for MIPS
 Requires: %{name}-system-mips-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-mips
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -623,7 +648,7 @@ This package provides the system emulator for MIPS boards.
 %package system-cris
 Summary: QEMU system emulator for CRIS
 Requires: %{name}-system-cris-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-cris
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -643,7 +668,7 @@ This package provides the system emulator for CRIS boards.
 %package system-lm32
 Summary: QEMU system emulator for LatticeMico32
 Requires: %{name}-system-lm32-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-lm32
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -663,7 +688,7 @@ This package provides the system emulator for LatticeMico32 boards.
 %package system-m68k
 Summary: QEMU system emulator for ColdFire (m68k)
 Requires: %{name}-system-m68k-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-m68k
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -683,7 +708,7 @@ This package provides the system emulator for ColdFire boards.
 %package system-microblaze
 Summary: QEMU system emulator for Microblaze
 Requires: %{name}-system-microblaze-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-microblaze
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -704,7 +729,7 @@ This package provides the system emulator for Microblaze boards.
 Summary: QEMU system emulator for OpenRisc32
 Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
 Obsoletes: %{name}-system-or32 < 2:2.9.0
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-or1k
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -722,10 +747,30 @@ emulation speed by using dynamic translation.
 This package provides the system emulator for OpenRisc32 boards.
 
 
+%package system-riscv
+Summary: QEMU system emulator for RISC-V
+Requires: %{name}-system-riscv-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-riscv
+QEMU is a generic and open source processor emulator which achieves a good
+emulation speed by using dynamic translation.
+
+This package provides the system emulator for RISC-V systems.
+
+%package system-riscv-core
+Summary: QEMU system emulator for RISC-V
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-riscv-core
+QEMU is a generic and open source processor emulator which achieves a good
+emulation speed by using dynamic translation.
+
+This package provides the system emulator for RISC-V systems.
+
+
 %package system-s390x
 Summary: QEMU system emulator for S390
 Requires: %{name}-system-s390x-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-s390x
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -745,7 +790,7 @@ This package provides the system emulator for S390 systems.
 %package system-sh4
 Summary: QEMU system emulator for SH4
 Requires: %{name}-system-sh4-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-sh4
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -765,7 +810,7 @@ This package provides the system emulator for SH4 boards.
 %package system-sparc
 Summary: QEMU system emulator for SPARC
 Requires: %{name}-system-sparc-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-sparc
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -786,7 +831,7 @@ This package provides the system emulator for SPARC and SPARC64 systems.
 %package system-ppc
 Summary: QEMU system emulator for PPC
 Requires: %{name}-system-ppc-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-ppc
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -809,7 +854,7 @@ This package provides the system emulator for PPC and PPC64 systems.
 %package system-xtensa
 Summary: QEMU system emulator for Xtensa
 Requires: %{name}-system-xtensa-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-xtensa
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -829,7 +874,7 @@ This package provides the system emulator for Xtensa boards.
 %package system-unicore32
 Summary: QEMU system emulator for Unicore32
 Requires: %{name}-system-unicore32-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-unicore32
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -849,7 +894,7 @@ This package provides the system emulator for Unicore32 boards.
 %package system-moxie
 Summary: QEMU system emulator for Moxie
 Requires: %{name}-system-moxie-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-moxie
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -869,7 +914,7 @@ This package provides the system emulator for Moxie boards.
 %package system-aarch64
 Summary: QEMU system emulator for AArch64
 Requires: %{name}-system-aarch64-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-aarch64
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -892,7 +937,7 @@ This package provides the system emulator for AArch64.
 %package system-tricore
 Summary: QEMU system emulator for tricore
 Requires: %{name}-system-tricore-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-tricore
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -912,7 +957,7 @@ This package provides the system emulator for Tricore.
 %package system-nios2
 Summary: QEMU system emulator for nios2
 Requires: %{name}-system-nios2-core = %{epoch}:%{version}-%{release}
-%{requires_all_block_modules}
+%{requires_all_modules}
 %description system-nios2
 QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
@@ -927,6 +972,28 @@ QEMU is a generic and open source processor emulator which achieves a good
 emulation speed by using dynamic translation.
 
 This package provides the system emulator for NIOS2.
+
+
+%package system-hppa
+Summary: QEMU system emulator for HPPA
+Requires: %{name}-system-hppa-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-hppa
+QEMU is a generic and open source processor emulator which achieves a good
+emulation speed by using dynamic translation.
+
+This package provides the system emulator for HPPA.
+
+%package system-hppa-core
+Summary: QEMU system emulator for hppa
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-hppa-core
+QEMU is a generic and open source processor emulator which achieves a good
+emulation speed by using dynamic translation.
+
+This package provides the system emulator for HPPA.
+
+
 
 
 
@@ -962,6 +1029,7 @@ system_arch="\
   alpha \
   arm \
   cris \
+  hppa \
   i386 \
   lm32 \
   m68k \
@@ -977,6 +1045,8 @@ system_arch="\
   ppc \
   ppc64 \
   ppcemb \
+  riscv32 \
+  riscv64 \
   s390x \
   sh4 \
   sh4eb \
@@ -990,6 +1060,7 @@ system_arch="\
 
 user_arch="\
   aarch64 \
+  aarch64_be \
   alpha \
   arm \
   armeb \
@@ -1017,6 +1088,8 @@ user_arch="\
   sparc \
   sparc32plus \
   sparc64 \
+  riscv32 \
+  riscv64 \
   x86_64"
 
 dynamic_targets=
@@ -1052,7 +1125,7 @@ run_configure() {
         --disable-strip \
         --disable-werror \
         --enable-kvm \
-        --python=/usr/bin/python2 \
+        --python=/usr/bin/python3 \
 %ifarch s390 %{mips64}
         --enable-tcg-interpreter \
 %endif
@@ -1517,31 +1590,36 @@ getent passwd qemu >/dev/null || \
 
 %files block-curl
 %{_libdir}/qemu/block-curl.so
-
-
 %files block-dmg
 %{_libdir}/qemu/block-dmg-bz2.so
-
-
 %files block-gluster
 %{_libdir}/qemu/block-gluster.so
-
-
 %files block-iscsi
 %{_libdir}/qemu/block-iscsi.so
-
-
 %files block-nfs
 %{_libdir}/qemu/block-nfs.so
-
-%if %{have_rbd}
 %files block-rbd
 %{_libdir}/qemu/block-rbd.so
-%endif
-
-
 %files block-ssh
 %{_libdir}/qemu/block-ssh.so
+
+
+%files audio-alsa
+%{_libdir}/qemu/audio-alsa.so
+%files audio-oss
+%{_libdir}/qemu/audio-oss.so
+%files audio-pa
+%{_libdir}/qemu/audio-pa.so
+%files audio-sdl
+%{_libdir}/qemu/audio-sdl.so
+
+
+%files ui-curses
+%{_libdir}/qemu/ui-curses.so
+%files ui-gtk
+%{_libdir}/qemu/ui-gtk.so
+%files ui-sdl
+%{_libdir}/qemu/ui-sdl.so
 
 
 %files -n ivshmem-tools
@@ -1562,6 +1640,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-i386
 %{_bindir}/qemu-x86_64
 %{_bindir}/qemu-aarch64
+%{_bindir}/qemu-aarch64_be
 %{_bindir}/qemu-alpha
 %{_bindir}/qemu-arm
 %{_bindir}/qemu-armeb
@@ -1582,6 +1661,8 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-ppc64
 %{_bindir}/qemu-ppc64abi32
 %{_bindir}/qemu-ppc64le
+%{_bindir}/qemu-riscv32
+%{_bindir}/qemu-riscv64
 %{_bindir}/qemu-s390x
 %{_bindir}/qemu-sh4
 %{_bindir}/qemu-sh4eb
@@ -1595,6 +1676,8 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-alpha.stp
 %{_datadir}/systemtap/tapset/qemu-alpha-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-arm.stp
@@ -1635,6 +1718,10 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-ppc64abi32-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-riscv32.stp
+%{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-s390x.stp
 %{_datadir}/systemtap/tapset/qemu-s390x-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sh4.stp
@@ -1657,6 +1744,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-i386-static
 %{_bindir}/qemu-x86_64-static
 %{_bindir}/qemu-aarch64-static
+%{_bindir}/qemu-aarch64_be-static
 %{_bindir}/qemu-alpha-static
 %{_bindir}/qemu-arm-static
 %{_bindir}/qemu-armeb-static
@@ -1677,6 +1765,8 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-ppc64-static
 %{_bindir}/qemu-ppc64abi32-static
 %{_bindir}/qemu-ppc64le-static
+%{_bindir}/qemu-riscv32-static
+%{_bindir}/qemu-riscv64-static
 %{_bindir}/qemu-s390x-static
 %{_bindir}/qemu-sh4-static
 %{_bindir}/qemu-sh4eb-static
@@ -1690,6 +1780,8 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64-static.stp
 %{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be-static.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-alpha-static.stp
 %{_datadir}/systemtap/tapset/qemu-alpha-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-arm-static.stp
@@ -1730,6 +1822,10 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-ppc64abi32-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-riscv32-static.stp
+%{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64-static.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-s390x-static.stp
 %{_datadir}/systemtap/tapset/qemu-s390x-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-sh4-static.stp
@@ -1761,7 +1857,6 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-kvm.1*
 %endif
 
-%{_datadir}/%{name}/acpi-dsdt.aml
 %{_datadir}/%{name}/bios.bin
 %{_datadir}/%{name}/bios-256k.bin
 %{_datadir}/%{name}/sgabios.bin
@@ -1853,6 +1948,16 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-or1k.1*
 
 
+%files system-riscv
+# Deliberately empty
+
+%files system-riscv-core
+%{_bindir}/qemu-system-riscv32
+%{_bindir}/qemu-system-riscv64
+%{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
+%{_mandir}/man1/qemu-system-riscv*.1*
+
+
 %files system-s390x
 # Deliberately empty
 
@@ -1903,11 +2008,13 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-ppc64.1*
 %{_mandir}/man1/qemu-system-ppcemb.1*
 %{_datadir}/%{name}/bamboo.dtb
+%{_datadir}/%{name}/canyonlands.dtb
 %{_datadir}/%{name}/ppc_rom.bin
 %{_datadir}/%{name}/qemu_vga.ndrv
 %{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/spapr-rtas.bin
 %{_datadir}/%{name}/u-boot.e500
+%{_datadir}/%{name}/u-boot-sam460-20100605.bin
 %ifarch %{power64}
 %{_sysconfdir}/security/limits.d/95-kvm-ppc64-memlock.conf
 %endif
@@ -1949,6 +2056,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-aarch64
 %{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
 %{_mandir}/man1/qemu-system-aarch64.1*
+%{_datadir}/%{name}/hppa-firmware.img
 
 
 %files system-tricore
@@ -1969,7 +2077,21 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-nios2.1*
 
 
+%files system-hppa
+# Deliberately empty
+
+%files system-hppa-core
+%{_bindir}/qemu-system-hppa
+%{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
+%{_mandir}/man1/qemu-system-hppa.1*
+
+
 %changelog
+* Thu Mar 22 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.1.rc0
+- Rebase to qemu-2.12.0-rc0
+- Add hppa and riscv32/64 targets
+- Add audio and ui modules
+
 * Mon Mar 19 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:2.11.1-2
 - Re-enable normal hardened build macros to fix ksmctl.c hardening
 - Don't strip _FORTIFY_SOURCE from compiler flags
