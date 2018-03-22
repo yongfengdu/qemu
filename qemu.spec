@@ -2056,7 +2056,6 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-aarch64
 %{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
 %{_mandir}/man1/qemu-system-aarch64.1*
-%{_datadir}/%{name}/hppa-firmware.img
 
 
 %files system-tricore
@@ -2084,6 +2083,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-system-hppa
 %{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
 %{_mandir}/man1/qemu-system-hppa.1*
+%{_datadir}/%{name}/hppa-firmware.img
 
 
 %changelog
