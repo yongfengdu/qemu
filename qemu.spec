@@ -315,11 +315,7 @@ Requires(post): /usr/sbin/useradd
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
-
 %description common
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
 This package provides the common files needed by all QEMU targets
 
 
@@ -339,11 +335,7 @@ Summary: QEMU guest agent
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
-
 %description guest-agent
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
 This package provides an agent to run inside guests, which communicates
 with the host over a virtio-serial channel named "org.qemu.guest_agent.0"
 
@@ -352,15 +344,19 @@ This package does not need to be installed on the host OS.
 
 %package  img
 Summary: QEMU command line tool for manipulating disk images
-
 %description img
 This package provides a command line tool for manipulating disk images
+
+
+%package -n ivshmem-tools
+Summary: Client and server for QEMU ivshmem device
+%description -n ivshmem-tools
+This package provides client and server tools for QEMU's ivshmem device.
 
 
 %package  block-curl
 Summary: QEMU CURL block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-
 %description block-curl
 This package provides the additional CURL block driver for QEMU.
 
@@ -371,7 +367,6 @@ http, https, ftp and other transports provided by the CURL library.
 %package  block-dmg
 Summary: QEMU block driver for DMG disk images
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-
 %description block-dmg
 This package provides the additional DMG block driver for QEMU.
 
@@ -381,7 +376,6 @@ Install this package if you want to open '.dmg' files.
 %package  block-gluster
 Summary: QEMU Gluster block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-
 %description block-gluster
 This package provides the additional Gluster block driver for QEMU.
 
@@ -391,7 +385,6 @@ Install this package if you want to access remote Gluster storage.
 %package  block-iscsi
 Summary: QEMU iSCSI block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-
 %description block-iscsi
 This package provides the additional iSCSI block driver for QEMU.
 
@@ -411,7 +404,6 @@ Install this package if you want to access remote NFS storage.
 %package  block-rbd
 Summary: QEMU Ceph/RBD block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-
 %description block-rbd
 This package provides the additional Ceph/RBD block driver for QEMU.
 
@@ -422,7 +414,6 @@ using the rbd protocol.
 %package  block-ssh
 Summary: QEMU SSH block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-
 %description block-ssh
 This package provides the additional SSH block driver for QEMU.
 
@@ -474,18 +465,10 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 This package provides the additional SDL UI for QEMU.
 
 
-%package -n ivshmem-tools
-Summary: Client and server for QEMU ivshmem device
-
-%description -n ivshmem-tools
-This package provides client and server tools for QEMU's ivshmem device.
-
-
 %if %{have_kvm}
 %package kvm
 Summary: QEMU metapackage for KVM support
 Requires: qemu-%{kvm_package} = %{epoch}:%{version}-%{release}
-
 %description kvm
 This is a meta-package that provides a qemu-system-<arch> package for native
 architectures where kvm can be enabled. For example, in an x86 system, this
@@ -495,7 +478,6 @@ will install qemu-system-x86
 %package kvm-core
 Summary: QEMU metapackage for KVM support
 Requires: qemu-%{kvm_package}-core = %{epoch}:%{version}-%{release}
-
 %description kvm-core
 This is a meta-package that provides a qemu-system-<arch>-core package
 for native architectures where kvm can be enabled. For example, in an
@@ -508,11 +490,7 @@ Summary: QEMU user mode emulation of qemu targets
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 # On upgrade, make qemu-user get replaced with qemu-user + qemu-user-binfmt
 Obsoletes: %{name}-user < 2:2.6.0-5%{?dist}
-
 %description user
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
 This package provides the user mode emulation of qemu targets
 
 
@@ -525,11 +503,7 @@ Requires(postun): systemd-units
 Conflicts: %{name}-user-static
 # On upgrade, make qemu-user get replaced with qemu-user + qemu-user-binfmt
 Obsoletes: %{name}-user < 2:2.6.0-5%{?dist}
-
 %description user-binfmt
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
 This package provides the user mode emulation of qemu targets
 
 %if %{user_static}
@@ -541,29 +515,295 @@ Requires(postun): systemd-units
 # qemu-user-binfmt + qemu-user-static both provide binfmt rules
 Conflicts: %{name}-user-binfmt
 Provides: %{name}-user-binfmt
-
 %description user-static
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
 This package provides the user mode emulation of qemu targets built as
 static binaries
 %endif
+
+
+%package system-aarch64
+Summary: QEMU system emulator for AArch64
+Requires: %{name}-system-aarch64-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-aarch64
+This package provides the QEMU system emulator for AArch64.
+
+%package system-aarch64-core
+Summary: QEMU system emulator for AArch64
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%if 0%{?have_edk2:1}
+Requires: edk2-aarch64
+%endif
+%description system-aarch64-core
+This package provides the QEMU system emulator for AArch64.
+
+
+%package system-alpha
+Summary: QEMU system emulator for Alpha
+Requires: %{name}-system-alpha-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-alpha
+This package provides the QEMU system emulator for Alpha systems.
+
+%package system-alpha-core
+Summary: QEMU system emulator for Alpha
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-alpha-core
+This package provides the QEMU system emulator for Alpha systems.
+
+
+%package system-arm
+Summary: QEMU system emulator for ARM
+Requires: %{name}-system-arm-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-arm
+This package provides the QEMU system emulator for ARM systems.
+
+%package system-arm-core
+Summary: QEMU system emulator for ARM
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-arm-core
+This package provides the QEMU system emulator for ARM boards.
+
+
+%package system-cris
+Summary: QEMU system emulator for CRIS
+Requires: %{name}-system-cris-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-cris
+This package provides the system emulator for CRIS systems.
+
+%package system-cris-core
+Summary: QEMU system emulator for CRIS
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-cris-core
+This package provides the system emulator for CRIS boards.
+
+
+%package system-hppa
+Summary: QEMU system emulator for HPPA
+Requires: %{name}-system-hppa-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-hppa
+This package provides the QEMU system emulator for HPPA.
+
+%package system-hppa-core
+Summary: QEMU system emulator for hppa
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-hppa-core
+This package provides the QEMU system emulator for HPPA.
+
+
+%package system-lm32
+Summary: QEMU system emulator for LatticeMico32
+Requires: %{name}-system-lm32-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-lm32
+This package provides the QEMU system emulator for LatticeMico32 boards.
+
+%package system-lm32-core
+Summary: QEMU system emulator for LatticsMico32
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-lm32-core
+This package provides the QEMU system emulator for LatticeMico32 boards.
+
+
+%package system-m68k
+Summary: QEMU system emulator for ColdFire (m68k)
+Requires: %{name}-system-m68k-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-m68k
+This package provides the QEMU system emulator for ColdFire boards.
+
+%package system-m68k-core
+Summary: QEMU system emulator for ColdFire (m68k)
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-m68k-core
+This package provides the QEMU system emulator for ColdFire boards.
+
+
+%package system-microblaze
+Summary: QEMU system emulator for Microblaze
+Requires: %{name}-system-microblaze-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-microblaze
+This package provides the QEMU system emulator for Microblaze boards.
+
+%package system-microblaze-core
+Summary: QEMU system emulator for Microblaze
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-microblaze-core
+This package provides the QEMU system emulator for Microblaze boards.
+
+
+%package system-mips
+Summary: QEMU system emulator for MIPS
+Requires: %{name}-system-mips-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-mips
+This package provides the QEMU system emulator for MIPS systems.
+
+%package system-mips-core
+Summary: QEMU system emulator for MIPS
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-mips-core
+This package provides the QEMU system emulator for MIPS systems.
+
+
+%package system-moxie
+Summary: QEMU system emulator for Moxie
+Requires: %{name}-system-moxie-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-moxie
+This package provides the QEMU system emulator for Moxie boards.
+
+%package system-moxie-core
+Summary: QEMU system emulator for Moxie
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-moxie-core
+This package provides the QEMU system emulator for Moxie boards.
+
+
+%package system-nios2
+Summary: QEMU system emulator for nios2
+Requires: %{name}-system-nios2-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-nios2
+This package provides the QEMU system emulator for NIOS2.
+
+%package system-nios2-core
+Summary: QEMU system emulator for nios2
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-nios2-core
+This package provides the QEMU system emulator for NIOS2.
+
+
+%package system-or1k
+Summary: QEMU system emulator for OpenRisc32
+Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-or32 < 2:2.9.0
+%{requires_all_modules}
+%description system-or1k
+This package provides the QEMU system emulator for OpenRisc32 boards.
+
+%package system-or1k-core
+Summary: QEMU system emulator for OpenRisc32
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Obsoletes: %{name}-system-or32-core < 2:2.9.0
+%description system-or1k-core
+This package provides the QEMU system emulator for OpenRisc32 boards.
+
+
+%package system-ppc
+Summary: QEMU system emulator for PPC
+Requires: %{name}-system-ppc-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-ppc
+This package provides the QEMU system emulator for PPC and PPC64 systems.
+
+%package system-ppc-core
+Summary: QEMU system emulator for PPC
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: openbios
+Requires: SLOF
+Requires: seavgabios-bin
+%description system-ppc-core
+This package provides the QEMU system emulator for PPC and PPC64 systems.
+
+
+%package system-riscv
+Summary: QEMU system emulator for RISC-V
+Requires: %{name}-system-riscv-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-riscv
+This package provides the QEMU system emulator for RISC-V systems.
+
+%package system-riscv-core
+Summary: QEMU system emulator for RISC-V
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-riscv-core
+This package provides the QEMU system emulator for RISC-V systems.
+
+
+%package system-s390x
+Summary: QEMU system emulator for S390
+Requires: %{name}-system-s390x-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-s390x
+This package provides the QEMU system emulator for S390 systems.
+
+%package system-s390x-core
+Summary: QEMU system emulator for S390
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-s390x-core
+This package provides the QEMU system emulator for S390 systems.
+
+
+%package system-sh4
+Summary: QEMU system emulator for SH4
+Requires: %{name}-system-sh4-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-sh4
+This package provides the QEMU system emulator for SH4 boards.
+
+%package system-sh4-core
+Summary: QEMU system emulator for SH4
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-sh4-core
+This package provides the QEMU system emulator for SH4 boards.
+
+
+%package system-sparc
+Summary: QEMU system emulator for SPARC
+Requires: %{name}-system-sparc-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-sparc
+This package provides the QEMU system emulator for SPARC and SPARC64 systems.
+
+%package system-sparc-core
+Summary: QEMU system emulator for SPARC
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: openbios
+%description system-sparc-core
+This package provides the QEMU system emulator for SPARC and SPARC64 systems.
+
+
+%package system-tricore
+Summary: QEMU system emulator for tricore
+Requires: %{name}-system-tricore-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-tricore
+This package provides the QEMU system emulator for Tricore.
+
+%package system-tricore-core
+Summary: QEMU system emulator for tricore
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-tricore-core
+This package provides the QEMU system emulator for Tricore.
+
+
+%package system-unicore32
+Summary: QEMU system emulator for Unicore32
+Requires: %{name}-system-unicore32-core = %{epoch}:%{version}-%{release}
+%{requires_all_modules}
+%description system-unicore32
+This package provides the QEMU system emulator for Unicore32 boards.
+
+%package system-unicore32-core
+Summary: QEMU system emulator for Unicore32
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%description system-unicore32-core
+This package provides the QEMU system emulator for Unicore32 boards.
 
 
 %package system-x86
 Summary: QEMU system emulator for x86
 Requires: %{name}-system-x86-core = %{epoch}:%{version}-%{release}
 %{requires_all_modules}
-
 %description system-x86
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for x86. When being run in a x86
+This package provides the QEMU system emulator for x86. When being run in a x86
 machine that supports it, this package also provides the KVM virtualization
 platform.
-
 
 %package system-x86-core
 Summary: QEMU system emulator for x86
@@ -574,281 +814,10 @@ Requires: seavgabios-bin
 %if 0%{?have_edk2:1}
 Requires: edk2-ovmf
 %endif
-
-
 %description system-x86-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for x86. When being run in a x86
+This package provides the QEMU system emulator for x86. When being run in a x86
 machine that supports it, this package also provides the KVM virtualization
 platform.
-
-
-%package system-alpha
-Summary: QEMU system emulator for Alpha
-Requires: %{name}-system-alpha-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-alpha
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Alpha systems.
-
-%package system-alpha-core
-Summary: QEMU system emulator for Alpha
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-alpha-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Alpha systems.
-
-
-%package system-arm
-Summary: QEMU system emulator for ARM
-Requires: %{name}-system-arm-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-arm
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for ARM systems.
-
-%package system-arm-core
-Summary: QEMU system emulator for ARM
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-arm-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for ARM boards.
-
-
-%package system-mips
-Summary: QEMU system emulator for MIPS
-Requires: %{name}-system-mips-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-mips
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for MIPS systems.
-
-%package system-mips-core
-Summary: QEMU system emulator for MIPS
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-mips-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for MIPS boards.
-
-
-%package system-cris
-Summary: QEMU system emulator for CRIS
-Requires: %{name}-system-cris-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-cris
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for CRIS systems.
-
-%package system-cris-core
-Summary: QEMU system emulator for CRIS
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-cris-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for CRIS boards.
-
-
-%package system-lm32
-Summary: QEMU system emulator for LatticeMico32
-Requires: %{name}-system-lm32-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-lm32
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for LatticeMico32 systems.
-
-%package system-lm32-core
-Summary: QEMU system emulator for LatticeMico32
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-lm32-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for LatticeMico32 boards.
-
-
-%package system-m68k
-Summary: QEMU system emulator for ColdFire (m68k)
-Requires: %{name}-system-m68k-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-m68k
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for ColdFire boards.
-
-%package system-m68k-core
-Summary: QEMU system emulator for ColdFire (m68k)
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-m68k-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for ColdFire boards.
-
-
-%package system-microblaze
-Summary: QEMU system emulator for Microblaze
-Requires: %{name}-system-microblaze-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-microblaze
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Microblaze boards.
-
-%package system-microblaze-core
-Summary: QEMU system emulator for Microblaze
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-microblaze-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Microblaze boards.
-
-
-%package system-or1k
-Summary: QEMU system emulator for OpenRisc32
-Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
-Obsoletes: %{name}-system-or32 < 2:2.9.0
-%{requires_all_modules}
-%description system-or1k
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for OpenRisc32 boards.
-
-%package system-or1k-core
-Summary: QEMU system emulator for OpenRisc32
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Obsoletes: %{name}-system-or32-core < 2:2.9.0
-%description system-or1k-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for OpenRisc32 boards.
-
-
-%package system-riscv
-Summary: QEMU system emulator for RISC-V
-Requires: %{name}-system-riscv-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-riscv
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for RISC-V systems.
-
-%package system-riscv-core
-Summary: QEMU system emulator for RISC-V
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-riscv-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for RISC-V systems.
-
-
-%package system-s390x
-Summary: QEMU system emulator for S390
-Requires: %{name}-system-s390x-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-s390x
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for S390 systems.
-
-%package system-s390x-core
-Summary: QEMU system emulator for S390
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-s390x-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for S390 systems.
-
-
-%package system-sh4
-Summary: QEMU system emulator for SH4
-Requires: %{name}-system-sh4-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-sh4
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for SH4 boards.
-
-%package system-sh4-core
-Summary: QEMU system emulator for SH4
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-sh4-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for SH4 boards.
-
-
-%package system-sparc
-Summary: QEMU system emulator for SPARC
-Requires: %{name}-system-sparc-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-sparc
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for SPARC and SPARC64 systems.
-
-%package system-sparc-core
-Summary: QEMU system emulator for SPARC
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires: openbios
-%description system-sparc-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for SPARC and SPARC64 systems.
-
-
-%package system-ppc
-Summary: QEMU system emulator for PPC
-Requires: %{name}-system-ppc-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-ppc
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for PPC and PPC64 systems.
-
-%package system-ppc-core
-Summary: QEMU system emulator for PPC
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires: openbios
-Requires: SLOF
-Requires: seavgabios-bin
-%description system-ppc-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for PPC and PPC64 systems.
 
 
 %package system-xtensa
@@ -856,144 +825,13 @@ Summary: QEMU system emulator for Xtensa
 Requires: %{name}-system-xtensa-core = %{epoch}:%{version}-%{release}
 %{requires_all_modules}
 %description system-xtensa
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Xtensa boards.
+This package provides the QEMU system emulator for Xtensa boards.
 
 %package system-xtensa-core
 Summary: QEMU system emulator for Xtensa
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-xtensa-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Xtensa boards.
-
-
-%package system-unicore32
-Summary: QEMU system emulator for Unicore32
-Requires: %{name}-system-unicore32-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-unicore32
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Unicore32 boards.
-
-%package system-unicore32-core
-Summary: QEMU system emulator for Unicore32
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-unicore32-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Unicore32 boards.
-
-
-%package system-moxie
-Summary: QEMU system emulator for Moxie
-Requires: %{name}-system-moxie-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-moxie
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Moxie boards.
-
-%package system-moxie-core
-Summary: QEMU system emulator for Moxie
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-moxie-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Moxie boards.
-
-
-%package system-aarch64
-Summary: QEMU system emulator for AArch64
-Requires: %{name}-system-aarch64-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-aarch64
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for AArch64.
-
-%package system-aarch64-core
-Summary: QEMU system emulator for AArch64
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%if 0%{?have_edk2:1}
-Requires: edk2-aarch64
-%endif
-%description system-aarch64-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for AArch64.
-
-
-%package system-tricore
-Summary: QEMU system emulator for tricore
-Requires: %{name}-system-tricore-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-tricore
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Tricore.
-
-%package system-tricore-core
-Summary: QEMU system emulator for tricore
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-tricore-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for Tricore.
-
-
-%package system-nios2
-Summary: QEMU system emulator for nios2
-Requires: %{name}-system-nios2-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-nios2
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for NIOS2.
-
-%package system-nios2-core
-Summary: QEMU system emulator for nios2
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-nios2-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for NIOS2.
-
-
-%package system-hppa
-Summary: QEMU system emulator for HPPA
-Requires: %{name}-system-hppa-core = %{epoch}:%{version}-%{release}
-%{requires_all_modules}
-%description system-hppa
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for HPPA.
-
-%package system-hppa-core
-Summary: QEMU system emulator for hppa
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%description system-hppa-core
-QEMU is a generic and open source processor emulator which achieves a good
-emulation speed by using dynamic translation.
-
-This package provides the system emulator for HPPA.
-
-
+This package provides the QEMU system emulator for Xtensa boards.
 
 
 
@@ -1841,34 +1679,14 @@ getent passwd qemu >/dev/null || \
 %endif
 
 
-%files system-x86
-# Deliberately empty
-
-%files system-x86-core
-%{_bindir}/qemu-system-i386
-%{_bindir}/qemu-system-x86_64
-%{_datadir}/systemtap/tapset/qemu-system-i386*.stp
-%{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
-%{_mandir}/man1/qemu-system-i386.1*
-%{_mandir}/man1/qemu-system-x86_64.1*
-
-%if 0%{?need_qemu_kvm}
-%{_bindir}/qemu-kvm
-%{_mandir}/man1/qemu-kvm.1*
-%endif
-
-%{_datadir}/%{name}/bios.bin
-%{_datadir}/%{name}/bios-256k.bin
-%{_datadir}/%{name}/sgabios.bin
-%{_datadir}/%{name}/linuxboot.bin
-%{_datadir}/%{name}/linuxboot_dma.bin
-%{_datadir}/%{name}/multiboot.bin
-%{_datadir}/%{name}/kvmvapic.bin
+%files system-aarch64
+%files system-aarch64-core
+%{_bindir}/qemu-system-aarch64
+%{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
+%{_mandir}/man1/qemu-system-aarch64.1*
 
 
 %files system-alpha
-# Deliberately empty
-
 %files system-alpha-core
 %{_bindir}/qemu-system-alpha
 %{_datadir}/systemtap/tapset/qemu-system-alpha*.stp
@@ -1877,17 +1695,52 @@ getent passwd qemu >/dev/null || \
 
 
 %files system-arm
-# Deliberately empty
-
 %files system-arm-core
 %{_bindir}/qemu-system-arm
 %{_datadir}/systemtap/tapset/qemu-system-arm*.stp
 %{_mandir}/man1/qemu-system-arm.1*
 
 
-%files system-mips
-# Deliberately empty
+%files system-cris
+%files system-cris-core
+%{_bindir}/qemu-system-cris
+%{_datadir}/systemtap/tapset/qemu-system-cris*.stp
+%{_mandir}/man1/qemu-system-cris.1*
 
+
+%files system-hppa
+%files system-hppa-core
+%{_bindir}/qemu-system-hppa
+%{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
+%{_mandir}/man1/qemu-system-hppa.1*
+%{_datadir}/%{name}/hppa-firmware.img
+
+
+%files system-lm32
+%files system-lm32-core
+%{_bindir}/qemu-system-lm32
+%{_datadir}/systemtap/tapset/qemu-system-lm32*.stp
+%{_mandir}/man1/qemu-system-lm32.1*
+
+
+%files system-m68k
+%files system-m68k-core
+%{_bindir}/qemu-system-m68k
+%{_datadir}/systemtap/tapset/qemu-system-m68k*.stp
+%{_mandir}/man1/qemu-system-m68k.1*
+
+
+%files system-microblaze
+%files system-microblaze-core
+%{_bindir}/qemu-system-microblaze
+%{_bindir}/qemu-system-microblazeel
+%{_datadir}/systemtap/tapset/qemu-system-microblaze*.stp
+%{_mandir}/man1/qemu-system-microblaze.1*
+%{_mandir}/man1/qemu-system-microblazeel.1*
+%{_datadir}/%{name}/petalogix*.dtb
+
+
+%files system-mips
 %files system-mips-core
 %{_bindir}/qemu-system-mips
 %{_bindir}/qemu-system-mipsel
@@ -1900,105 +1753,28 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-mips64.1*
 
 
-%files system-cris
-# Deliberately empty
-
-%files system-cris-core
-%{_bindir}/qemu-system-cris
-%{_datadir}/systemtap/tapset/qemu-system-cris*.stp
-%{_mandir}/man1/qemu-system-cris.1*
+%files system-moxie
+%files system-moxie-core
+%{_bindir}/qemu-system-moxie
+%{_datadir}/systemtap/tapset/qemu-system-moxie*.stp
+%{_mandir}/man1/qemu-system-moxie.1*
 
 
-%files system-lm32
-# Deliberately empty
-
-%files system-lm32-core
-%{_bindir}/qemu-system-lm32
-%{_datadir}/systemtap/tapset/qemu-system-lm32*.stp
-%{_mandir}/man1/qemu-system-lm32.1*
-
-
-%files system-m68k
-# Deliberately empty
-
-%files system-m68k-core
-%{_bindir}/qemu-system-m68k
-%{_datadir}/systemtap/tapset/qemu-system-m68k*.stp
-%{_mandir}/man1/qemu-system-m68k.1*
-
-
-%files system-microblaze
-# Deliberately empty
-
-%files system-microblaze-core
-%{_bindir}/qemu-system-microblaze
-%{_bindir}/qemu-system-microblazeel
-%{_datadir}/systemtap/tapset/qemu-system-microblaze*.stp
-%{_mandir}/man1/qemu-system-microblaze.1*
-%{_mandir}/man1/qemu-system-microblazeel.1*
-%{_datadir}/%{name}/petalogix*.dtb
+%files system-nios2
+%files system-nios2-core
+%{_bindir}/qemu-system-nios2
+%{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
+%{_mandir}/man1/qemu-system-nios2.1*
 
 
 %files system-or1k
-# Deliberately empty
-
 %files system-or1k-core
 %{_bindir}/qemu-system-or1k
 %{_datadir}/systemtap/tapset/qemu-system-or1k*.stp
 %{_mandir}/man1/qemu-system-or1k.1*
 
 
-%files system-riscv
-# Deliberately empty
-
-%files system-riscv-core
-%{_bindir}/qemu-system-riscv32
-%{_bindir}/qemu-system-riscv64
-%{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
-%{_mandir}/man1/qemu-system-riscv*.1*
-
-
-%files system-s390x
-# Deliberately empty
-
-%files system-s390x-core
-%{_bindir}/qemu-system-s390x
-%{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
-%{_mandir}/man1/qemu-system-s390x.1*
-%{_datadir}/%{name}/s390-ccw.img
-%{_datadir}/%{name}/s390-netboot.img
-%ifarch s390x
-%{_sysconfdir}/sysctl.d/50-kvm-s390x.conf
-%endif
-
-
-%files system-sh4
-# Deliberately empty
-
-%files system-sh4-core
-%{_bindir}/qemu-system-sh4
-%{_bindir}/qemu-system-sh4eb
-%{_datadir}/systemtap/tapset/qemu-system-sh4*.stp
-%{_mandir}/man1/qemu-system-sh4.1*
-%{_mandir}/man1/qemu-system-sh4eb.1*
-
-
-%files system-sparc
-# Deliberately empty
-
-%files system-sparc-core
-%{_bindir}/qemu-system-sparc
-%{_bindir}/qemu-system-sparc64
-%{_datadir}/systemtap/tapset/qemu-system-sparc*.stp
-%{_mandir}/man1/qemu-system-sparc.1*
-%{_mandir}/man1/qemu-system-sparc64.1*
-%{_datadir}/%{name}/QEMU,tcx.bin
-%{_datadir}/%{name}/QEMU,cgthree.bin
-
-
 %files system-ppc
-# Deliberately empty
-
 %files system-ppc-core
 %{_bindir}/qemu-system-ppc
 %{_bindir}/qemu-system-ppc64
@@ -2020,70 +1796,88 @@ getent passwd qemu >/dev/null || \
 %endif
 
 
-%files system-unicore32
-# Deliberately empty
-
-%files system-unicore32-core
-%{_bindir}/qemu-system-unicore32
-%{_datadir}/systemtap/tapset/qemu-system-unicore32*.stp
-%{_mandir}/man1/qemu-system-unicore32.1*
-
-
-%files system-xtensa
-# Deliberately empty
-
-%files system-xtensa-core
-%{_bindir}/qemu-system-xtensa
-%{_bindir}/qemu-system-xtensaeb
-%{_datadir}/systemtap/tapset/qemu-system-xtensa*.stp
-%{_mandir}/man1/qemu-system-xtensa.1*
-%{_mandir}/man1/qemu-system-xtensaeb.1*
+%files system-riscv
+%files system-riscv-core
+%{_bindir}/qemu-system-riscv32
+%{_bindir}/qemu-system-riscv64
+%{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
+%{_mandir}/man1/qemu-system-riscv*.1*
 
 
-%files system-moxie
-# Deliberately empty
+%files system-s390x
+%files system-s390x-core
+%{_bindir}/qemu-system-s390x
+%{_datadir}/systemtap/tapset/qemu-system-s390x*.stp
+%{_mandir}/man1/qemu-system-s390x.1*
+%{_datadir}/%{name}/s390-ccw.img
+%{_datadir}/%{name}/s390-netboot.img
+%ifarch s390x
+%{_sysconfdir}/sysctl.d/50-kvm-s390x.conf
+%endif
 
-%files system-moxie-core
-%{_bindir}/qemu-system-moxie
-%{_datadir}/systemtap/tapset/qemu-system-moxie*.stp
-%{_mandir}/man1/qemu-system-moxie.1*
+
+%files system-sh4
+%files system-sh4-core
+%{_bindir}/qemu-system-sh4
+%{_bindir}/qemu-system-sh4eb
+%{_datadir}/systemtap/tapset/qemu-system-sh4*.stp
+%{_mandir}/man1/qemu-system-sh4.1*
+%{_mandir}/man1/qemu-system-sh4eb.1*
 
 
-%files system-aarch64
-# Deliberately empty
-
-%files system-aarch64-core
-%{_bindir}/qemu-system-aarch64
-%{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
-%{_mandir}/man1/qemu-system-aarch64.1*
+%files system-sparc
+%files system-sparc-core
+%{_bindir}/qemu-system-sparc
+%{_bindir}/qemu-system-sparc64
+%{_datadir}/systemtap/tapset/qemu-system-sparc*.stp
+%{_mandir}/man1/qemu-system-sparc.1*
+%{_mandir}/man1/qemu-system-sparc64.1*
+%{_datadir}/%{name}/QEMU,tcx.bin
+%{_datadir}/%{name}/QEMU,cgthree.bin
 
 
 %files system-tricore
-# Deliberately empty
-
 %files system-tricore-core
 %{_bindir}/qemu-system-tricore
 %{_datadir}/systemtap/tapset/qemu-system-tricore*.stp
 %{_mandir}/man1/qemu-system-tricore.1*
 
 
-%files system-nios2
-# Deliberately empty
-
-%files system-nios2-core
-%{_bindir}/qemu-system-nios2
-%{_datadir}/systemtap/tapset/qemu-system-nios2*.stp
-%{_mandir}/man1/qemu-system-nios2.1*
+%files system-unicore32
+%files system-unicore32-core
+%{_bindir}/qemu-system-unicore32
+%{_datadir}/systemtap/tapset/qemu-system-unicore32*.stp
+%{_mandir}/man1/qemu-system-unicore32.1*
 
 
-%files system-hppa
-# Deliberately empty
+%files system-x86
+%files system-x86-core
+%{_bindir}/qemu-system-i386
+%{_bindir}/qemu-system-x86_64
+%{_datadir}/systemtap/tapset/qemu-system-i386*.stp
+%{_datadir}/systemtap/tapset/qemu-system-x86_64*.stp
+%{_mandir}/man1/qemu-system-i386.1*
+%{_mandir}/man1/qemu-system-x86_64.1*
+%{_datadir}/%{name}/bios.bin
+%{_datadir}/%{name}/bios-256k.bin
+%{_datadir}/%{name}/sgabios.bin
+%{_datadir}/%{name}/linuxboot.bin
+%{_datadir}/%{name}/linuxboot_dma.bin
+%{_datadir}/%{name}/multiboot.bin
+%{_datadir}/%{name}/kvmvapic.bin
+%if 0%{?need_qemu_kvm}
+%{_bindir}/qemu-kvm
+%{_mandir}/man1/qemu-kvm.1*
+%endif
 
-%files system-hppa-core
-%{_bindir}/qemu-system-hppa
-%{_datadir}/systemtap/tapset/qemu-system-hppa*.stp
-%{_mandir}/man1/qemu-system-hppa.1*
-%{_datadir}/%{name}/hppa-firmware.img
+
+%files system-xtensa
+%files system-xtensa-core
+%{_bindir}/qemu-system-xtensa
+%{_bindir}/qemu-system-xtensaeb
+%{_datadir}/systemtap/tapset/qemu-system-xtensa*.stp
+%{_mandir}/man1/qemu-system-xtensa.1*
+%{_mandir}/man1/qemu-system-xtensaeb.1*
 
 
 %changelog
