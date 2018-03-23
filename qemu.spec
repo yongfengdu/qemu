@@ -25,23 +25,35 @@
 %endif
 
 %global user_static 1
-# glibc static libs are fubar on i386, s390 & ppc64*
-# https://bugzilla.redhat.com/show_bug.cgi?id=1352625
-%ifarch %{?ix86} s390 s390x %{power64}
-%global user_static 0
-%endif
 
 %global have_kvm 0
 %if 0%{?kvm_package:1}
 %global have_kvm 1
 %endif
 
-%ifarch %{ix86} x86_64
+# Matches numactl ExcludeArch
+%global have_numactl 1
+%ifarch s390 %{arm}
+%global have_numactl 0
+%endif
+
+# Upstream disables iasl for big endian and QEMU checks
+# for this. Fedora has re-enabled it on BE circumventing
+# the QEMU checks, but it fails none the less:
+#
+# https://bugzilla.redhat.com/show_bug.cgi?id=1332449
+%global have_iasl 1
+%ifnarch s390 s390x ppc ppc64
+%global have_iasl 0
+%endif
+
+# Matches spice ExclusiveArch
+%ifarch %{ix86} x86_64 %{arm} aarch64
 %global have_spice   1
 %endif
 
-# Xen is available only on i386 x86_64 (from libvirt spec)
-%ifarch %{ix86} x86_64
+# Matches xen ExclusiveArch
+%ifarch %{ix86} x86_64 armv7hl aarch64
 %global have_xen 1
 %endif
 
@@ -140,14 +152,8 @@ BuildRequires: perl-podlators
 # For sanity test
 BuildRequires: qemu-sanity-check-nodeps
 BuildRequires: kernel
+%if %{have_iasl}
 # For acpi compilation
-#
-# Upstream disables iasl for big endian and QEMU checks
-# for this. Fedora has re-enabled it on BE circumventing
-# the QEMU checks, but it fails none the less:
-#
-# https://bugzilla.redhat.com/show_bug.cgi?id=1332449
-%ifnarch s390 s390x ppc ppc64
 BuildRequires: iasl
 %endif
 # For chrpath calls in specfile
@@ -227,14 +233,12 @@ BuildRequires: vte291-devel
 # GTK translations
 BuildRequires: gettext
 # RDMA migration
-%ifnarch s390 s390x %{arm}
-BuildRequires: librdmacm-devel
-%endif
+BuildRequires: rdma-core-devel
 %if 0%{?have_xen:1}
 # Xen support
 BuildRequires: xen-devel
 %endif
-%ifarch %{ix86} x86_64 aarch64
+%if %{have_numactl}
 # qemu 2.1: needed for memdev hostmem backend
 BuildRequires: numactl-devel
 %endif
@@ -968,11 +972,7 @@ run_configure() {
         --enable-tcg-interpreter \
 %endif
         --enable-trace-backend=$tracebackends \
-%ifnarch aarch64
         --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
-%else
-        --extra-ldflags="$extraldflags" \
-%endif
         --extra-cflags="%{optflags}" \
         "$@" || cat config.log
 }
