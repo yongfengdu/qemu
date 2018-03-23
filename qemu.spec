@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 0.1%{?rcrel}%{?dist}
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1881,6 +1881,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Mar 23 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.2.rc0
+- Fix audio and ui module RPM deps
+- Drop some arch restrictions for rdma, spice, xen, numactl
+- Fix hppa firmware packaging
+
 * Thu Mar 22 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.1.rc0
 - Rebase to qemu-2.12.0-rc0
 - Add hppa and riscv32/64 targets
