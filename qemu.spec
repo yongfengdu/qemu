@@ -1251,9 +1251,9 @@ for f in %{buildroot}%{_bindir}/* %{buildroot}%{_libdir}/* \
   if file $f | grep -q ELF | grep -q -i shared; then chrpath --delete $f; fi
 done
 
-# We need to make the block device modules executable else
+# We need to make the modules executable else
 # RPM won't pick up their dependencies.
-chmod +x %{buildroot}%{_libdir}/qemu/block-*.so
+chmod +x %{buildroot}%{_libdir}/qemu/*.so
 
 
 %check
