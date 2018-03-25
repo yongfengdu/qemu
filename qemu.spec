@@ -104,14 +104,12 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 0.2%{?rcrel}%{?dist}
+Release: 0.3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
 Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
-
-Source1: qemu.binfmt
 
 # KSM control scripts
 Source4: ksm.service
@@ -1174,65 +1172,20 @@ rom_link ../seabios/bios-256k.bin bios-256k.bin
 rom_link ../sgabios/sgabios.bin sgabios.bin
 
 # Install binfmt
-mkdir -p %{buildroot}%{_exec_prefix}/lib/binfmt.d
-for i in dummy \
-%ifnarch %{ix86} x86_64
-    qemu-i386 \
-%endif
-%ifnarch alpha
-    qemu-alpha \
-%endif
-%ifnarch aarch64
-    qemu-aarch64 \
-%endif
-%ifnarch %{arm}
-    qemu-arm \
-%endif
-    qemu-armeb \
-    qemu-cris \
-    qemu-microblaze qemu-microblazeel \
-%ifnarch mips64
-    qemu-mips64 \
-%ifnarch mips
-    qemu-mips \
-%endif
-%endif
-%ifnarch mips64el
-    qemu-mips64el \
-%ifnarch mipsel
-    qemu-mipsel \
-%endif
-%endif
-%ifnarch m68k
-    qemu-m68k \
-%endif
-%ifnarch ppc %{power64}
-    qemu-ppc qemu-ppc64abi32 qemu-ppc64le qemu-ppc64 \
-%endif
-%ifnarch sparc sparc64
-    qemu-sparc qemu-sparc32plus qemu-sparc64 \
-%endif
-%ifnarch s390 s390x
-    qemu-s390x \
-%endif
-%ifnarch sh4
-    qemu-sh4 \
-%endif
-    qemu-sh4eb \
-; do
-  test $i = dummy && continue
+%global binfmt_dir %{buildroot}%{_exec_prefix}/lib/binfmt.d
+mkdir -p %{binfmt_dir}
 
-  grep /$i:\$ %{_sourcedir}/qemu.binfmt > %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-dynamic.conf
-  chmod 644 %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-dynamic.conf
+./scripts/qemu-binfmt-conf.sh --systemd ALL --exportdir %{binfmt_dir} --qemu-path %{_bindir}
+for i in %{binfmt_dir}/*; do
+    mv $i $(echo $i | sed 's/.conf/-dynamic.conf/')
+done
 
 %if %{user_static}
-  grep /$i:\$ %{_sourcedir}/qemu.binfmt | tr -d '\n' > %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
-  echo "F" >> %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
-  perl -i -p -e "s/$i:F/$i-static:F/" %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
-  chmod 644 %{buildroot}%{_exec_prefix}/lib/binfmt.d/$i-static.conf
+for regularfmt in %{binfmt_dir}/*; do
+  staticfmt="$(echo $regularfmt | sed 's/-dynamic/-static/g')"
+  cat $regularfmt | tr -d '\n' | sed "s/:$/-static:F/" > $staticfmt
+done
 %endif
-
-done < %{_sourcedir}/qemu.binfmt
 
 
 # Install rules to use the bridge helper with libvirt's virbr0
@@ -1881,6 +1834,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sun Mar 25 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.3.rc0
+- Generate binfmt configs with qemu-binfmt-conf.sh
+
 * Fri Mar 23 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.2.rc0
 - Fix audio and ui module RPM deps
 - Drop some arch restrictions for rdma, spice, xen, numactl
