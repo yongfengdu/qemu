@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 0.3%{?rcrel}%{?dist}
+Release: 0.4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -864,89 +864,6 @@ buildldflags="VL_LDFLAGS=-Wl,--build-id"
 # but there's a performance impact for non-dtrace so we don't use them
 tracebackends="dtrace"
 
-system_arch="\
-  aarch64 \
-  alpha \
-  arm \
-  cris \
-  hppa \
-  i386 \
-  lm32 \
-  m68k \
-  microblaze \
-  microblazeel \
-  mips \
-  mips64 \
-  mips64el \
-  mipsel \
-  moxie \
-  nios2 \
-  or1k \
-  ppc \
-  ppc64 \
-  ppcemb \
-  riscv32 \
-  riscv64 \
-  s390x \
-  sh4 \
-  sh4eb \
-  sparc \
-  sparc64 \
-  tricore \
-  unicore32 \
-  x86_64 \
-  xtensa \
-  xtensaeb"
-
-user_arch="\
-  aarch64 \
-  aarch64_be \
-  alpha \
-  arm \
-  armeb \
-  cris \
-  i386 \
-  hppa \
-  m68k \
-  microblaze \
-  microblazeel \
-  mips \
-  mips64 \
-  mips64el \
-  mipsel \
-  mipsn32 \
-  mipsn32el \
-  nios2 \
-  or1k \
-  ppc \
-  ppc64 \
-  ppc64abi32 \
-  ppc64le \
-  s390x \
-  sh4 \
-  sh4eb \
-  sparc \
-  sparc32plus \
-  sparc64 \
-  riscv32 \
-  riscv64 \
-  x86_64"
-
-dynamic_targets=
-static_targets=
-
-for arch in $system_arch
-do
-  dynamic_targets="$dynamic_targets $arch-softmmu"
-done
-
-for arch in $user_arch
-do
-  dynamic_targets="$dynamic_targets $arch-linux-user"
-  static_targets="$static_targets $arch-linux-user"
-done
-
-
 %if 0%{?have_spice:1}
     %global spiceflag --enable-spice
 %else
@@ -979,7 +896,8 @@ mkdir build-dynamic
 pushd build-dynamic
 
 run_configure \
-    --target-list="$dynamic_targets" \
+    --enable-system \
+    --enable-linux-user \
     --enable-pie \
     --enable-modules \
     --audio-drv-list=pa,sdl,alsa,oss \
@@ -1003,7 +921,8 @@ mkdir build-static
 pushd build-static
 
 run_configure \
-    --target-list="$static_targets" \
+    --disable-system \
+    --enable-linux-user \
     --static \
     --disable-pie \
     --disable-sdl \
@@ -1460,6 +1379,9 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-sparc
 %{_bindir}/qemu-sparc32plus
 %{_bindir}/qemu-sparc64
+%{_bindir}/qemu-tilegx
+%{_bindir}/qemu-xtensa
+%{_bindir}/qemu-xtensaeb
 
 %{_datadir}/systemtap/tapset/qemu-i386.stp
 %{_datadir}/systemtap/tapset/qemu-i386-simpletrace.stp
@@ -1525,110 +1447,23 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-tilegx.stp
+%{_datadir}/systemtap/tapset/qemu-tilegx-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-xtensaeb.stp
+%{_datadir}/systemtap/tapset/qemu-xtensaeb-simpletrace.stp
 
 %files user-binfmt
 %{_exec_prefix}/lib/binfmt.d/qemu-*-dynamic.conf
 
 %if %{user_static}
 %files user-static
+# Just use wildcard matches here: we will catch any new/missing files
+# in the qemu-user filelists
 %{_exec_prefix}/lib/binfmt.d/qemu-*-static.conf
-%{_bindir}/qemu-i386-static
-%{_bindir}/qemu-x86_64-static
-%{_bindir}/qemu-aarch64-static
-%{_bindir}/qemu-aarch64_be-static
-%{_bindir}/qemu-alpha-static
-%{_bindir}/qemu-arm-static
-%{_bindir}/qemu-armeb-static
-%{_bindir}/qemu-cris-static
-%{_bindir}/qemu-hppa-static
-%{_bindir}/qemu-m68k-static
-%{_bindir}/qemu-microblaze-static
-%{_bindir}/qemu-microblazeel-static
-%{_bindir}/qemu-mips-static
-%{_bindir}/qemu-mipsel-static
-%{_bindir}/qemu-mips64-static
-%{_bindir}/qemu-mips64el-static
-%{_bindir}/qemu-mipsn32-static
-%{_bindir}/qemu-mipsn32el-static
-%{_bindir}/qemu-nios2-static
-%{_bindir}/qemu-or1k-static
-%{_bindir}/qemu-ppc-static
-%{_bindir}/qemu-ppc64-static
-%{_bindir}/qemu-ppc64abi32-static
-%{_bindir}/qemu-ppc64le-static
-%{_bindir}/qemu-riscv32-static
-%{_bindir}/qemu-riscv64-static
-%{_bindir}/qemu-s390x-static
-%{_bindir}/qemu-sh4-static
-%{_bindir}/qemu-sh4eb-static
-%{_bindir}/qemu-sparc-static
-%{_bindir}/qemu-sparc32plus-static
-%{_bindir}/qemu-sparc64-static
-
-%{_datadir}/systemtap/tapset/qemu-i386-static.stp
-%{_datadir}/systemtap/tapset/qemu-i386-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-x86_64-static.stp
-%{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64-static.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be-static.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-alpha-static.stp
-%{_datadir}/systemtap/tapset/qemu-alpha-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-arm-static.stp
-%{_datadir}/systemtap/tapset/qemu-arm-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-armeb-static.stp
-%{_datadir}/systemtap/tapset/qemu-armeb-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-cris-static.stp
-%{_datadir}/systemtap/tapset/qemu-cris-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-hppa-static.stp
-%{_datadir}/systemtap/tapset/qemu-hppa-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-m68k-static.stp
-%{_datadir}/systemtap/tapset/qemu-m68k-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-microblaze-static.stp
-%{_datadir}/systemtap/tapset/qemu-microblaze-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-microblazeel-static.stp
-%{_datadir}/systemtap/tapset/qemu-microblazeel-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mips-static.stp
-%{_datadir}/systemtap/tapset/qemu-mips-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mips64-static.stp
-%{_datadir}/systemtap/tapset/qemu-mips64-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el-static.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-nios2-static.stp
-%{_datadir}/systemtap/tapset/qemu-nios2-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-or1k-static.stp
-%{_datadir}/systemtap/tapset/qemu-or1k-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64abi32-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64abi32-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le-static.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-riscv32-static.stp
-%{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64-static.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-s390x-static.stp
-%{_datadir}/systemtap/tapset/qemu-s390x-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-sh4-static.stp
-%{_datadir}/systemtap/tapset/qemu-sh4-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-sh4eb-static.stp
-%{_datadir}/systemtap/tapset/qemu-sh4eb-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-sparc-static.stp
-%{_datadir}/systemtap/tapset/qemu-sparc-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-sparc32plus-static.stp
-%{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-sparc64-static.stp
-%{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace-static.stp
+%{_bindir}/qemu-*-static
+%{_datadir}/systemtap/tapset/qemu-*-static.stp
 %endif
 
 
@@ -1834,6 +1669,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Mar 26 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.4.rc0
+- Enable missing tilegx, xtensa* qemu-user targets
+
 * Sun Mar 25 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.3.rc0
 - Generate binfmt configs with qemu-binfmt-conf.sh
 
