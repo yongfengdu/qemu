@@ -94,7 +94,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 
 # Release candidate version tracking
-%global rcver rc1
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 0.5%{?rcrel}%{?dist}
+Release: 0.6%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -139,9 +139,6 @@ Source22: 95-kvm-ppc64-memlock.conf
 
 # Avoid breakage in tests due to stricter crypto policies
 Patch0001: 0001-crypto-ensure-we-use-a-predictable-TLS-priority-sett.patch
-# RISC-V fix from rich:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1551452#c7
-Patch0002: 0002-riscv-force-float-save.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1669,6 +1666,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Apr 05 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.6.rc2
+- Update to qemu-2.12.0-rc2
+
 * Wed Mar 28 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.5.rc1
 - Update to qemu-2.12.0-rc1
 
