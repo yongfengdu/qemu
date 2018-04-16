@@ -94,7 +94,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 
 # Release candidate version tracking
-%global rcver rc2
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 0.6%{?rcrel}%{?dist}
+Release: 0.7%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -136,9 +136,6 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
-
-# Avoid breakage in tests due to stricter crypto policies
-Patch0001: 0001-crypto-ensure-we-use-a-predictable-TLS-priority-sett.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1666,6 +1663,11 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Apr 16 2018 Richard W.M. Jones <rjones@redhat.com> - 2:2.12.0-0.7.rc3
+- Update to qemu-2.12.0-rc3
+- Remove upstream patch.
+- Fixes issues with partition / LV minimum alignment (RHBZ#1565714).
+
 * Thu Apr 05 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-0.6.rc2
 - Update to qemu-2.12.0-rc2
 
