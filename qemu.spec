@@ -94,7 +94,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 
 # Release candidate version tracking
-%global rcver rc3
+#global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 0.7%{?rcrel}%{?dist}
+Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1663,6 +1663,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Apr 30 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-1
+- Update to qemu-2.12.0 GA
+
 * Mon Apr 16 2018 Richard W.M. Jones <rjones@redhat.com> - 2:2.12.0-0.7.rc3
 - Update to qemu-2.12.0-rc3
 - Remove upstream patch.
