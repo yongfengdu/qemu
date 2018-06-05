@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -136,6 +136,9 @@ Source20: kvm.conf
 Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source22: 95-kvm-ppc64-memlock.conf
+
+# Fix qxl memslot_get_virt crashes (bz #1565354)
+Patch0001: 0001-qxl-fix-local-renderer-crash.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1663,6 +1666,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Jun 05 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-2
+- Fix qxl memslot_get_virt crashes (bz #1565354)
+
 * Mon Apr 30 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-1
 - Update to qemu-2.12.0 GA
 
