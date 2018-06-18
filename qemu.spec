@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 2%{?rcrel}%{?dist}
+Release: 3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -139,6 +139,12 @@ Source22: 95-kvm-ppc64-memlock.conf
 
 # Fix qxl memslot_get_virt crashes (bz #1565354)
 Patch0001: 0001-qxl-fix-local-renderer-crash.patch
+
+Patch0002: 0001-i386-define-the-ssbd-CPUID-feature-bit-CVE-2018-3639.patch
+Patch0003: 0002-i386-Define-the-Virt-SSBD-MSR-and-handling-of-it-CVE.patch
+Patch0004: 0003-i386-define-the-AMD-virt-ssbd-CPUID-feature-bit-CVE-.patch
+
+
 
 # documentation deps
 BuildRequires: texinfo
@@ -1666,6 +1672,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Jun 18 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:2.12.0-3
+- New CPU features for speculative store bypass (CVE-2018-3639)
+
 * Tue Jun 05 2018 Cole Robinson <crobinso@redhat.com> - 2:2.12.0-2
 - Fix qxl memslot_get_virt crashes (bz #1565354)
 
