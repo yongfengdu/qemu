@@ -104,7 +104,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 2.12.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1672,6 +1672,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Jul 13 2018 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.12.0-4
+- Rebuild for Xen 4.11
+
 * Mon Jun 18 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:2.12.0-3
 - New CPU features for speculative store bypass (CVE-2018-3639)
 
