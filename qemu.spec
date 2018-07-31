@@ -94,7 +94,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 
 # Release candidate version tracking
-#global rcver rc3
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -103,8 +103,8 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 2.12.0
-Release: 4%{?rcrel}%{?dist}
+Version: 3.0.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -132,17 +132,8 @@ Source14: qemu-pr-helper.service
 Source15: qemu-pr-helper.socket
 # /etc/modprobe.d/kvm.conf
 Source20: kvm.conf
-# /etc/sysctl.d/50-kvm-s390x.conf
-Source21: 50-kvm-s390x.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
-Source22: 95-kvm-ppc64-memlock.conf
-
-# Fix qxl memslot_get_virt crashes (bz #1565354)
-Patch0001: 0001-qxl-fix-local-renderer-crash.patch
-
-Patch0002: 0001-i386-define-the-ssbd-CPUID-feature-bit-CVE-2018-3639.patch
-Patch0003: 0002-i386-Define-the-Virt-SSBD-MSR-and-handling-of-it-CVE.patch
-Patch0004: 0003-i386-define-the-AMD-virt-ssbd-CPUID-feature-bit-CVE-.patch
+Source21: 95-kvm-ppc64-memlock.conf
 
 
 
@@ -878,9 +869,9 @@ run_configure() {
         --prefix=%{_prefix} \
         --libdir=%{_libdir} \
         --sysconfdir=%{_sysconfdir} \
-        --interp-prefix=%{_prefix}/qemu-%%M \
         --localstatedir=%{_localstatedir} \
         --libexecdir=%{_libexecdir} \
+        --interp-prefix=%{_prefix}/qemu-%%M \
         --with-pkgversion=%{name}-%{version}-%{release} \
         --disable-strip \
         --disable-werror \
@@ -1672,6 +1663,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Jul 31 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-0.1.rc3
+- Rebase to qemu-3.0.0-rc3
+- Drop now unneeded s390x conf (bz #1609706)
+
 * Fri Jul 13 2018 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.12.0-4
 - Rebuild for Xen 4.11
 
