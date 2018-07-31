@@ -130,8 +130,8 @@ Source13: qemu-kvm.sh
 # PR manager service
 Source14: qemu-pr-helper.service
 Source15: qemu-pr-helper.socket
-# /etc/modprobe.d/kvm.conf
-Source20: kvm.conf
+# /etc/modprobe.d/kvm.conf, for x86
+Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
@@ -961,8 +961,6 @@ install -D -p -m 0644 %{_sourcedir}/ksmtuned.service %{buildroot}%{_unitdir}
 install -D -p -m 0755 %{_sourcedir}/ksmtuned %{buildroot}%{_sbindir}/ksmtuned
 install -D -p -m 0644 %{_sourcedir}/ksmtuned.conf %{buildroot}%{_sysconfdir}/ksmtuned.conf
 
-install -D -p -m 0644 %{_sourcedir}/kvm.conf %{buildroot}%{_sysconfdir}/modprobe.d/kvm.conf
-
 # Install qemu-guest-agent service and udev rules
 install -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
 install -m 0644 %{_sourcedir}/qemu-ga.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/qemu-ga
@@ -977,11 +975,6 @@ touch %{buildroot}%{_localstatedir}/log/qga-fsfreeze-hook.log
 # Install qemu-pr-helper service
 install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
 install -m 0644 %{_sourcedir}/qemu-pr-helper.socket %{buildroot}%{_unitdir}
-
-%ifarch s390x
-install -d %{buildroot}%{_sysconfdir}/sysctl.d
-install -m 0644 %{_sourcedir}/50-kvm-s390x.conf %{buildroot}%{_sysconfdir}/sysctl.d
-%endif
 
 %ifarch %{power64}
 install -d %{buildroot}%{_sysconfdir}/security/limits.d
@@ -1032,6 +1025,7 @@ done
 %if 0%{?need_qemu_kvm}
 install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
 ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/qemu-kvm.1.gz
+install -D -p -m 0644 %{_sourcedir}/kvm-x86.modprobe.conf %{buildroot}%{_sysconfdir}/modprobe.d/kvm.conf
 %endif
 
 install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/qemu.conf
@@ -1259,7 +1253,6 @@ getent passwd qemu >/dev/null || \
 %{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
 %config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
-%config(noreplace) %{_sysconfdir}/modprobe.d/kvm.conf
 %dir %{_sysconfdir}/qemu
 %config(noreplace) %{_sysconfdir}/qemu/bridge.conf
 %dir %{_libdir}/qemu
@@ -1650,6 +1643,7 @@ getent passwd qemu >/dev/null || \
 %if 0%{?need_qemu_kvm}
 %{_bindir}/qemu-kvm
 %{_mandir}/man1/qemu-kvm.1*
+%config(noreplace) %{_sysconfdir}/modprobe.d/kvm.conf
 %endif
 
 
@@ -1666,6 +1660,7 @@ getent passwd qemu >/dev/null || \
 * Tue Jul 31 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-0.1.rc3
 - Rebase to qemu-3.0.0-rc3
 - Drop now unneeded s390x conf (bz #1609706)
+- Only install modprobe kvm.conf on x86 (bz #1517989)
 
 * Fri Jul 13 2018 Peter Robinson <pbrobinson@fedoraproject.org> 2:2.12.0-4
 - Rebuild for Xen 4.11
