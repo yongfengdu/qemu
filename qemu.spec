@@ -1148,15 +1148,6 @@ qemu-sanity-check --qemu=%{?hostqemu} ||:
 popd
 
 
-%if %{have_kvm}
-%post %{kvm_package}
-
-%ifarch s390x
-%sysctl_apply 50-kvm-s390x.conf
-%endif
-%endif
-
-
 %post common
 getent group kvm >/dev/null || groupadd -g 36 -r kvm
 getent group qemu >/dev/null || groupadd -g 107 -r qemu
@@ -1586,9 +1577,6 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu-system-s390x.1*
 %{_datadir}/%{name}/s390-ccw.img
 %{_datadir}/%{name}/s390-netboot.img
-%ifarch s390x
-%{_sysconfdir}/sysctl.d/50-kvm-s390x.conf
-%endif
 
 
 %files system-sh4
