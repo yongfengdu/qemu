@@ -84,6 +84,7 @@ Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
 Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
 Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-block-rbd = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-audio-alsa = %{epoch}:%{version}-%{release}    \
 Requires: %{name}-audio-oss = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-audio-pa = %{epoch}:%{version}-%{release}      \
