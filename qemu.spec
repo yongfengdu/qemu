@@ -112,13 +112,6 @@ URL: http://www.qemu.org/
 
 Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
 
-# KSM control scripts
-Source4: ksm.service
-Source5: ksm.sysconfig
-Source6: ksmctl.c
-Source7: ksmtuned.service
-Source8: ksmtuned
-Source9: ksmtuned.conf
 # guest agent service
 Source10: qemu-guest-agent.service
 Source17: qemu-ga.sysconfig
@@ -314,17 +307,6 @@ Requires(preun): systemd-units
 Requires(postun): systemd-units
 %description common
 This package provides the common files needed by all QEMU targets
-
-
-%package -n ksm
-Summary: Kernel Samepage Merging services
-Requires(post): systemd-units
-Requires(postun): systemd-units
-%description -n ksm
-Kernel Samepage Merging (KSM) is a memory-saving de-duplication feature,
-that merges anonymous (private) pages (not pagecache ones).
-
-This package provides service files for disabling and tuning KSM.
 
 
 %package guest-agent
@@ -942,8 +924,6 @@ make V=1 %{?_smp_mflags} $buildldflags
 popd
 %endif
 
-gcc %{_sourcedir}/ksmctl.c $RPM_OPT_FLAGS $RPM_LD_FLAGS -o ksmctl
-
 
 %install
 
@@ -953,14 +933,6 @@ gcc %{_sourcedir}/ksmctl.c $RPM_OPT_FLAGS $RPM_LD_FLAGS -o ksmctl
 mkdir -p %{buildroot}%{_udevdir}
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_sysconfdir}/qemu
-
-install -D -p -m 0644 %{_sourcedir}/ksm.service %{buildroot}%{_unitdir}
-install -D -p -m 0644 %{_sourcedir}/ksm.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/ksm
-install -D -p -m 0755 ksmctl %{buildroot}%{_libexecdir}/ksmctl
-
-install -D -p -m 0644 %{_sourcedir}/ksmtuned.service %{buildroot}%{_unitdir}
-install -D -p -m 0755 %{_sourcedir}/ksmtuned %{buildroot}%{_sbindir}/ksmtuned
-install -D -p -m 0644 %{_sourcedir}/ksmtuned.conf %{buildroot}%{_sysconfdir}/ksmtuned.conf
 
 # Install qemu-guest-agent service and udev rules
 install -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
@@ -1157,17 +1129,6 @@ getent passwd qemu >/dev/null || \
     -c "qemu user" qemu
 
 
-%post -n ksm
-%systemd_post ksm.service
-%systemd_post ksmtuned.service
-%preun -n ksm
-%systemd_preun ksm.service
-%systemd_preun ksmtuned.service
-%postun -n ksm
-%systemd_postun_with_restart ksm.service
-%systemd_postun_with_restart ksmtuned.service
-
-
 %post user-binfmt
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 %postun user-binfmt
@@ -1248,15 +1209,6 @@ getent passwd qemu >/dev/null || \
 %dir %{_sysconfdir}/qemu
 %config(noreplace) %{_sysconfdir}/qemu/bridge.conf
 %dir %{_libdir}/qemu
-
-
-%files -n ksm
-%{_libexecdir}/ksmctl
-%{_sbindir}/ksmtuned
-%{_unitdir}/ksmtuned.service
-%{_unitdir}/ksm.service
-%config(noreplace) %{_sysconfdir}/ksmtuned.conf
-%config(noreplace) %{_sysconfdir}/sysconfig/ksm
 
 
 %files guest-agent
