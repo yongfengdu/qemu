@@ -935,8 +935,8 @@ mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_sysconfdir}/qemu
 
 # Install qemu-guest-agent service and udev rules
-install -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
-install -m 0644 %{_sourcedir}/qemu-ga.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/qemu-ga
+install -p -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
+install -D -p -m 0644 %{_sourcedir}/qemu-ga.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/qemu-ga
 install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d
