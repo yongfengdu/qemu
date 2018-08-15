@@ -95,7 +95,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 
 # Release candidate version tracking
-%global rcver rc3
+#global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -105,7 +105,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 3.0.0
-Release: 0.2%{?rcrel}%{?dist}
+Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1598,6 +1598,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Aug 15 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-1
+- Rebase to qemu-3.0.0 GA
+
 * Mon Aug 13 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-0.2.rc3
 - Drop ksm package, moved to ksmtuned srpm
 
