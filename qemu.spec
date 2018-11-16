@@ -246,8 +246,10 @@ BuildRequires: capstone-devel
 BuildRequires: libxml2-devel
 # python scripts in the build process
 BuildRequires: python3
+%ifarch x86_64
 # qemu 3.1: Used for nvdimm
 BuildRequires: libpmem-devel
+%endif
 # qemu 3.1: Used for qemu-ga
 BuildRequires: libudev-devel
 
