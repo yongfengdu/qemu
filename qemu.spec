@@ -95,7 +95,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 
 # Release candidate version tracking
-#global rcver rc3
+%global rcver rc1
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -104,8 +104,8 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 3.0.0
-Release: 1%{?rcrel}%{?dist}
+Version: 3.1.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -246,6 +246,10 @@ BuildRequires: capstone-devel
 BuildRequires: libxml2-devel
 # python scripts in the build process
 BuildRequires: python3
+# qemu 3.1: Used for nvdimm
+BuildRequires: libpmem-devel
+# qemu 3.1: Used for qemu-ga
+BuildRequires: libudev-devel
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -882,7 +886,6 @@ run_configure \
     --enable-mpath \
     %{spiceflag} \
     --with-sdlabi="2.0" \
-    --with-gtkabi="3.0"
 
 echo "config-host.mak contents:"
 echo "==="
@@ -917,7 +920,9 @@ run_configure \
     --disable-brlapi \
     --disable-mpath \
     --disable-libnfs \
-    --disable-capstone
+    --disable-capstone \
+    --disable-xen \
+    --disable-rdma
 
 make V=1 %{?_smp_mflags} $buildldflags
 
@@ -1197,9 +1202,11 @@ getent passwd qemu >/dev/null || \
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
 %{_mandir}/man7/qemu-block-drivers.7*
+%{_mandir}/man7/qemu-cpu-models.7*
 %{_mandir}/man7/qemu-ga-ref.7*
 %{_mandir}/man7/qemu-qmp-ref.7*
 %{_bindir}/virtfs-proxy-helper
+%{_bindir}/qemu-edid
 %{_bindir}/qemu-keymap
 %{_bindir}/qemu-pr-helper
 %{_unitdir}/qemu-pr-helper.service
@@ -1497,11 +1504,9 @@ getent passwd qemu >/dev/null || \
 %files system-ppc-core
 %{_bindir}/qemu-system-ppc
 %{_bindir}/qemu-system-ppc64
-%{_bindir}/qemu-system-ppcemb
 %{_datadir}/systemtap/tapset/qemu-system-ppc*.stp
 %{_mandir}/man1/qemu-system-ppc.1*
 %{_mandir}/man1/qemu-system-ppc64.1*
-%{_mandir}/man1/qemu-system-ppcemb.1*
 %{_datadir}/%{name}/bamboo.dtb
 %{_datadir}/%{name}/canyonlands.dtb
 %{_datadir}/%{name}/ppc_rom.bin
@@ -1598,6 +1603,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Nov 15 2018 Cole Robinson <crobinso@redhat.com> - 2:3.1.0-0.1.rc1
+- Rebase to qemu-3.1.0-rc1
+
 * Wed Aug 15 2018 Cole Robinson <crobinso@redhat.com> - 2:3.0.0-1
 - Rebase to qemu-3.0.0 GA
 
