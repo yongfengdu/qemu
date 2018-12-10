@@ -77,6 +77,13 @@
 %endif
 
 # All modules should be listed here.
+%ifarch %{ix86} %{arm}
+%define with_block_rbd 0
+%else
+%define with_block_rbd 1
+%endif
+
+%if %{with_block_rbd}
 %global requires_all_modules                               \
 Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
 Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
@@ -92,7 +99,22 @@ Requires: %{name}-audio-sdl = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-ui-curses = %{epoch}:%{version}-%{release}     \
 Requires: %{name}-ui-gtk = %{epoch}:%{version}-%{release}        \
 Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
-
+%else
+%global requires_all_modules                               \
+Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
+Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
+Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
+Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-audio-alsa = %{epoch}:%{version}-%{release}    \
+Requires: %{name}-audio-oss = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-audio-pa = %{epoch}:%{version}-%{release}      \
+Requires: %{name}-audio-sdl = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-ui-curses = %{epoch}:%{version}-%{release}     \
+Requires: %{name}-ui-gtk = %{epoch}:%{version}-%{release}        \
+Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
+%endif
 
 # Release candidate version tracking
 %global rcver rc1
@@ -105,7 +127,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 3.1.0
-Release: 0.1%{?rcrel}%{?dist}
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -188,9 +210,11 @@ BuildRequires: spice-server-devel >= 0.12.0
 BuildRequires: libseccomp-devel >= 2.3.0
 # For network block driver
 BuildRequires: libcurl-devel
+%if %{with_block_rbd}
 # For rbd block driver
 BuildRequires: librados2-devel
 BuildRequires: librbd1-devel
+%endif
 # We need both because the 'stap' binary is probed for by configure
 BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
@@ -386,6 +410,7 @@ This package provides the additional NFS block driver for QEMU.
 Install this package if you want to access remote NFS storage.
 
 
+%if %{with_block_rbd}
 %package  block-rbd
 Summary: QEMU Ceph/RBD block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
@@ -394,7 +419,7 @@ This package provides the additional Ceph/RBD block driver for QEMU.
 
 Install this package if you want to access remote Ceph volumes
 using the rbd protocol.
-
+%endif
 
 %package  block-ssh
 Summary: QEMU SSH block driver
@@ -1248,8 +1273,10 @@ getent passwd qemu >/dev/null || \
 %{_libdir}/qemu/block-iscsi.so
 %files block-nfs
 %{_libdir}/qemu/block-nfs.so
+%if %{with_block_rbd}
 %files block-rbd
 %{_libdir}/qemu/block-rbd.so
+%endif
 %files block-ssh
 %{_libdir}/qemu/block-ssh.so
 
@@ -1605,6 +1632,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Dec 10 2018 Daniel P. Berrangé <berrange@redhat.com> - 2:3.1.0-0.2.rc1
+- Disable RBD on 32-bit arches
+
 * Thu Nov 15 2018 Cole Robinson <crobinso@redhat.com> - 2:3.1.0-0.1.rc1
 - Rebase to qemu-3.1.0-rc1
 
