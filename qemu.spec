@@ -127,7 +127,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 3.1.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -150,6 +150,9 @@ Source15: qemu-pr-helper.socket
 Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
+
+# Good ol' keymap 86 still messin with us
+Patch0: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
 
 
 
@@ -1632,6 +1635,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Dec 18 2018 Adam Williamson <awilliam@redhat.com> - 2:3.1.0-1.1
+- Restore patch to drop phantom 86 key from en-us keymap (bz #1658676)
+
 * Tue Dec 11 2018 Cole Robinson <crobinso@redhat.com> - 2:3.1.0-1
 - Rebase to qemu-3.1.0 GA
 
