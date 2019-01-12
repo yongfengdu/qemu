@@ -127,7 +127,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 3.1.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -153,10 +153,6 @@ Source21: 95-kvm-ppc64-memlock.conf
 
 # Good ol' keymap 86 still messin with us
 Patch0: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
-
-# Temporary workaround for capstone 4.  See:
-# https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/thread/NTFMIAACL7ALBHUC3FZDSB3UMNR2SYJT/
-Patch1: 0001-Temporary-workaround-Fix-location-of-capstone-header.patch
 
 
 
@@ -1639,6 +1635,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sat Jan 12 2019 Richard W.M. Jones <rjones@redhat.com> - 2:3.1.0-4
+- Remove temporary patch and rebuild against fixed capstone.
+
 * Fri Jan 11 2019 Richard W.M. Jones <rjones@redhat.com> - 2:3.1.0-3
 - Rebuild for unannounced libcapstone soname bump from 3 to 4.
 - Add a temporary patch to fix capstone header location.
