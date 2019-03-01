@@ -83,38 +83,42 @@
 %define with_block_rbd 1
 %endif
 
+%define evr %{epoch}:%{version}-%{release}
+
+%define requires_block_curl Requires: %{name}-block-curl = %{evr}
+%define requires_block_dmg Requires: %{name}-block-dmg = %{evr}
+%define requires_block_gluster Requires: %{name}-block-gluster = %{evr}
+%define requires_block_iscsi Requires: %{name}-block-iscsi = %{evr}
+%define requires_block_nfs Requires: %{name}-block-nfs = %{evr}
 %if %{with_block_rbd}
-%global requires_all_modules                               \
-Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
-Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
-Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
-Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-rbd = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-audio-alsa = %{epoch}:%{version}-%{release}    \
-Requires: %{name}-audio-oss = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-audio-pa = %{epoch}:%{version}-%{release}      \
-Requires: %{name}-audio-sdl = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-ui-curses = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-ui-gtk = %{epoch}:%{version}-%{release}        \
-Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
+%define requires_block_rbd Requires: %{name}-block-rbd = %{evr}
 %else
-%global requires_all_modules                               \
-Requires: %{name}-block-curl = %{epoch}:%{version}-%{release}    \
-Requires: %{name}-block-dmg = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-gluster = %{epoch}:%{version}-%{release} \
-Requires: %{name}-block-iscsi = %{epoch}:%{version}-%{release}   \
-Requires: %{name}-block-nfs = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-block-ssh = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-audio-alsa = %{epoch}:%{version}-%{release}    \
-Requires: %{name}-audio-oss = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-audio-pa = %{epoch}:%{version}-%{release}      \
-Requires: %{name}-audio-sdl = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-ui-curses = %{epoch}:%{version}-%{release}     \
-Requires: %{name}-ui-gtk = %{epoch}:%{version}-%{release}        \
-Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
+%define requires_block_rbd %{nil}
 %endif
+%define requires_block_ssh Requires: %{name}-block-ssh = %{evr}
+%define requires_audio_alsa Requires: %{name}-audio-alsa = %{evr}
+%define requires_audio_oss Requires: %{name}-audio-oss = %{evr}
+%define requires_audio_pa Requires: %{name}-audio-pa = %{evr}
+%define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
+%define requires_ui_curses Requires: %{name}-ui-curl = %{evr}
+%define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
+%define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
+
+%global requires_all_modules \
+%{requires_block_curl} \
+%{requires_block_dmg} \
+%{requires_block_gluster} \
+%{requires_block_iscsi} \
+%{requires_block_nfs} \
+%{requires_block_rbd} \
+%{requires_block_ssh} \
+%{requires_audio_alsa} \
+%{requires_audio_oss} \
+%{requires_audio_pa} \
+%{requires_audio_sdl} \
+%{requires_ui_curses} \
+%{requires_ui_gtk} \
+%{requires_ui_sdl}
 
 # Release candidate version tracking
 # global rcver rc1
