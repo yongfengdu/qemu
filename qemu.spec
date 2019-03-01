@@ -83,11 +83,20 @@
 %define with_block_rbd 1
 %endif
 
+# Temp disabled due to API breakage https://bugzilla.redhat.com/show_bug.cgi?id=1684298
+%global with_block_gluster 0
+
 %define evr %{epoch}:%{version}-%{release}
 
 %define requires_block_curl Requires: %{name}-block-curl = %{evr}
 %define requires_block_dmg Requires: %{name}-block-dmg = %{evr}
+%if %{with_block_gluster}
 %define requires_block_gluster Requires: %{name}-block-gluster = %{evr}
+%define obsoletes_block_gluster %{nil}
+%else
+%define requires_block_gluster %{nil}
+%define obsoletes_block_gluster Obsoletes: %{name}-block-gluster < %{evr}
+%endif
 %define requires_block_iscsi Requires: %{name}-block-iscsi = %{evr}
 %define requires_block_nfs Requires: %{name}-block-nfs = %{evr}
 %if %{with_block_rbd}
@@ -124,6 +133,7 @@
 
 # Modules which can be conditionally built
 %global obsoletes_some_modules \
+%{obsoletes_block_gluster} \
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
@@ -247,9 +257,11 @@ BuildRequires: brlapi-devel
 BuildRequires: libfdt-devel
 # Hard requirement for version >= 1.3
 BuildRequires: pixman-devel
+%if %{with_block_gluster}
 # For gluster support
-# BuildRequires: glusterfs-devel >= 3.4.0
-# BuildRequires: glusterfs-api-devel >= 3.4.0
+BuildRequires: glusterfs-devel >= 3.4.0
+BuildRequires: glusterfs-api-devel >= 3.4.0
+%endif
 # Needed for usb passthrough for qemu >= 1.5
 BuildRequires: libusbx-devel
 # SSH block driver
@@ -400,6 +412,7 @@ This package provides the additional DMG block driver for QEMU.
 Install this package if you want to open '.dmg' files.
 
 
+%if %{with_block_gluster}
 %package  block-gluster
 Summary: QEMU Gluster block driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
@@ -407,6 +420,7 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 This package provides the additional Gluster block driver for QEMU.
 
 Install this package if you want to access remote Gluster storage.
+%endif
 
 
 %package  block-iscsi
@@ -1286,8 +1300,10 @@ getent passwd qemu >/dev/null || \
 %{_libdir}/qemu/block-curl.so
 %files block-dmg
 %{_libdir}/qemu/block-dmg-bz2.so
+%if %{with_block_gluster}
 %files block-gluster
-#{_libdir}/qemu/block-gluster.so
+%{_libdir}/qemu/block-gluster.so
+%endif
 %files block-iscsi
 %{_libdir}/qemu/block-iscsi.so
 %files block-nfs
