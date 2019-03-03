@@ -127,7 +127,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 3.1.0
-Release: 4%{?rcrel}%{?dist}.2
+Release: 4%{?rcrel}%{?dist}.3
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -234,8 +234,8 @@ BuildRequires: libfdt-devel
 # Hard requirement for version >= 1.3
 BuildRequires: pixman-devel
 # For gluster support
-BuildRequires: glusterfs-devel >= 3.4.0
-BuildRequires: glusterfs-api-devel >= 3.4.0
+# BuildRequires: glusterfs-devel >= 3.4.0
+# BuildRequires: glusterfs-api-devel >= 3.4.0
 # Needed for usb passthrough for qemu >= 1.5
 BuildRequires: libusbx-devel
 # SSH block driver
@@ -892,6 +892,7 @@ run_configure() {
         --with-pkgversion=%{name}-%{version}-%{release} \
         --disable-strip \
         --disable-werror \
+        --disable-glusterfs \
         --enable-kvm \
         --python=/usr/bin/python3 \
 %ifarch s390 %{mips64}
@@ -1271,7 +1272,7 @@ getent passwd qemu >/dev/null || \
 %files block-dmg
 %{_libdir}/qemu/block-dmg-bz2.so
 %files block-gluster
-%{_libdir}/qemu/block-gluster.so
+#{_libdir}/qemu/block-gluster.so
 %files block-iscsi
 %{_libdir}/qemu/block-iscsi.so
 %files block-nfs
@@ -1635,6 +1636,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Sun Mar 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:3.1.0-4.3
+- Temporarily disable glusterfs (bz #1684298)
+
 * Thu Feb 28 2019 Cole Robinson <aintdiscole@gmail.com> - 2:3.1.0-4.2
 - Rebuild for brltty soname bump
 
