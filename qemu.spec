@@ -92,8 +92,10 @@
 %define requires_block_nfs Requires: %{name}-block-nfs = %{evr}
 %if %{with_block_rbd}
 %define requires_block_rbd Requires: %{name}-block-rbd = %{evr}
+%define obsoletes_block_rbd %{nil}
 %else
 %define requires_block_rbd %{nil}
+%define obsoletes_block_rbd Obsoletes: %{name}-block-rbd < %{evr}
 %endif
 %define requires_block_ssh Requires: %{name}-block-ssh = %{evr}
 %define requires_audio_alsa Requires: %{name}-audio-alsa = %{evr}
@@ -119,6 +121,10 @@
 %{requires_ui_curses} \
 %{requires_ui_gtk} \
 %{requires_ui_sdl}
+
+# Modules which can be conditionally built
+%global obsoletes_some_modules \
+%{obsoletes_block_rbd}
 
 # Release candidate version tracking
 # global rcver rc1
@@ -346,6 +352,7 @@ Requires(post): /usr/sbin/useradd
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
+%{obsoletes_some_modules}
 %description common
 This package provides the common files needed by all QEMU targets
 
