@@ -111,7 +111,7 @@
 %define requires_audio_oss Requires: %{name}-audio-oss = %{evr}
 %define requires_audio_pa Requires: %{name}-audio-pa = %{evr}
 %define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
-%define requires_ui_curses Requires: %{name}-ui-curl = %{evr}
+%define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
 %define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
 %define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
 
