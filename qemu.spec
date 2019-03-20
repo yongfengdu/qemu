@@ -127,7 +127,7 @@ Requires: %{name}-ui-sdl = %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 3.1.0
-Release: 4%{?rcrel}%{?dist}.3
+Release: 5%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -153,6 +153,10 @@ Source21: 95-kvm-ppc64-memlock.conf
 
 # Good ol' keymap 86 still messin with us
 Patch0: 0001-Remove-problematic-evdev-86-key-from-en-us-keymap.patch
+
+# Modern glibc has a gettid function
+Patch1: 0002-linux-user-assume-__NR_gettid-always-exists.patch
+Patch2: 0003-linux-user-rename-gettid-to-sys_gettid-to-avoid-clas.patch
 
 
 
@@ -1636,6 +1640,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Mar 20 2019 Daniel P. Berrangé <berrange@redhat.com> - 2:3.1.0-5
+- Fix compat with latest glibc which has gettid func
+
 * Sun Mar 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:3.1.0-4.3
 - Temporarily disable glusterfs (bz #1684298)
 
