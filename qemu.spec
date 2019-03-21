@@ -145,7 +145,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 0.1%{?rcrel}%{?dist}.3
+Release: 0.2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -291,8 +291,6 @@ BuildRequires: mesa-libgbm-devel
 BuildRequires: capstone-devel
 # qemu 2.12: parallels disk images require libxml2 now
 BuildRequires: libxml2-devel
-# python scripts in the build process
-BuildRequires: python3
 %ifarch x86_64
 # qemu 3.1: Used for nvdimm
 BuildRequires: libpmem-devel
@@ -309,6 +307,9 @@ BuildRequires: python2-sphinx
 %endif
 # qemu 4.0: Used by test suite ./scripts/tap-driver.pl
 BuildRequires: perl-Test-Harness
+# Required for making python shebangs versioned
+BuildRequires: /usr/bin/pathfix.py
+BuildRequires: python3-devel
 
 BuildRequires: glibc-static pcre-static glib2-static zlib-static
 
@@ -885,6 +886,14 @@ This package provides the QEMU system emulator for Xtensa boards.
 %setup -q -n qemu-%{version}%{?rcstr}
 %autopatch -p1
 
+# https://fedoraproject.org/wiki/Changes/Make_ambiguous_python_shebangs_error
+# Fix all Python shebangs recursively in .
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+# Need to list files that do not match ^[a-zA-Z0-9_]+\.py$ explicitly!
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . scripts/qemu-trace-stap
+
 
 %build
 
@@ -926,7 +935,7 @@ run_configure() {
         --disable-strip \
         --disable-werror \
         --enable-kvm \
-        --python=/usr/bin/python3 \
+        --python=%{__python3} \
 %ifarch s390 %{mips64}
         --enable-tcg-interpreter \
 %endif
@@ -1089,11 +1098,6 @@ rm -rf %{buildroot}%{_datadir}/%{name}/bios.bin
 rm -rf %{buildroot}%{_datadir}/%{name}/bios-256k.bin
 # Provided by package sgabios
 rm -rf %{buildroot}%{_datadir}/%{name}/sgabios.bin
-
-# crobinso: temp hack for qemu 4.0.0-rc0, rawhide builds want versioned
-# python in shebang
-rm -rf %{buildroot}%{_bindir}/qemu-trace-stap
-rm -rf %{buildroot}%{_bindir}/qemu-trace-stap-static
 
 pxe_link() {
   ln -s ../ipxe/$2.rom %{buildroot}%{_datadir}/%{name}/pxe-$1.rom
@@ -1286,7 +1290,7 @@ getent passwd qemu >/dev/null || \
 %{_bindir}/qemu-edid
 %{_bindir}/qemu-keymap
 %{_bindir}/qemu-pr-helper
-#%{_bindir}/qemu-trace-stap
+%{_bindir}/qemu-trace-stap
 %{_bindir}/virtfs-proxy-helper
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
@@ -1722,7 +1726,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed Mar 20 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.1.3.rc0
+* Thu Mar 21 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
+- Fix python paths for qemu-trace-stap
+
+* Wed Mar 20 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
 - Update to 4.0.0-rc0
 
 * Wed Mar 20 2019 Daniel P. Berrangé <berrange@redhat.com> - 2:3.1.0-5
