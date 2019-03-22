@@ -1180,7 +1180,7 @@ chmod +x %{buildroot}%{_libdir}/qemu/*.so
 # 4.0.0-rc0 failing with
 # ERROR - too few tests run (expected 23, got 1)
 # make: *** [/root/qemu/qemu-4.0.0-rc0/tests/Makefile.include:911: check-unit] Error 1
-# error: Bad exit status from /var/tmp/rpm-tmp.0igDWU (%check)
+# error: Bad exit status from /var/tmp/rpm-tmp.0igDWU (%%check)
 %global temp_skip_check 1
 
 pushd build-dynamic
