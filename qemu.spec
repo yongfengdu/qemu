@@ -48,16 +48,19 @@
 %endif
 
 # Matches spice ExclusiveArch
+%global have_spice 0
 %ifarch %{ix86} x86_64 %{arm} aarch64
-%global have_spice   1
+%global have_spice 1
 %endif
 
 # Matches xen ExclusiveArch
+%global have_xen 0
 %ifarch %{ix86} x86_64 armv7hl aarch64
 %global have_xen 1
 %endif
 
 # Matches edk2.spec ExclusiveArch
+%global have_edk2 0
 %ifarch %{ix86} x86_64 %{arm} aarch64
 %global have_edk2 1
 %endif
@@ -222,7 +225,7 @@ BuildRequires: libcap-devel
 BuildRequires: libcap-ng-devel
 # spice usb redirection support
 BuildRequires: usbredir-devel >= 0.5.2
-%if 0%{?have_spice:1}
+%if %{have_spice}
 # spice graphics support
 BuildRequires: spice-protocol >= 0.12.2
 BuildRequires: spice-server-devel >= 0.12.0
@@ -267,7 +270,7 @@ BuildRequires: vte291-devel
 BuildRequires: gettext
 # RDMA migration
 BuildRequires: rdma-core-devel
-%if 0%{?have_xen:1}
+%if %{have_xen}
 # Xen support
 BuildRequires: xen-devel
 %endif
@@ -578,7 +581,7 @@ This package provides the QEMU system emulator for AArch64.
 %package system-aarch64-core
 Summary: QEMU system emulator for AArch64
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%if 0%{?have_edk2:1}
+%if %{have_edk2}
 Requires: edk2-aarch64
 %endif
 %description system-aarch64-core
@@ -858,7 +861,7 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: seabios-bin
 Requires: sgabios-bin
 Requires: seavgabios-bin
-%if 0%{?have_edk2:1}
+%if %{have_edk2}
 Requires: edk2-ovmf
 %endif
 %description system-x86-core
@@ -917,7 +920,7 @@ buildldflags="VL_LDFLAGS=-Wl,--build-id"
 # but there's a performance impact for non-dtrace so we don't use them
 tracebackends="dtrace"
 
-%if 0%{?have_spice:1}
+%if %{have_spice}
     %global spiceflag --enable-spice
 %else
     %global spiceflag --disable-spice
