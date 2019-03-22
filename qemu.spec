@@ -895,7 +895,7 @@ This package provides the QEMU system emulator for Xtensa boards.
 # -n prevents creating ~backup files
 # -i specifies the interpreter for the shebang
 # Need to list files that do not match ^[a-zA-Z0-9_]+\.py$ explicitly!
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . scripts/qemu-trace-stap
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/qemu-trace-stap
 
 
 %build
