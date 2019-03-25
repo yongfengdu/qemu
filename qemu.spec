@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 0.2%{?rcrel}%{?dist}
+Release: 0.3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -176,6 +176,10 @@ Source21: 95-kvm-ppc64-memlock.conf
 Patch1: 0002-linux-user-assume-__NR_gettid-always-exists.patch
 Patch2: 0003-linux-user-rename-gettid-to-sys_gettid-to-avoid-clas.patch
 
+# Fix a crasher with 3D acceleration enabled (RHBZ#1692323)
+# https://lists.gnu.org/archive/html/qemu-devel/2019-03/msg04413.html
+# (danpb's original version, not the broken Otobo version)
+Patch3: 0001-qemu-seccomp-dont-kill-process-for-resource-contro.patch
 
 # documentation deps
 BuildRequires: texinfo
