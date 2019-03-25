@@ -1733,6 +1733,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Mon Mar 25 2019 Adam Williamson <awilliam@redhat.com> - 2:4.0.0-0.3.rc0
+- Backport patch to fix 3D crasher bug (bz #1692323)
+
 * Thu Mar 21 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.2.rc0
 - Fix python paths for qemu-trace-stap
 
