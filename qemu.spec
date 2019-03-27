@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-%global rcver rc0
+%global rcver rc1
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 0.3%{?rcrel}%{?dist}
+Release: 0.4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1733,6 +1733,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Mar 27 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.4.rc1
+- Update to 4.0.0-rc1
+
 * Mon Mar 25 2019 Adam Williamson <awilliam@redhat.com> - 2:4.0.0-0.3.rc0
 - Backport patch to fix 3D crasher bug (bz #1692323)
 
