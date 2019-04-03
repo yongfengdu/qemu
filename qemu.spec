@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-%global rcver rc1
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 0.4%{?rcrel}%{?dist}
+Release: 0.5%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -176,10 +176,6 @@ Source21: 95-kvm-ppc64-memlock.conf
 Patch1: 0002-linux-user-assume-__NR_gettid-always-exists.patch
 Patch2: 0003-linux-user-rename-gettid-to-sys_gettid-to-avoid-clas.patch
 
-# Fix a crasher with 3D acceleration enabled (RHBZ#1692323)
-# https://lists.gnu.org/archive/html/qemu-devel/2019-03/msg04413.html
-# (danpb's original version, not the broken Otobo version)
-Patch3: 0001-qemu-seccomp-dont-kill-process-for-resource-contro.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1181,11 +1177,8 @@ chmod +x %{buildroot}%{_libdir}/qemu/*.so
 %global archs_skip_tests s390
 %global archs_ignore_test_failures 0
 
-# 4.0.0-rc0 failing with
-# ERROR - too few tests run (expected 23, got 1)
-# make: *** [/root/qemu/qemu-4.0.0-rc0/tests/Makefile.include:911: check-unit] Error 1
-# error: Bad exit status from /var/tmp/rpm-tmp.0igDWU (%%check)
-%global temp_skip_check 1
+# Enable this temporarily if tests are broken
+%global temp_skip_check 0
 
 pushd build-dynamic
 %ifnarch %{archs_skip_tests}
@@ -1733,6 +1726,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Apr 03 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.5.rc2
+- Update to 4.0.0-rc2
+
 * Wed Mar 27 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-0.4.rc1
 - Update to 4.0.0-rc1
 
