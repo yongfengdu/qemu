@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-%global rcver rc2
+%global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 0.6%{?rcrel}%{?dist}
+Release: 0.7%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -172,9 +172,10 @@ Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
-# Modern glibc has a gettid function
-Patch1: 0002-linux-user-assume-__NR_gettid-always-exists.patch
-Patch2: 0003-linux-user-rename-gettid-to-sys_gettid-to-avoid-clas.patch
+# Don't block migration with nested VMX (bz #1697997)
+# Not upstream: temporary workaround until kernel supports lands for nested
+# VMX migration
+Patch0001: 0001-Revert-target-i386-kvm-add-VMX-migration-blocker.patch
 
 
 # documentation deps
@@ -1726,6 +1727,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Tue Apr 16 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-0.7.rc3
+- Don't block migration with nested VMX (bz #1697997)
+- Update to qemu-4.0.0-rc3
+
 * Sat Apr 06 2019 Richard W.M. Jones <rjones@redhat.com> - 2:4.0.0-0.6.rc2
 - Rebuild against xen 4.12.
 
