@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-%global rcver rc3
+# global rcver rc3
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 0.7%{?rcrel}%{?dist}
+Release: 1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1727,6 +1727,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Apr 24 2019 Cole Robinson <aintdiscole@gmail.com> - 4.0.0-1
+- Update to qemu-4.0.0 GA
+
 * Tue Apr 16 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-0.7.rc3
 - Don't block migration with nested VMX (bz #1697997)
 - Update to qemu-4.0.0-rc3
