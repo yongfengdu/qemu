@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 1%{?rcrel}%{?dist}
+Release: 2%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -177,6 +177,9 @@ Source21: 95-kvm-ppc64-memlock.conf
 # VMX migration
 Patch0001: 0001-Revert-target-i386-kvm-add-VMX-migration-blocker.patch
 
+
+# CVE-2018-12126, CVE-2018-12127, CVE-2018-12130, CVE-2019-11091
+Patch1001: 0001-target-i386-define-md-clear-bit.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1727,7 +1730,12 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
-* Wed Apr 24 2019 Cole Robinson <aintdiscole@gmail.com> - 4.0.0-1
+* Tue May 14 2019 Daniel P. Berrangé <berrange@redhat.com> - 2:4.0.0-2
+- Define md-clear CPUID bit
+- Resolves: rhbz #1710002 (CVE-2018-12126), rhbz #1710004 (CVE-2018-12127),
+  rhbz #1710003 (CVE-2018-12130), rhbz #1710006 (CVE-2019-11091)
+
+* Wed Apr 24 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.0.0-1
 - Update to qemu-4.0.0 GA
 
 * Tue Apr 16 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-0.7.rc3
