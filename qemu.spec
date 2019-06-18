@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 2%{?rcrel}%{?dist}
+Release: 3%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1133,6 +1133,8 @@ rom_link ../seavgabios/vgabios-qxl.bin vgabios-qxl.bin
 rom_link ../seavgabios/vgabios-stdvga.bin vgabios-stdvga.bin
 rom_link ../seavgabios/vgabios-vmware.bin vgabios-vmware.bin
 rom_link ../seavgabios/vgabios-virtio.bin vgabios-virtio.bin
+rom_link ../seavgabios/vgabios-ramfb.bin vgabios-ramfb.bin
+rom_link ../seavgabios/vgabios-bochs-display.bin vgabios-bochs-display.bin
 rom_link ../seabios/bios.bin bios.bin
 rom_link ../seabios/bios-256k.bin bios-256k.bin
 rom_link ../sgabios/sgabios.bin sgabios.bin
@@ -1270,6 +1272,8 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/vgabios-stdvga.bin
 %{_datadir}/%{name}/vgabios-vmware.bin
 %{_datadir}/%{name}/vgabios-virtio.bin
+%{_datadir}/%{name}/vgabios-ramfb.bin
+%{_datadir}/%{name}/vgabios-bochs-display.bin
 %{_datadir}/%{name}/pxe-e1000.rom
 %{_datadir}/%{name}/efi-e1000.rom
 %{_datadir}/%{name}/pxe-e1000e.rom
