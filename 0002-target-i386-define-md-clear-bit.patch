@@ -1,6 +1,5 @@
-From de8cb5ded43603937e0e7c341fcd7521822328a6 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
-Date: Sat, 2 Mar 2019 00:07:10 +0100
+Date: Wed, 15 May 2019 15:10:10 +0100
 Subject: [PATCH] target/i386: define md-clear bit
 
 md-clear is a new CPUID bit which is set when microcode provides the
@@ -8,7 +7,9 @@ mechanism to invoke a flush of various exploitable CPU buffers by invoking
 the VERW instruction.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-(cherry-picked from a private commit)
+Message-Id: <20190515141011.5315-2-berrange@redhat.com>
+Signed-off-by: Eduardo Habkost <ehabkost@redhat.com>
+(cherry picked from commit b2ae52101fca7f9547ac2f388085dbc58f8fe1c0)
 ---
  target/i386/cpu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -26,6 +27,3 @@ index d6bb57d210..4ea78a4939 100644
              NULL, NULL, NULL, NULL,
              NULL, NULL, NULL, NULL,
              NULL, NULL, NULL, NULL,
--- 
-2.21.0
-

@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 3%{?rcrel}%{?dist}
+Release: 4%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -176,10 +176,16 @@ Source21: 95-kvm-ppc64-memlock.conf
 # Not upstream: temporary workaround until kernel supports lands for nested
 # VMX migration
 Patch0001: 0001-Revert-target-i386-kvm-add-VMX-migration-blocker.patch
-
-
 # CVE-2018-12126, CVE-2018-12127, CVE-2018-12130, CVE-2019-11091
-Patch1001: 0001-target-i386-define-md-clear-bit.patch
+Patch0002: 0002-target-i386-define-md-clear-bit.patch
+# CVE-2019-12155: qxl: null pointer dereference while releasing spice
+# resources (bz #1712727, bz #1712670)
+Patch0003: 0003-qxl-check-release-info-object.patch
+# qemu-4.0.0-2.fc31 ppc64le: rpm hash calculation buggy (bz #1715017)
+Patch0004: 0004-target-ppc-Fix-lxvw4x-lxvh8x-and-lxvb16x.patch
+# Fix rawhide build (bz #1718926)
+# Not upstream, might be a kernel fix
+Patch0005: 0005-NOT-UPSTREAM-Build-fix-with-latest-kernel.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1737,6 +1743,14 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Jun 20 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-4
+- CVE-2019-12155: qxl: null pointer dereference while releasing spice
+  resources (bz #1712727, bz #1712670)
+- qemu-4.0.0-2.fc31 ppc64le: rpm hash calculation buggy (bz #1715017)
+- Fix rawhide build (bz #1718926)
+- Link against libslirp (bz #1712980)
+- Add vgabios-ramfb.bin and vgabios-bochs-display.bin (bz #1721445)
+
 * Tue May 14 2019 Daniel P. Berrangé <berrange@redhat.com> - 2:4.0.0-2
 - Define md-clear CPUID bit
 - Resolves: rhbz #1710002 (CVE-2018-12126), rhbz #1710004 (CVE-2018-12127),

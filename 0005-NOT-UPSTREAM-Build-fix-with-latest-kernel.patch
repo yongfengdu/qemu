@@ -1,0 +1,23 @@
+From: Cole Robinson <crobinso@redhat.com>
+Date: Thu, 20 Jun 2019 17:20:13 -0400
+Subject: [PATCH] NOT UPSTREAM: Build fix with latest kernel
+
+From here: https://lkml.org/lkml/2019/6/3/988
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ linux-user/syscall.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/linux-user/syscall.c b/linux-user/syscall.c
+index 96cd4bf86d..c7625858eb 100644
+--- a/linux-user/syscall.c
++++ b/linux-user/syscall.c
+@@ -34,6 +34,7 @@
+ #include <sys/resource.h>
+ #include <sys/swap.h>
+ #include <linux/capability.h>
++#include <linux/sockios.h>
+ #include <sched.h>
+ #include <sys/timex.h>
+ #include <sys/socket.h>
