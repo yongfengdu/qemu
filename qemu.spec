@@ -1204,10 +1204,12 @@ if [ -x "$b" ]; then "$b" -help; fi
 
 %ifarch %{archs_ignore_test_failures}
 make check V=1 || :
-%else if %{temp_skip_check}
-make check V=1 || :
 %else
-make check V=1
+ %if %{temp_skip_check}
+ make check V=1 || :
+ %else
+ make check V=1
+ %endif
 %endif
 
 %if 0%{?hostqemu:1}
