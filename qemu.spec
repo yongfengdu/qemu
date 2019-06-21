@@ -313,7 +313,9 @@ BuildRequires: libudev-devel
 # qemu 4.0: Use for qauth infrastructure
 BuildRequires: pam-devel
 # qemu 4.0: user-mode networking
+%if 0%{?fedora} > 30
 BuildRequires: libslirp-devel
+%endif
 # qemu 4.0: sphinx-build used for some docs
 %if 0%{?fedora} > 30
 BuildRequires: python3-sphinx
@@ -957,7 +959,9 @@ run_configure() {
         --enable-trace-backend=$tracebackends \
         --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
         --extra-cflags="%{optflags}" \
+%if 0%{?fedora} > 30
         --enable-slirp=system \
+%endif
         "$@" || cat config.log
 }
 
