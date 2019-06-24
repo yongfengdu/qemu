@@ -899,6 +899,7 @@ This package provides the QEMU system emulator for Xtensa boards.
 
 
 
+
 %prep
 %setup -q -n qemu-%{version}%{?rcstr}
 %autopatch -p1
@@ -910,6 +911,8 @@ This package provides the QEMU system emulator for Xtensa boards.
 # -i specifies the interpreter for the shebang
 # Need to list files that do not match ^[a-zA-Z0-9_]+\.py$ explicitly!
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/qemu-trace-stap
+
+
 
 
 %build
@@ -925,7 +928,6 @@ sed -i.debug 's/"-g $CFLAGS"/"$CFLAGS"/g' configure
 %global _smp_mflags %{nil}
 %endif
 
-
 # --build-id option is used for giving info to the debug packages.
 extraldflags="-Wl,--build-id";
 buildldflags="VL_LDFLAGS=-Wl,--build-id"
@@ -940,7 +942,9 @@ tracebackends="dtrace"
     %global spiceflag --disable-spice
 %endif
 
+
 run_configure() {
+    # Base configure call with standard shared options
     ../configure \
         --prefix=%{_prefix} \
         --libdir=%{_libdir} \
@@ -949,34 +953,141 @@ run_configure() {
         --libexecdir=%{_libexecdir} \
         --interp-prefix=%{_prefix}/qemu-%%M \
         --with-pkgversion=%{name}-%{version}-%{release} \
-        --disable-strip \
-        --disable-werror \
-        --enable-kvm \
-        --python=%{__python3} \
-%ifarch s390 %{mips64}
-        --enable-tcg-interpreter \
-%endif
-        --enable-trace-backend=$tracebackends \
         --extra-ldflags="$extraldflags -Wl,-z,relro -Wl,-z,now" \
         --extra-cflags="%{optflags}" \
-%if 0%{?fedora} > 30
-        --enable-slirp=system \
-%endif
+        --python=%{__python3} \
+        --disable-strip \
+        --disable-werror \
+        --tls-priority=@QEMU,SYSTEM \
+        --enable-trace-backend=$tracebackends \
         "$@" || cat config.log
 }
 
+run_configure_disable_everything() {
+    # Disable every qemu feature. Callers can --enable-X the bits they need
+    run_configure \
+        --audio-drv-list= \
+        --disable-attr \
+        --disable-auth-pam \
+        --disable-avx2 \
+        --disable-blobs \
+        --disable-bluez \
+        --disable-bochs \
+        --disable-brlapi \
+        --disable-bsd-user \
+        --disable-bzip2 \
+        --disable-cap-ng \
+        --disable-capstone \
+        --disable-cloop \
+        --disable-cocoa \
+        --disable-coroutine-pool \
+        --disable-crypto-afalg \
+        --disable-curl \
+        --disable-curses \
+        --disable-debug-info \
+        --disable-debug-mutex \
+        --disable-debug-tcg \
+        --disable-dmg \
+        --disable-docs \
+        --disable-fdt \
+        --disable-gcrypt \
+        --disable-glusterfs \
+        --disable-gnutls \
+        --disable-gtk \
+        --disable-guest-agent \
+        --disable-guest-agent-msi \
+        --disable-hax \
+        --disable-hvf \
+        --disable-iconv \
+        --disable-jemalloc \
+        --disable-kvm \
+        --disable-libiscsi \
+        --disable-libnfs \
+        --disable-libpmem \
+        --disable-libssh2 \
+        --disable-libusb \
+        --disable-libxml2 \
+        --disable-linux-aio \
+        --disable-linux-user \
+        --disable-live-block-migration \
+        --disable-lzfse \
+        --disable-lzo \
+        --disable-membarrier \
+        --disable-modules \
+        --disable-mpath \
+        --disable-netmap \
+        --disable-nettle \
+        --disable-numa \
+        --disable-opengl \
+        --disable-parallels \
+        --disable-pie \
+        --disable-pvrdma \
+        --disable-qcow1 \
+        --disable-qed \
+        --disable-qom-cast-debug \
+        --disable-rbd \
+        --disable-rdma \
+        --disable-replication \
+        --disable-sdl \
+        --disable-sdl-image \
+        --disable-seccomp \
+        --disable-sheepdog \
+        --disable-slirp \
+        --disable-smartcard \
+        --disable-snappy \
+        --disable-sparse \
+        --disable-spice \
+        --disable-system \
+        --disable-tcmalloc \
+        --disable-tools \
+        --disable-tpm \
+        --disable-usb-redir \
+        --disable-user \
+        --disable-vde \
+        --disable-vdi \
+        --disable-vhost-crypto \
+        --disable-vhost-kernel \
+        --disable-vhost-net \
+        --disable-vhost-scsi \
+        --disable-vhost-user \
+        --disable-vhost-vsock \
+        --disable-virglrenderer \
+        --disable-virtfs \
+        --disable-vnc \
+        --disable-vnc-jpeg \
+        --disable-vnc-png \
+        --disable-vnc-sasl \
+        --disable-vte \
+        --disable-vvfat \
+        --disable-vxhs \
+        --disable-whpx \
+        --disable-xen \
+        --disable-xen-pci-passthrough \
+        --disable-xfsctl \
+        --without-default-devices \
+        "$@"
+}
+
+
+# Build for non-static qemu-*
 mkdir build-dynamic
 pushd build-dynamic
 
 run_configure \
+    --audio-drv-list=pa,sdl,alsa,oss \
+    --enable-kvm \
     --enable-system \
     --enable-linux-user \
     --enable-pie \
     --enable-modules \
-    --audio-drv-list=pa,sdl,alsa,oss \
-    --tls-priority=@QEMU,SYSTEM \
     --enable-mpath \
-    %{spiceflag}
+    %{spiceflag} \
+%ifarch s390 %{mips64}
+    --enable-tcg-interpreter \
+%endif
+%if 0%{?fedora} > 30
+    --enable-slirp=system \
+%endif
 
 echo "config-host.mak contents:"
 echo "==="
@@ -987,38 +1098,23 @@ make V=1 %{?_smp_mflags} $buildldflags
 
 popd
 
+
+# Build for qemu-user-static
 %if %{user_static}
 mkdir build-static
 pushd build-static
 
-run_configure \
-    --disable-system \
-    --enable-linux-user \
-    --static \
+run_configure_disable_everything \
     --disable-pie \
-    --disable-sdl \
-    --disable-gtk \
-    --disable-spice \
-    --disable-tools \
-    --disable-guest-agent \
-    --disable-guest-agent-msi \
-    --disable-curses \
-    --disable-curl \
-    --disable-gnutls \
-    --disable-gcrypt \
-    --disable-nettle \
-    --disable-cap-ng \
-    --disable-brlapi \
-    --disable-mpath \
-    --disable-libnfs \
-    --disable-capstone \
-    --disable-xen \
-    --disable-rdma
+    --enable-linux-user \
+    --static
 
 make V=1 %{?_smp_mflags} $buildldflags
 
 popd
-%endif
+%endif # user_static
+
+
 
 
 %install
@@ -1026,48 +1122,50 @@ popd
 %global _udevdir /lib/udev/rules.d
 %global qemudocdir %{_docdir}/%{name}
 
-mkdir -p %{buildroot}%{_udevdir}
-mkdir -p %{buildroot}%{_unitdir}
-mkdir -p %{buildroot}%{_sysconfdir}/qemu
+
+# Install rules to use the bridge helper with libvirt's virbr0
+install -D -m 0644 %{_sourcedir}/bridge.conf %{buildroot}%{_sysconfdir}/qemu/bridge.conf
+
 
 # Install qemu-guest-agent service and udev rules
-install -p -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}
+install -D -p -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}/qemu-guest-agent.service
 install -D -p -m 0644 %{_sourcedir}/qemu-ga.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/qemu-ga
-install -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}
+install -D -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}/99-qemu-guest-agent.rules
 
+
+# Install qemu-ga fsfreeze bits
 mkdir -p %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d
 install -p -m 0755 scripts/qemu-guest-agent/fsfreeze-hook %{buildroot}%{_sysconfdir}/qemu-ga
 install -p -m 0644 scripts/qemu-guest-agent/fsfreeze-hook.d/*.sample %{buildroot}%{_sysconfdir}/qemu-ga/fsfreeze-hook.d/
 mkdir -p %{buildroot}%{_localstatedir}/log
 touch %{buildroot}%{_localstatedir}/log/qga-fsfreeze-hook.log
 
+
 # Install qemu-pr-helper service
 install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
 install -m 0644 %{_sourcedir}/qemu-pr-helper.socket %{buildroot}%{_unitdir}
 
+
+# Install ppc64 memlock
 %ifarch %{power64}
 install -d %{buildroot}%{_sysconfdir}/security/limits.d
 install -m 0644 %{_sourcedir}/95-kvm-ppc64-memlock.conf %{buildroot}%{_sysconfdir}/security/limits.d
 %endif
 
 
-# Install kvm specific bits
-%if %{have_kvm}
-mkdir -p %{buildroot}%{_bindir}/
-%endif
-
+# Install qemu-user-static tree
+mkdir -p %{buildroot}%{_bindir}
 %if %{user_static}
 pushd build-static
 make DESTDIR=%{buildroot} install
 
-# Give all QEMU user emulators a -static suffix
+# Rename all QEMU user emulators to have a -static suffix
 for src in %{buildroot}%{_bindir}/qemu-*
 do
   mv $src $src-static
 done
 
-# Update trace files to match
-
+# Rename trace files to match -static suffix
 for src in %{buildroot}%{_datadir}/systemtap/tapset/qemu-*.stp
 do
   dst=`echo $src | sed -e 's/.stp/-static.stp/'`
@@ -1075,29 +1173,53 @@ do
   perl -i -p -e 's/(qemu-\w+)/$1-static/g; s/(qemu\.user\.\w+)/$1.static/g' $dst
 done
 
-
 popd
-%endif
+%endif # user_static
 
+
+# Install main qemu-system-* tree
 pushd build-dynamic
 make DESTDIR=%{buildroot} install
 popd
-
 %find_lang %{name}
 
-chmod -x %{buildroot}%{_mandir}/man1/*
+
+# Copy some static data into place
 install -D -p -m 0644 -t %{buildroot}%{qemudocdir} Changelog README COPYING COPYING.LIB LICENSE
+install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/qemu.conf
+
+
+# Generate qemu-system-* man pages
+chmod -x %{buildroot}%{_mandir}/man1/*
 for emu in %{buildroot}%{_bindir}/qemu-system-*; do
     ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/$(basename $emu).1.gz
 done
 
+
+# Install kvm specific source bits, and qemu-kvm manpage
 %if 0%{?need_qemu_kvm}
-install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
 ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/qemu-kvm.1.gz
+install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
 install -D -p -m 0644 %{_sourcedir}/kvm-x86.modprobe.conf %{buildroot}%{_sysconfdir}/modprobe.d/kvm.conf
 %endif
 
-install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/qemu.conf
+
+# Install binfmt
+%global binfmt_dir %{buildroot}%{_exec_prefix}/lib/binfmt.d
+mkdir -p %{binfmt_dir}
+
+./scripts/qemu-binfmt-conf.sh --systemd ALL --exportdir %{binfmt_dir} --qemu-path %{_bindir}
+for i in %{binfmt_dir}/*; do
+    mv $i $(echo $i | sed 's/.conf/-dynamic.conf/')
+done
+
+%if %{user_static}
+for regularfmt in %{binfmt_dir}/*; do
+  staticfmt="$(echo $regularfmt | sed 's/-dynamic/-static/g')"
+  cat $regularfmt | tr -d '\n' | sed "s/:$/-static:F/" > $staticfmt
+done
+%endif
+
 
 # XXX With qemu 2.11 we can probably drop this symlinking with use of
 # configure --firmwarepath, see qemu git 3d5eecab4
@@ -1149,25 +1271,6 @@ rom_link ../seabios/bios.bin bios.bin
 rom_link ../seabios/bios-256k.bin bios-256k.bin
 rom_link ../sgabios/sgabios.bin sgabios.bin
 
-# Install binfmt
-%global binfmt_dir %{buildroot}%{_exec_prefix}/lib/binfmt.d
-mkdir -p %{binfmt_dir}
-
-./scripts/qemu-binfmt-conf.sh --systemd ALL --exportdir %{binfmt_dir} --qemu-path %{_bindir}
-for i in %{binfmt_dir}/*; do
-    mv $i $(echo $i | sed 's/.conf/-dynamic.conf/')
-done
-
-%if %{user_static}
-for regularfmt in %{binfmt_dir}/*; do
-  staticfmt="$(echo $regularfmt | sed 's/-dynamic/-static/g')"
-  cat $regularfmt | tr -d '\n' | sed "s/:$/-static:F/" > $staticfmt
-done
-%endif
-
-
-# Install rules to use the bridge helper with libvirt's virbr0
-install -m 0644 %{_sourcedir}/bridge.conf %{buildroot}%{_sysconfdir}/qemu
 
 # When building using 'rpmbuild' or 'fedpkg local', RPATHs can be left in
 # the binaries and libraries (although this doesn't occur when
@@ -1182,13 +1285,14 @@ for f in %{buildroot}%{_bindir}/* %{buildroot}%{_libdir}/* \
   if file $f | grep -q ELF | grep -q -i shared; then chrpath --delete $f; fi
 done
 
+
 # We need to make the modules executable else
 # RPM won't pick up their dependencies.
 chmod +x %{buildroot}%{_libdir}/qemu/*.so
 
 
-%check
 
+%check
 # Tests are hanging on s390 as of 2.3.0
 #   https://bugzilla.redhat.com/show_bug.cgi?id=1206057
 # Tests seem to be a recurring problem on s390, so I'd suggest just leaving
