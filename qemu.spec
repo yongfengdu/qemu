@@ -148,7 +148,7 @@
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 Version: 4.0.0
-Release: 4%{?rcrel}%{?dist}
+Release: 5%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -1853,6 +1853,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Fri Jun 28 2019 Kevin Fenzi <kevin@scrye.com> - 2:4.0.0-5
+- Rebuild for new brltty.
+
 * Thu Jun 20 2019 Cole Robinson <crobinso@redhat.com> - 2:4.0.0-4
 - CVE-2019-12155: qxl: null pointer dereference while releasing spice
   resources (bz #1712727, bz #1712670)
