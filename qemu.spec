@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-# global rcver rc3
+%global rcver rc0
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -147,8 +147,8 @@
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 4.0.0
-Release: 5%{?rcrel}%{?dist}
+Version: 4.1.0
+Release: 0.1%{?rcrel}%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -172,20 +172,9 @@ Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
-# Don't block migration with nested VMX (bz #1697997)
-# Not upstream: temporary workaround until kernel supports lands for nested
-# VMX migration
-Patch0001: 0001-Revert-target-i386-kvm-add-VMX-migration-blocker.patch
-# CVE-2018-12126, CVE-2018-12127, CVE-2018-12130, CVE-2019-11091
-Patch0002: 0002-target-i386-define-md-clear-bit.patch
-# CVE-2019-12155: qxl: null pointer dereference while releasing spice
-# resources (bz #1712727, bz #1712670)
-Patch0003: 0003-qxl-check-release-info-object.patch
-# qemu-4.0.0-2.fc31 ppc64le: rpm hash calculation buggy (bz #1715017)
-Patch0004: 0004-target-ppc-Fix-lxvw4x-lxvh8x-and-lxvb16x.patch
 # Fix rawhide build (bz #1718926)
-# Not upstream, might be a kernel fix
-Patch0005: 0005-NOT-UPSTREAM-Build-fix-with-latest-kernel.patch
+# Not upstream, some mailing list patches have been proposed
+Patch0001: 0001-NOT-UPSTREAM-Build-fix-with-latest-kernel.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -272,7 +261,7 @@ BuildRequires: glusterfs-api-devel >= 3.4.0
 # Needed for usb passthrough for qemu >= 1.5
 BuildRequires: libusbx-devel
 # SSH block driver
-BuildRequires: libssh2-devel
+BuildRequires: libssh-devel
 # GTK frontend
 BuildRequires: gtk3-devel
 BuildRequires: vte291-devel
@@ -298,7 +287,7 @@ BuildRequires: libtasn1-devel
 BuildRequires: libcacard-devel >= 2.5.0
 # qemu 2.5: virgl 3d support
 BuildRequires: virglrenderer-devel
-# qemu 2.6: Needed for gtk GL support
+# qemu 2.6: Needed for gtk GL support, vhost-user-gpu
 BuildRequires: mesa-libgbm-devel
 # qemu 2.11: preferred disassembler for TCG
 BuildRequires: capstone-devel
@@ -1004,7 +993,7 @@ run_configure_disable_everything() {
         --disable-libiscsi \
         --disable-libnfs \
         --disable-libpmem \
-        --disable-libssh2 \
+        --disable-libssh \
         --disable-libusb \
         --disable-libxml2 \
         --disable-linux-aio \
@@ -1069,6 +1058,24 @@ run_configure_disable_everything() {
 }
 
 
+
+# Build for qemu-user-static
+%if %{user_static}
+mkdir build-static
+pushd build-static
+
+run_configure_disable_everything \
+    --disable-pie \
+    --enable-linux-user \
+    --static
+
+make V=1 %{?_smp_mflags} $buildldflags
+
+popd
+%endif # user_static
+
+
+
 # Build for non-static qemu-*
 mkdir build-dynamic
 pushd build-dynamic
@@ -1097,22 +1104,6 @@ echo "==="
 make V=1 %{?_smp_mflags} $buildldflags
 
 popd
-
-
-# Build for qemu-user-static
-%if %{user_static}
-mkdir build-static
-pushd build-static
-
-run_configure_disable_everything \
-    --disable-pie \
-    --enable-linux-user \
-    --static
-
-make V=1 %{?_smp_mflags} $buildldflags
-
-popd
-%endif # user_static
 
 
 
@@ -1240,6 +1231,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/bios.bin
 rm -rf %{buildroot}%{_datadir}/%{name}/bios-256k.bin
 # Provided by package sgabios
 rm -rf %{buildroot}%{_datadir}/%{name}/sgabios.bin
+# Provided by package edk2
+rm -rf %{buildroot}%{_datadir}/%{name}/edk2*
+rm -rf %{buildroot}%{_datadir}/%{name}/firmware/*edk2*.json
 
 pxe_link() {
   ln -s ../ipxe/$2.rom %{buildroot}%{_datadir}/%{name}/pxe-$1.rom
@@ -1267,6 +1261,7 @@ rom_link ../seavgabios/vgabios-vmware.bin vgabios-vmware.bin
 rom_link ../seavgabios/vgabios-virtio.bin vgabios-virtio.bin
 rom_link ../seavgabios/vgabios-ramfb.bin vgabios-ramfb.bin
 rom_link ../seavgabios/vgabios-bochs-display.bin vgabios-bochs-display.bin
+rom_link ../seavgabios/vgabios-ati.bin vgabios-ati.bin
 rom_link ../seabios/bios.bin bios.bin
 rom_link ../seabios/bios-256k.bin bios-256k.bin
 rom_link ../sgabios/sgabios.bin sgabios.bin
@@ -1377,6 +1372,7 @@ getent passwd qemu >/dev/null || \
 %doc %{qemudocdir}/qemu-qmp-ref.txt
 %doc %{qemudocdir}/README
 %doc %{qemudocdir}/interop
+%doc %{qemudocdir}/specs
 %dir %{_datadir}/%{name}/
 %{_datadir}/applications/qemu.desktop
 %{_datadir}/icons/hicolor/*/apps/*
@@ -1390,6 +1386,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/vgabios-virtio.bin
 %{_datadir}/%{name}/vgabios-ramfb.bin
 %{_datadir}/%{name}/vgabios-bochs-display.bin
+%{_datadir}/%{name}/vgabios-ati.bin
 %{_datadir}/%{name}/pxe-e1000.rom
 %{_datadir}/%{name}/efi-e1000.rom
 %{_datadir}/%{name}/pxe-e1000e.rom
@@ -1406,6 +1403,7 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/efi-virtio.rom
 %{_datadir}/%{name}/pxe-vmxnet3.rom
 %{_datadir}/%{name}/efi-vmxnet3.rom
+%{_datadir}/%{name}/vhost-user/50-qemu-gpu.json
 %{_mandir}/man1/qemu.1*
 %{_mandir}/man1/qemu-trace-stap.1*
 %{_mandir}/man1/virtfs-proxy-helper.1*
@@ -1422,6 +1420,7 @@ getent passwd qemu >/dev/null || \
 %{_unitdir}/qemu-pr-helper.service
 %{_unitdir}/qemu-pr-helper.socket
 %attr(4755, root, root) %{_libexecdir}/qemu-bridge-helper
+%{_libexecdir}/vhost-user-gpu
 %config(noreplace) %{_sysconfdir}/sasl2/qemu.conf
 %dir %{_sysconfdir}/qemu
 %config(noreplace) %{_sysconfdir}/qemu/bridge.conf
@@ -1853,6 +1852,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Thu Jul 11 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.1.0-0.1.rc0
+- Update to qemu-4.1.0-rc0
+
 * Fri Jun 28 2019 Kevin Fenzi <kevin@scrye.com> - 2:4.0.0-5
 - Rebuild for new brltty.
 
