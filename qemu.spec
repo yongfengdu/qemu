@@ -175,6 +175,8 @@ Source21: 95-kvm-ppc64-memlock.conf
 # Fix rawhide build (bz #1718926)
 # Not upstream, some mailing list patches have been proposed
 Patch0001: 0001-NOT-UPSTREAM-Build-fix-with-latest-kernel.patch
+# Fix for docs building
+Patch0002: 0002-docs-bitmaps-use-QMP-lexer-instead-of-json.patch
 
 # documentation deps
 BuildRequires: texinfo
