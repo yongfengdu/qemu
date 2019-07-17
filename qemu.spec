@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-%global rcver rc0
+%global rcver rc1
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -175,8 +175,6 @@ Source21: 95-kvm-ppc64-memlock.conf
 # Fix rawhide build (bz #1718926)
 # Not upstream, some mailing list patches have been proposed
 Patch0001: 0001-NOT-UPSTREAM-Build-fix-with-latest-kernel.patch
-# Fix for docs building
-Patch0002: 0002-docs-bitmaps-use-QMP-lexer-instead-of-json.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1854,6 +1852,9 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Jul 17 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.1.0-0.1.rc1
+- Update to qemu-4.1.0-rc1
+
 * Thu Jul 11 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.1.0-0.1.rc0
 - Update to qemu-4.1.0-rc0
 
