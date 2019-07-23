@@ -1066,6 +1066,7 @@ pushd build-static
 
 run_configure_disable_everything \
     --disable-pie \
+    --enable-attr \
     --enable-linux-user \
     --static
 
