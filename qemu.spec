@@ -138,7 +138,7 @@
 %{obsoletes_block_rbd}
 
 # Release candidate version tracking
-%global rcver rc1
+%global rcver rc2
 %if 0%{?rcver:1}
 %global rcrel .%{rcver}
 %global rcstr -%{rcver}
@@ -172,9 +172,6 @@ Source20: kvm-x86.modprobe.conf
 # /etc/security/limits.d/95-kvm-ppc64-memlock.conf
 Source21: 95-kvm-ppc64-memlock.conf
 
-# Fix rawhide build (bz #1718926)
-# Not upstream, some mailing list patches have been proposed
-Patch0001: 0001-NOT-UPSTREAM-Build-fix-with-latest-kernel.patch
 
 # documentation deps
 BuildRequires: texinfo
@@ -1073,7 +1070,7 @@ run_configure_disable_everything \
 make V=1 %{?_smp_mflags} $buildldflags
 
 popd
-%endif # user_static
+%endif
 
 
 
@@ -1166,7 +1163,7 @@ do
 done
 
 popd
-%endif # user_static
+%endif
 
 
 # Install main qemu-system-* tree
@@ -1322,7 +1319,7 @@ make check V=1 || :
 qemu-sanity-check --qemu=%{?hostqemu} ||:
 %endif
 
-%endif  # archs_skip_tests
+%endif
 popd
 
 
@@ -1853,6 +1850,10 @@ getent passwd qemu >/dev/null || \
 
 
 %changelog
+* Wed Jul 17 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.1.0-0.1.rc2
+- Update to qemu-4.1.0-rc2
+- Re-add libattr for qemu-user-static (bz 1731756)
+
 * Wed Jul 17 2019 Cole Robinson <aintdiscole@gmail.com> - 2:4.1.0-0.1.rc1
 - Update to qemu-4.1.0-rc1
 
