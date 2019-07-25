@@ -1374,6 +1374,7 @@ getent passwd qemu >/dev/null || \
 %dir %{_datadir}/%{name}/
 %{_datadir}/applications/qemu.desktop
 %{_datadir}/icons/hicolor/*/apps/*
+%exclude %{_datadir}/%{name}/qemu-nsis.bmp
 %{_datadir}/%{name}/keymaps/
 %{_datadir}/%{name}/trace-events-all
 %{_datadir}/%{name}/vgabios.bin
@@ -1770,6 +1771,7 @@ getent passwd qemu >/dev/null || \
 %files system-riscv-core
 %{_bindir}/qemu-system-riscv32
 %{_bindir}/qemu-system-riscv64
+%{_datadir}/%{name}/opensbi-riscv*.bin
 %{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
 %{_mandir}/man1/qemu-system-riscv*.1*
 
