@@ -179,7 +179,9 @@ BuildRequires: texinfo
 BuildRequires: perl-podlators
 # For sanity test
 BuildRequires: qemu-sanity-check-nodeps
+%ifnarch %{ix86}
 BuildRequires: kernel
+%endif
 %if %{have_iasl}
 # For acpi compilation
 BuildRequires: iasl
