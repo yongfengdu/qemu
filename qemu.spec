@@ -153,7 +153,7 @@ Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{version}%{?rcstr}.tar.xz
+Source0: https://download.qemu.org/%{name}-%{version}%{?rcstr}.tar.xz
 
 # guest agent service
 Source10: qemu-guest-agent.service
