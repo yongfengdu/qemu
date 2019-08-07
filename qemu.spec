@@ -1097,14 +1097,6 @@ popd
 %global qemudocdir %{_docdir}/%{name}
 
 
-# Install rules to use the bridge helper with libvirt's virbr0
-install -D -m 0644 %{_sourcedir}/bridge.conf %{buildroot}%{_sysconfdir}/qemu/bridge.conf
-
-
-# Install qemu-guest-agent service and udev rules
-install -D -p -m 0644 %{_sourcedir}/qemu-guest-agent.service %{buildroot}%{_unitdir}/qemu-guest-agent.service
-install -D -p -m 0644 %{_sourcedir}/qemu-ga.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/qemu-ga
-install -D -m 0644 %{_sourcedir}/99-qemu-guest-agent.rules %{buildroot}%{_udevdir}/99-qemu-guest-agent.rules
 
 
 # Install qemu-ga fsfreeze bits
@@ -1116,14 +1108,11 @@ touch %{buildroot}%{_localstatedir}/log/qga-fsfreeze-hook.log
 
 
 # Install qemu-pr-helper service
-install -m 0644 %{_sourcedir}/qemu-pr-helper.service %{buildroot}%{_unitdir}
-install -m 0644 %{_sourcedir}/qemu-pr-helper.socket %{buildroot}%{_unitdir}
 
 
 # Install ppc64 memlock
 %ifarch %{power64}
 install -d %{buildroot}%{_sysconfdir}/security/limits.d
-install -m 0644 %{_sourcedir}/95-kvm-ppc64-memlock.conf %{buildroot}%{_sysconfdir}/security/limits.d
 %endif
 
 
@@ -1173,8 +1162,6 @@ done
 # Install kvm specific source bits, and qemu-kvm manpage
 %if 0%{?need_qemu_kvm}
 ln -sf qemu.1.gz %{buildroot}%{_mandir}/man1/qemu-kvm.1.gz
-install -m 0755 %{_sourcedir}/qemu-kvm.sh %{buildroot}%{_bindir}/qemu-kvm
-install -D -p -m 0644 %{_sourcedir}/kvm-x86.modprobe.conf %{buildroot}%{_sysconfdir}/modprobe.d/kvm.conf
 %endif
 
 
@@ -1748,7 +1735,6 @@ getent passwd qemu >/dev/null || \
 %{_datadir}/%{name}/u-boot.e500
 %{_datadir}/%{name}/u-boot-sam460-20100605.bin
 %ifarch %{power64}
-%{_sysconfdir}/security/limits.d/95-kvm-ppc64-memlock.conf
 %endif
 
 
