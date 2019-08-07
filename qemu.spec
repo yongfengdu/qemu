@@ -155,23 +155,6 @@ URL: http://www.qemu.org/
 
 Source0: https://download.qemu.org/%{name}-%{version}%{?rcstr}.tar.xz
 
-# guest agent service
-Source10: qemu-guest-agent.service
-Source17: qemu-ga.sysconfig
-# guest agent udev rules
-Source11: 99-qemu-guest-agent.rules
-# /etc/qemu/bridge.conf
-Source12: bridge.conf
-# qemu-kvm back compat wrapper installed as /usr/bin/qemu-kvm
-Source13: qemu-kvm.sh
-# PR manager service
-Source14: qemu-pr-helper.service
-Source15: qemu-pr-helper.socket
-# /etc/modprobe.d/kvm.conf, for x86
-Source20: kvm-x86.modprobe.conf
-# /etc/security/limits.d/95-kvm-ppc64-memlock.conf
-Source21: 95-kvm-ppc64-memlock.conf
-
 
 # documentation deps
 BuildRequires: texinfo
